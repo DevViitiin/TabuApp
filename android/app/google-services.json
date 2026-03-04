@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "962739787299",
+    "firebase_url": "https://tabuapp-4325a-default-rtdb.firebaseio.com",
+    "project_id": "tabuapp-4325a",
+    "storage_bucket": "tabuapp-4325a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:962739787299:android:07559ed97ecde912824396",
+        "android_client_info": {
+          "package_name": "com.tabu.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8WTqOuCCqMcxc0d0nRNQFr-p8ynrwuUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
