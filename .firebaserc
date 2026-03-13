@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "dracoryx-96df3"
-  }
+    "default": "dracoryx-96df3",
+    "s": "tabuapp-4325a"
+  },
+  "targets": {},
+  "etags": {}
 }

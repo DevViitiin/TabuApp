@@ -76,55 +76,53 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   Future<void> _register() async {
-  final nome     = _nameController.text.trim();
-  final email    = _emailController.text.trim();
-  final senha    = _passwordController.text;
-  final confirma = _confirmController.text;
+    final nome     = _nameController.text.trim();
+    final email    = _emailController.text.trim();
+    final senha    = _passwordController.text;
+    final confirma = _confirmController.text;
 
-  if (nome.isEmpty || email.isEmpty || senha.isEmpty || confirma.isEmpty) {
-    setState(() => _errorMsg = 'Preencha todos os campos.');
-    return;
-  }
-  if (senha != confirma) {
-    setState(() => _errorMsg = 'As senhas não coincidem.');
-    return;
-  }
-  if (!_passwordHasLength || !_passwordHasUpper || !_passwordHasNumber) {
-    setState(() => _errorMsg = 'A senha não atende aos requisitos.');
-    return;
-  }
-
-  setState(() { _isLoading = true; _errorMsg = null; });
-
-  try {
-    final credential = await _authService.registerWithEmail(
-      email: email,
-      password: senha,
-      displayName: nome,
-    );
-
-    final uid = credential?.user?.uid;
-    print('✅ Cadastro efetuado — UID: $uid');
-
-    if (uid != null && mounted) {
-      final dados = await _authService.getUserData(uid);
-      print('📦 Dados salvos: $dados');
-
-      if (mounted && dados != null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => HomeScreen(userData: dados), // 👈
-          ),
-        );
-      }
+    if (nome.isEmpty || email.isEmpty || senha.isEmpty || confirma.isEmpty) {
+      setState(() => _errorMsg = 'Preencha todos os campos.');
+      return;
     }
-  } catch (e) {
-    print('❌ Erro no cadastro: $e');
-    if (mounted) setState(() => _errorMsg = e.toString());
-  } finally {
-    if (mounted) setState(() => _isLoading = false);
+    if (senha != confirma) {
+      setState(() => _errorMsg = 'As senhas não coincidem.');
+      return;
+    }
+    if (!_passwordHasLength || !_passwordHasUpper || !_passwordHasNumber) {
+      setState(() => _errorMsg = 'A senha não atende aos requisitos.');
+      return;
+    }
+
+    setState(() { _isLoading = true; _errorMsg = null; });
+
+    try {
+      final credential = await _authService.registerWithEmail(
+        email: email,
+        password: senha,
+        displayName: nome,
+      );
+
+      final uid = credential?.user?.uid;
+      print('✅ Cadastro efetuado — UID: $uid');
+
+      if (uid != null && mounted) {
+        final dados = await _authService.getUserData(uid);
+        print('📦 Dados salvos: $dados');
+
+        if (mounted && dados != null) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => HomeScreen(userData: dados)),
+          );
+        }
+      }
+    } catch (e) {
+      print('❌ Erro no cadastro: $e');
+      if (mounted) setState(() => _errorMsg = e.toString());
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -132,23 +130,24 @@ class _RegisterScreenState extends State<RegisterScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: TabuColors.rosaPrincipal,
+      backgroundColor: TabuColors.bg,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _bgController,
-              builder: (_, __) => CustomPaint(painter: _FundoRosaPainter(progress: _bgController.value)),
+              builder: (_, __) => CustomPaint(painter: _FundoEscuroPainter(progress: _bgController.value)),
             ),
           ),
+          // Linha neon rosa no topo
           Positioned(
             top: 0, left: 0, right: 0,
             child: Container(
-              height: 4,
+              height: 3,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(colors: [
-                  TabuColors.neonGlow, TabuColors.neonCyan, TabuColors.neonBright, TabuColors.neonCyan, TabuColors.neonGlow,
+                  TabuColors.rosaDeep, TabuColors.rosaPrincipal, TabuColors.rosaClaro, TabuColors.rosaPrincipal, TabuColors.rosaDeep,
                 ]),
               ),
             ),
@@ -165,14 +164,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                         child: Container(
                           width: 40, height: 40,
                           decoration: BoxDecoration(
-                            color: const Color(0x22FFFFFF),
+                            color: TabuColors.bgCard,
                             border: Border.all(color: TabuColors.border, width: 0.8),
                           ),
                           child: const Icon(Icons.arrow_back_ios_new, color: TabuColors.branco, size: 16),
                         ),
                       ),
                       const Spacer(),
-                      Text('CRIAR CONTA', style: theme.textTheme.labelLarge?.copyWith(fontSize: 11, letterSpacing: 5, color: TabuColors.textoSecundario)),
+                      Text('CRIAR CONTA', style: theme.textTheme.labelLarge?.copyWith(fontSize: 11, letterSpacing: 5, color: TabuColors.dim)),
                       const Spacer(),
                       const SizedBox(width: 40),
                     ],
@@ -254,7 +253,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                               onChanged: (v) => setState(() => _acceptedTerms = v ?? false),
                             ),
 
-                            // Mensagem de erro
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 200),
                               child: _errorMsg != null
@@ -264,11 +262,11 @@ class _RegisterScreenState extends State<RegisterScreen>
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Container(width: 4, height: 4, decoration: const BoxDecoration(color: TabuColors.rosaVivo, shape: BoxShape.circle)),
+                                          Container(width: 4, height: 4, decoration: const BoxDecoration(color: TabuColors.rosaPrincipal, shape: BoxShape.circle)),
                                           const SizedBox(width: 8),
-                                          Flexible(child: Text(_errorMsg!, style: theme.textTheme.bodySmall?.copyWith(color: TabuColors.rosaVivo, fontSize: 11, letterSpacing: 1))),
+                                          Flexible(child: Text(_errorMsg!, style: theme.textTheme.bodySmall?.copyWith(color: TabuColors.rosaPrincipal, fontSize: 11, letterSpacing: 1))),
                                           const SizedBox(width: 8),
-                                          Container(width: 4, height: 4, decoration: const BoxDecoration(color: TabuColors.rosaVivo, shape: BoxShape.circle)),
+                                          Container(width: 4, height: 4, decoration: const BoxDecoration(color: TabuColors.rosaPrincipal, shape: BoxShape.circle)),
                                         ],
                                       ),
                                     )
@@ -287,15 +285,15 @@ class _RegisterScreenState extends State<RegisterScreen>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('Já tem conta?  ', style: theme.textTheme.bodySmall?.copyWith(fontSize: 12, color: TabuColors.textoSecundario)),
+                                Text('Já tem conta?  ', style: theme.textTheme.bodySmall?.copyWith(fontSize: 12, color: TabuColors.dim)),
                                 GestureDetector(
                                   onTap: () => Navigator.of(context).maybePop(),
-                                  child: Text('Entrar', style: theme.textTheme.labelLarge?.copyWith(color: TabuColors.neonGlow, letterSpacing: 1, fontSize: 12)),
+                                  child: Text('Entrar', style: theme.textTheme.labelLarge?.copyWith(color: TabuColors.rosaPrincipal, letterSpacing: 1, fontSize: 12)),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 40),
-                            Text('— TABU BAR & LOUNGE —', style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 4, color: TabuColors.textoMuted, fontSize: 8)),
+                            Text('— TABU BAR & LOUNGE —', style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 4, color: TabuColors.subtle, fontSize: 8)),
                             const SizedBox(height: 24),
                           ],
                         ),
@@ -307,21 +305,20 @@ class _RegisterScreenState extends State<RegisterScreen>
             ),
           ),
 
-          // Loading overlay
           if (_isLoading)
             Positioned.fill(
               child: Container(
-                color: TabuColors.rosaPrincipal.withOpacity(0.35),
+                color: TabuColors.bg.withOpacity(0.7),
                 child: Center(
                   child: Container(
                     width: 52, height: 52,
                     decoration: BoxDecoration(
-                      color: const Color(0x28FFFFFF),
+                      color: TabuColors.bgCard,
                       border: Border.all(color: TabuColors.border, width: 0.8),
                     ),
                     child: const Padding(
                       padding: EdgeInsets.all(15),
-                      child: CircularProgressIndicator(strokeWidth: 1.5, color: TabuColors.branco),
+                      child: CircularProgressIndicator(strokeWidth: 1.5, color: TabuColors.rosaPrincipal),
                     ),
                   ),
                 ),
@@ -341,13 +338,13 @@ class _HeaderSection extends StatelessWidget {
     final theme = Theme.of(context);
     return Column(
       children: [
-        SizedBox(width: 52, height: 52, child: CustomPaint(painter: _NuvemNeonIcon())),
+        SizedBox(width: 52, height: 52, child: CustomPaint(painter: _RosaGlowIcon())),
         const SizedBox(height: 16),
         Text(
           'TABU',
           style: theme.textTheme.displaySmall?.copyWith(
             fontSize: 42, letterSpacing: 18, fontWeight: FontWeight.w400, color: TabuColors.branco, height: 1,
-            shadows: [Shadow(color: TabuColors.rosaEscuro.withOpacity(0.25), offset: const Offset(2, 3), blurRadius: 6)],
+            shadows: [Shadow(color: TabuColors.rosaPrincipal.withOpacity(0.5), offset: const Offset(0, 0), blurRadius: 20)],
           ),
         ),
         const SizedBox(height: 4),
@@ -355,41 +352,51 @@ class _HeaderSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 16, height: 1.5, color: TabuColors.neonCyan),
+            Container(width: 16, height: 1.5, color: TabuColors.rosaPrincipal),
             const SizedBox(width: 8),
-            Text('LOUNGE', style: theme.textTheme.labelSmall?.copyWith(color: TabuColors.neonCyan, letterSpacing: 6, fontSize: 9, fontWeight: FontWeight.w700)),
+            Text('LOUNGE', style: theme.textTheme.labelSmall?.copyWith(color: TabuColors.rosaPrincipal, letterSpacing: 6, fontSize: 9, fontWeight: FontWeight.w700)),
             const SizedBox(width: 8),
-            Container(width: 16, height: 1.5, color: TabuColors.neonCyan),
+            Container(width: 16, height: 1.5, color: TabuColors.rosaPrincipal),
           ],
         ),
         const SizedBox(height: 20),
-        Text('Crie sua conta exclusiva', style: theme.textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic, letterSpacing: 1.5, fontSize: 13, color: TabuColors.textoSecundario)),
+        Text('Crie sua conta exclusiva', style: theme.textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic, letterSpacing: 1.5, fontSize: 13, color: TabuColors.dim)),
       ],
     );
   }
 }
 
-// ─── Cloud Neon Icon ──────────────────────────────────────────────────────────
-class _NuvemNeonIcon extends CustomPainter {
+// ─── Rosa Glow Icon ───────────────────────────────────────────────────────────
+class _RosaGlowIcon extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
-    canvas.drawCircle(Offset(cx, cy), cx, Paint()..color = TabuColors.neonCyan.withOpacity(0.2)..style = PaintingStyle.stroke..strokeWidth = 1.5);
-    final cloud = Paint()..color = TabuColors.branco;
-    canvas.drawCircle(Offset(cx, cy + 3), 10, cloud);
-    canvas.drawCircle(Offset(cx - 8, cy + 6), 7, cloud);
-    canvas.drawCircle(Offset(cx + 8, cy + 6), 7, cloud);
-    canvas.drawCircle(Offset(cx - 4, cy), 8.5, cloud);
-    canvas.drawCircle(Offset(cx + 4, cy), 8.5, cloud);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(cx - 15, cy + 3, 30, 11), const Radius.circular(3)), cloud);
-    final neon = Paint()..color = TabuColors.neonCyan.withOpacity(0.75)..style = PaintingStyle.stroke..strokeWidth = 1.0..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5);
-    canvas.drawCircle(Offset(cx - 4, cy), 8.5, neon);
-    canvas.drawCircle(Offset(cx + 4, cy), 8.5, neon);
-    canvas.drawCircle(Offset(cx, cy + 3), 10, neon);
+    // Halo externo
+    canvas.drawCircle(Offset(cx, cy), cx, Paint()
+      ..color = TabuColors.rosaPrincipal.withOpacity(0.25)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5);
+    // Ícone rosa
+    final rosa = Paint()..color = TabuColors.rosaPrincipal;
+    canvas.drawCircle(Offset(cx, cy + 3), 10, rosa);
+    canvas.drawCircle(Offset(cx - 8, cy + 6), 7, rosa);
+    canvas.drawCircle(Offset(cx + 8, cy + 6), 7, rosa);
+    canvas.drawCircle(Offset(cx - 4, cy), 8.5, rosa);
+    canvas.drawCircle(Offset(cx + 4, cy), 8.5, rosa);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(cx - 15, cy + 3, 30, 11), const Radius.circular(3)), rosa);
+    // Glow
+    final glow = Paint()
+      ..color = TabuColors.glow
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+    canvas.drawCircle(Offset(cx - 4, cy), 8.5, glow);
+    canvas.drawCircle(Offset(cx + 4, cy), 8.5, glow);
+    canvas.drawCircle(Offset(cx, cy + 3), 10, glow);
   }
   @override
-  bool shouldRepaint(_NuvemNeonIcon old) => false;
+  bool shouldRepaint(_RosaGlowIcon old) => false;
 }
 
 // ─── Text Field ───────────────────────────────────────────────────────────────
@@ -426,16 +433,21 @@ class _TabuTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: theme.textTheme.labelSmall?.copyWith(fontSize: 9, letterSpacing: 3, fontWeight: FontWeight.w700, color: isFocused ? TabuColors.branco : TabuColors.textoMuted)),
+        Text(label, style: theme.textTheme.labelSmall?.copyWith(
+          fontSize: 9, letterSpacing: 3, fontWeight: FontWeight.w700,
+          color: isFocused ? TabuColors.rosaPrincipal : TabuColors.subtle,
+        )),
         const SizedBox(height: 8),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: isFocused ? const Color(0x33FFFFFF) : const Color(0x1AFFFFFF),
-            border: Border.all(color: isFocused ? TabuColors.branco : TabuColors.border, width: isFocused ? 1.5 : 0.8),
+            color: isFocused ? const Color(0x14E85D8A) : TabuColors.bgCard,
+            border: Border.all(
+              color: isFocused ? TabuColors.borderMid : TabuColors.border,
+              width: isFocused ? 1.5 : 0.8,
+            ),
             boxShadow: isFocused ? [
-              BoxShadow(color: Colors.white.withOpacity(0.15), blurRadius: 14, offset: const Offset(0, 4)),
-              BoxShadow(color: TabuColors.neonCyan.withOpacity(0.08), blurRadius: 22),
+              BoxShadow(color: TabuColors.glow.withOpacity(0.3), blurRadius: 14, offset: const Offset(0, 4)),
             ] : [],
           ),
           child: TextField(
@@ -448,9 +460,9 @@ class _TabuTextField extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: theme.inputDecorationTheme.hintStyle,
-              prefixIcon: Icon(prefixIcon, color: isFocused ? TabuColors.branco : TabuColors.textoMuted, size: 18),
+              prefixIcon: Icon(prefixIcon, color: isFocused ? TabuColors.rosaPrincipal : TabuColors.subtle, size: 18),
               suffixIcon: suffixIcon != null
-                  ? GestureDetector(onTap: onSuffixTap, child: Icon(suffixIcon, color: TabuColors.textoMuted, size: 18))
+                  ? GestureDetector(onTap: onSuffixTap, child: Icon(suffixIcon, color: TabuColors.subtle, size: 18))
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
@@ -478,10 +490,10 @@ class _PasswordStrengthBar extends StatelessWidget {
 
   Color get _color {
     switch (_strength) {
-      case 0: case 1: return TabuColors.rosaVivo;
-      case 2: return TabuColors.rosaClaro;
-      case 3: return TabuColors.neonCyan;
-      case 4: return TabuColors.neonBright;
+      case 0: case 1: return TabuColors.rosaDeep;
+      case 2: return TabuColors.rosaPrincipal;
+      case 3: return TabuColors.rosaClaro;
+      case 4: return TabuColors.rosaPale;
       default: return TabuColors.border;
     }
   }
@@ -509,7 +521,7 @@ class _PasswordStrengthBar extends StatelessWidget {
                   duration: const Duration(milliseconds: 300),
                   height: 3,
                   margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
-                  decoration: BoxDecoration(color: filled ? _color : Colors.white.withOpacity(0.2)),
+                  decoration: BoxDecoration(color: filled ? _color : Colors.white.withOpacity(0.08)),
                 ),
               );
             }),
@@ -518,7 +530,7 @@ class _PasswordStrengthBar extends StatelessWidget {
         const SizedBox(width: 12),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
-          child: Text(_label, key: ValueKey(_label), style: TextStyle(fontFamily: 'Outfit', fontSize: 9, letterSpacing: 2, fontWeight: FontWeight.w700, color: _color)),
+          child: Text(_label, key: ValueKey(_label), style: TextStyle(fontFamily: 'Barlow Condensed', fontSize: 9, letterSpacing: 2, fontWeight: FontWeight.w700, color: _color)),
         ),
       ],
     );
@@ -561,13 +573,13 @@ class _Rule extends StatelessWidget {
           width: 12, height: 12,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: ok ? TabuColors.neonCyan : Colors.transparent,
-            border: Border.all(color: ok ? TabuColors.neonCyan : TabuColors.textoMuted, width: 1),
+            color: ok ? TabuColors.rosaPrincipal : Colors.transparent,
+            border: Border.all(color: ok ? TabuColors.rosaPrincipal : TabuColors.subtle, width: 1),
           ),
           child: ok ? const Icon(Icons.check, size: 8, color: Colors.white) : null,
         ),
         const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontFamily: 'Outfit', fontSize: 9, letterSpacing: 0.5, color: ok ? TabuColors.neonCyan : TabuColors.textoMuted)),
+        Text(label, style: TextStyle(fontFamily: 'Barlow Condensed', fontSize: 9, letterSpacing: 0.5, color: ok ? TabuColors.rosaClaro : TabuColors.subtle)),
       ],
     );
   }
@@ -591,21 +603,21 @@ class _TermsCheckbox extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             width: 20, height: 20,
             decoration: BoxDecoration(
-              color: value ? TabuColors.branco : Colors.transparent,
-              border: Border.all(color: value ? TabuColors.branco : TabuColors.border, width: 1.5),
+              color: value ? TabuColors.rosaPrincipal : Colors.transparent,
+              border: Border.all(color: value ? TabuColors.rosaPrincipal : TabuColors.border, width: 1.5),
             ),
-            child: value ? Icon(Icons.check, size: 13, color: TabuColors.rosaPrincipal) : null,
+            child: value ? const Icon(Icons.check, size: 13, color: Colors.white) : null,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: theme.textTheme.bodySmall?.copyWith(fontSize: 11, letterSpacing: 0.3, color: TabuColors.textoSecundario, height: 1.5),
+                style: theme.textTheme.bodySmall?.copyWith(fontSize: 11, letterSpacing: 0.3, color: TabuColors.dim, height: 1.5),
                 children: [
                   const TextSpan(text: 'Li e aceito os '),
-                  TextSpan(text: 'Termos de Uso', style: TextStyle(color: TabuColors.neonGlow, fontWeight: FontWeight.w600, decoration: TextDecoration.underline, decorationColor: TabuColors.neonCyan.withOpacity(0.5))),
+                  TextSpan(text: 'Termos de Uso', style: TextStyle(color: TabuColors.rosaClaro, fontWeight: FontWeight.w600, decoration: TextDecoration.underline, decorationColor: TabuColors.rosaPrincipal.withOpacity(0.5))),
                   const TextSpan(text: ' e a '),
-                  TextSpan(text: 'Política de Privacidade', style: TextStyle(color: TabuColors.neonGlow, fontWeight: FontWeight.w600, decoration: TextDecoration.underline, decorationColor: TabuColors.neonCyan.withOpacity(0.5))),
+                  TextSpan(text: 'Política de Privacidade', style: TextStyle(color: TabuColors.rosaClaro, fontWeight: FontWeight.w600, decoration: TextDecoration.underline, decorationColor: TabuColors.rosaPrincipal.withOpacity(0.5))),
                   const TextSpan(text: ' do TABU Lounge'),
                 ],
               ),
@@ -656,14 +668,20 @@ class _RegisterButtonState extends State<_RegisterButton> with SingleTickerProvi
         transformAlignment: Alignment.center,
         decoration: BoxDecoration(
           gradient: enabled ? LinearGradient(
-            colors: _pressed ? [TabuColors.neonGlow, TabuColors.branco] : [TabuColors.branco, TabuColors.neonGlow],
-            begin: Alignment.centerLeft, end: Alignment.centerRight,
+            colors: _pressed
+                ? [TabuColors.rosaDeep, TabuColors.rosaPrincipal]
+                : [TabuColors.rosaPrincipal, TabuColors.rosaClaro],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ) : null,
-          color: enabled ? null : Colors.white.withOpacity(0.15),
-          border: Border.all(color: enabled ? Colors.transparent : TabuColors.border, width: 0.8),
+          color: enabled ? null : TabuColors.bgCard,
+          border: Border.all(
+            color: enabled ? Colors.transparent : TabuColors.border,
+            width: 0.8,
+          ),
           boxShadow: enabled && !_pressed ? [
-            BoxShadow(color: Colors.white.withOpacity(0.35), blurRadius: 20, offset: const Offset(0, 6)),
-            BoxShadow(color: TabuColors.neonCyan.withOpacity(0.25), blurRadius: 32, offset: const Offset(0, 12)),
+            BoxShadow(color: TabuColors.glow, blurRadius: 20, offset: const Offset(0, 6)),
+            BoxShadow(color: TabuColors.rosaPrincipal.withOpacity(0.3), blurRadius: 32, offset: const Offset(0, 12)),
           ] : [],
         ),
         child: Stack(
@@ -673,15 +691,15 @@ class _RegisterButtonState extends State<_RegisterButton> with SingleTickerProvi
               AnimatedBuilder(
                 animation: _shimmer,
                 builder: (_, __) => CustomPaint(
-                  painter: _ShimmerPainter(progress: _shimmer.value, color: TabuColors.neonCyan.withOpacity(0.25)),
+                  painter: _ShimmerPainter(progress: _shimmer.value, color: Colors.white.withOpacity(0.2)),
                   size: const Size(double.infinity, 56),
                 ),
               ),
             widget.isLoading
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: TabuColors.rosaPrincipal))
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : Text('CRIAR CONTA', style: theme.textTheme.labelLarge?.copyWith(
                     fontSize: 14, letterSpacing: 5, fontWeight: FontWeight.w700,
-                    color: enabled ? TabuColors.rosaPrincipal : TabuColors.textoMuted,
+                    color: enabled ? TabuColors.branco : TabuColors.subtle,
                   )),
           ],
         ),
@@ -713,29 +731,45 @@ class _ShimmerPainter extends CustomPainter {
   bool shouldRepaint(_ShimmerPainter old) => old.progress != progress;
 }
 
-// ─── Fundo Rosa Animado ───────────────────────────────────────────────────────
-class _FundoRosaPainter extends CustomPainter {
+// ─── Fundo Escuro Animado ─────────────────────────────────────────────────────
+class _FundoEscuroPainter extends CustomPainter {
   final double progress;
-  const _FundoRosaPainter({required this.progress});
+  const _FundoEscuroPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = TabuColors.rosaPrincipal);
+    // Base escura
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = TabuColors.bg);
+
+    // Halo rosa superior
     final r1 = size.width * (0.9 + progress * 0.15);
-    canvas.drawCircle(Offset(size.width * 0.65, -size.height * 0.06), r1, Paint()..shader = RadialGradient(
-      colors: [TabuColors.neonCyan.withOpacity(0.20 - progress * 0.05), TabuColors.neonGlow.withOpacity(0.07), Colors.transparent],
-      stops: const [0.0, 0.45, 1.0],
-    ).createShader(Rect.fromCircle(center: Offset(size.width * 0.65, -size.height * 0.06), radius: r1)));
+    canvas.drawCircle(
+      Offset(size.width * 0.65, -size.height * 0.06), r1,
+      Paint()..shader = RadialGradient(
+        colors: [TabuColors.rosaPrincipal.withOpacity(0.18 - progress * 0.05), TabuColors.rosaDeep.withOpacity(0.07), Colors.transparent],
+        stops: const [0.0, 0.45, 1.0],
+      ).createShader(Rect.fromCircle(center: Offset(size.width * 0.65, -size.height * 0.06), radius: r1)),
+    );
+
+    // Halo bgAlt lateral
     final r2 = size.width * (0.5 + (1 - progress) * 0.1);
-    canvas.drawCircle(Offset(size.width * 1.08, size.height * 0.12), r2, Paint()..shader = RadialGradient(
-      colors: [TabuColors.rosaEscuro.withOpacity(0.25), Colors.transparent],
-    ).createShader(Rect.fromCircle(center: Offset(size.width * 1.08, size.height * 0.12), radius: r2)));
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..shader = RadialGradient(
-      center: const Alignment(0.0, 0.1), radius: 0.65,
-      colors: [TabuColors.rosaClaro.withOpacity(0.08 + progress * 0.05), Colors.transparent],
-    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)));
+    canvas.drawCircle(
+      Offset(size.width * 1.08, size.height * 0.12), r2,
+      Paint()..shader = RadialGradient(
+        colors: [TabuColors.bgAlt.withOpacity(0.8), Colors.transparent],
+      ).createShader(Rect.fromCircle(center: Offset(size.width * 1.08, size.height * 0.12), radius: r2)),
+    );
+
+    // Brilho central suave
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..shader = RadialGradient(
+        center: const Alignment(0.0, 0.1), radius: 0.65,
+        colors: [TabuColors.rosaDeep.withOpacity(0.12 + progress * 0.05), Colors.transparent],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
+    );
   }
 
   @override
-  bool shouldRepaint(_FundoRosaPainter old) => old.progress != progress;
+  bool shouldRepaint(_FundoEscuroPainter old) => old.progress != progress;
 }

@@ -130,7 +130,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
     await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
     final code = _fullCode.toUpperCase();
-    if (code == 'TABU01') {
+    if (code == 'TABUUM') {
       setState(() { _isLoading = false; _isSuccess = true; });
       _successController.forward();
       HapticFeedback.heavyImpact();
@@ -177,37 +177,36 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
     final theme = Theme.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: TabuColors.rosaPrincipal,
+      backgroundColor: TabuColors.bg,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
           children: [
-            // Fundo animado
+            // Fundo escuro animado
             Positioned.fill(
               child: AnimatedBuilder(
                 animation: _bgController,
                 builder: (_, __) => CustomPaint(
-                  painter: _FundoRosaPainter(progress: _bgController.value),
+                  painter: _FundoEscuroPainter(progress: _bgController.value),
                 ),
               ),
             ),
-            // Linha neon topo
+            // Linha neon rosa no topo
             Positioned(
               top: 0, left: 0, right: 0,
               child: Container(
-                height: 4,
+                height: 3,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(colors: [
                     Colors.transparent,
-                    TabuColors.neonCyan,
-                    TabuColors.neonBright,
-                    TabuColors.neonCyan,
+                    TabuColors.rosaPrincipal,
+                    TabuColors.rosaClaro,
+                    TabuColors.rosaPrincipal,
                     Colors.transparent,
                   ]),
                 ),
               ),
             ),
-            // Conteúdo — tela não sobe, scroll automático até o campo focado
             SafeArea(
               child: FadeTransition(
                 opacity: _fade,
@@ -223,19 +222,19 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
             if (_isLoading)
               Positioned.fill(
                 child: Container(
-                  color: TabuColors.rosaPrincipal.withOpacity(0.35),
+                  color: TabuColors.bg.withOpacity(0.7),
                   child: Center(
                     child: Container(
                       width: 52, height: 52,
                       decoration: BoxDecoration(
-                        color: const Color(0x28FFFFFF),
+                        color: TabuColors.bgCard,
                         border: Border.all(color: TabuColors.border, width: 0.8),
                       ),
                       child: const Padding(
                         padding: EdgeInsets.all(15),
                         child: CircularProgressIndicator(
                           strokeWidth: 1.5,
-                          color: TabuColors.branco,
+                          color: TabuColors.rosaPrincipal,
                         ),
                       ),
                     ),
@@ -251,34 +250,29 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
   Widget _buildCodeEntry(ThemeData theme) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Altura disponível sem o teclado — usada para calcular espaços fixos
         final h = constraints.maxHeight;
         return SingleChildScrollView(
-          // Scroll automático até o campo focado, sem mover o Scaffold
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           physics: const ClampingScrollPhysics(),
           padding: EdgeInsets.only(
             left: 28,
             right: 28,
-            // Garante que o campo fique visível acima do teclado
             bottom: MediaQuery.of(context).viewInsets.bottom + 24,
           ),
           child: ConstrainedBox(
-            // Mínimo igual à altura da tela — mantém layout vertical quando teclado fechado
             constraints: BoxConstraints(minHeight: h),
             child: IntrinsicHeight(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 16),
-                  // AppBar row
                   Row(
                     children: [
                       const Spacer(),
                       Text(
                         'ACESSO EXCLUSIVO',
                         style: theme.textTheme.labelSmall?.copyWith(
-                          fontSize: 12, letterSpacing: 5, color: TabuColors.textoMuted,
+                          fontSize: 12, letterSpacing: 5, color: TabuColors.subtle,
                         ),
                       ),
                       const Spacer(),
@@ -295,7 +289,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                       scale: _pulse.value,
                       child: SizedBox(
                         width: 64, height: 64,
-                        child: CustomPaint(painter: _LockNeonIcon()),
+                        child: CustomPaint(painter: _LockRosaIcon()),
                       ),
                     ),
                   ),
@@ -316,7 +310,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                     'Insira o código recebido para\nacessar o TABU Lounge.',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: TabuColors.textoMuted, fontSize: 12,
+                      color: TabuColors.subtle, fontSize: 12,
                       height: 1.7, letterSpacing: 0.4,
                     ),
                   ),
@@ -349,15 +343,15 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(width: 4, height: 4,
-                                  decoration: const BoxDecoration(color: TabuColors.rosaVivo, shape: BoxShape.circle)),
+                                  decoration: const BoxDecoration(color: TabuColors.rosaPrincipal, shape: BoxShape.circle)),
                                 const SizedBox(width: 8),
                                 Text(_errorMsg,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: TabuColors.rosaVivo, fontSize: 11, letterSpacing: 1,
+                                    color: TabuColors.rosaPrincipal, fontSize: 11, letterSpacing: 1,
                                   )),
                                 const SizedBox(width: 8),
                                 Container(width: 4, height: 4,
-                                  decoration: const BoxDecoration(color: TabuColors.rosaVivo, shape: BoxShape.circle)),
+                                  decoration: const BoxDecoration(color: TabuColors.rosaPrincipal, shape: BoxShape.circle)),
                               ],
                             ),
                           )
@@ -377,16 +371,16 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(width: 1, height: 12, color: TabuColors.borderNeon),
+                      Container(width: 1, height: 12, color: TabuColors.border),
                       const SizedBox(width: 10),
                       Text(
                         'Código enviado via WhatsApp ou e-mail',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: TabuColors.textoMuted, fontSize: 10, letterSpacing: 0.5,
+                          color: TabuColors.subtle, fontSize: 10, letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Container(width: 1, height: 12, color: TabuColors.borderNeon),
+                      Container(width: 1, height: 12, color: TabuColors.border),
                     ],
                   ),
 
@@ -394,12 +388,12 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
 
                   Column(
                     children: [
-                      Container(width: 24, height: 0.5, color: TabuColors.textoMuted),
+                      Container(width: 24, height: 0.5, color: TabuColors.subtle),
                       const SizedBox(height: 8),
                       Text(
                         'TABU BAR & LOUNGE',
                         style: theme.textTheme.labelSmall?.copyWith(
-                          letterSpacing: 5, color: TabuColors.textoMuted, fontSize: 7,
+                          letterSpacing: 5, color: TabuColors.subtle, fontSize: 7,
                         ),
                       ),
                     ],
@@ -423,32 +417,33 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
       width: 44, height: 54,
       decoration: BoxDecoration(
         color: _hasError
-            ? TabuColors.rosaVivo.withOpacity(0.15)
+            ? TabuColors.rosaPrincipal.withOpacity(0.15)
             : hasValue
-                ? const Color(0x44FFFFFF)
+                ? const Color(0x22E85D8A)
                 : isFocused
-                    ? const Color(0x2AFFFFFF)
-                    : const Color(0x14FFFFFF),
+                    ? const Color(0x14E85D8A)
+                    : TabuColors.bgCard,
         border: Border.all(
           color: _hasError
-              ? TabuColors.rosaVivo.withOpacity(0.8)
+              ? TabuColors.rosaPrincipal.withOpacity(0.8)
               : isFocused
-                  ? TabuColors.branco
+                  ? TabuColors.rosaPrincipal
                   : hasValue
-                      ? TabuColors.neonCyan.withOpacity(0.5)
+                      ? TabuColors.borderMid
                       : TabuColors.border,
           width: isFocused ? 1.5 : _hasError ? 1.2 : 0.8,
         ),
         boxShadow: isFocused
-            ? [BoxShadow(color: TabuColors.neonCyan.withOpacity(0.2), blurRadius: 16)]
+            ? [BoxShadow(color: TabuColors.glow.withOpacity(0.3), blurRadius: 16)]
             : hasValue && !_hasError
-                ? [BoxShadow(color: TabuColors.neonCyan.withOpacity(0.12), blurRadius: 8)]
+                ? [BoxShadow(color: TabuColors.glow.withOpacity(0.15), blurRadius: 8)]
                 : [],
       ),
       child: RawKeyboardListener(
         focusNode: FocusNode(),
         onKey: (event) => _onKeyDown(index, event),
-        child: TextField(
+        child: Center(
+          child: TextField(
           controller: _controllers[index],
           focusNode: _focusNodes[index],
           textAlign: TextAlign.center,
@@ -462,15 +457,23 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
           style: theme.textTheme.titleLarge?.copyWith(
             fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: 0,
             color: _hasError
-                ? TabuColors.rosaVivo
-                : hasValue ? TabuColors.branco : TabuColors.textoMuted,
+                ? TabuColors.rosaPrincipal
+                : hasValue ? TabuColors.branco : TabuColors.subtle,
           ),
           decoration: const InputDecoration(
             border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            focusedErrorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
             counterText: '',
-            contentPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.symmetric(vertical: 16),
+            isDense: true,
+            isCollapsed: false,
           ),
           onChanged: (v) => _onDigitChanged(index, v),
+        ),
         ),
       ),
     );
@@ -489,7 +492,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
               scale: _successScale,
               child: SizedBox(
                 width: 96, height: 96,
-                child: CustomPaint(painter: _SuccessNeonIcon()),
+                child: CustomPaint(painter: _SuccessRosaIcon()),
               ),
             ),
           ),
@@ -499,7 +502,8 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
             child: Text(
               'ACESSO LIBERADO',
               style: theme.textTheme.headlineLarge?.copyWith(
-                fontSize: 19, letterSpacing: 6, color: TabuColors.branco, fontWeight: FontWeight.w400,
+                fontSize: 19, letterSpacing: 6,
+                color: TabuColors.branco, fontWeight: FontWeight.w400,
               ),
             ),
           ),
@@ -510,7 +514,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
               'Bem-vindo ao TABU Lounge.\nSua experiência exclusiva começa agora.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: TabuColors.textoMuted, fontSize: 12, height: 1.8, letterSpacing: 0.3,
+                color: TabuColors.subtle, fontSize: 12, height: 1.8, letterSpacing: 0.3,
               ),
             ),
           ),
@@ -533,7 +537,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
             child: Text(
               'TABU BAR & LOUNGE',
               style: theme.textTheme.labelSmall?.copyWith(
-                letterSpacing: 5, color: TabuColors.textoMuted, fontSize: 7,
+                letterSpacing: 5, color: TabuColors.subtle, fontSize: 7,
               ),
             ),
           ),
@@ -584,21 +588,21 @@ class _ActionButtonState extends State<_ActionButton>
           gradient: widget.enabled
               ? LinearGradient(
                   colors: _pressed
-                      ? [TabuColors.neonGlow, TabuColors.branco]
-                      : [TabuColors.branco, TabuColors.neonGlow],
+                      ? [TabuColors.rosaDeep, TabuColors.rosaPrincipal]
+                      : [TabuColors.rosaPrincipal, TabuColors.rosaClaro],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 )
               : null,
-          color: widget.enabled ? null : Colors.white.withOpacity(0.10),
+          color: widget.enabled ? null : TabuColors.bgCard,
           border: Border.all(
             color: widget.enabled ? Colors.transparent : TabuColors.border,
             width: 0.8,
           ),
           boxShadow: widget.enabled && !_pressed
               ? [
-                  BoxShadow(color: Colors.white.withOpacity(0.28), blurRadius: 24, offset: const Offset(0, 6)),
-                  BoxShadow(color: TabuColors.neonCyan.withOpacity(0.20), blurRadius: 32, offset: const Offset(0, 12)),
+                  BoxShadow(color: TabuColors.glow, blurRadius: 24, offset: const Offset(0, 6)),
+                  BoxShadow(color: TabuColors.rosaPrincipal.withOpacity(0.25), blurRadius: 32, offset: const Offset(0, 12)),
                 ]
               : [],
         ),
@@ -611,7 +615,7 @@ class _ActionButtonState extends State<_ActionButton>
                 builder: (_, __) => CustomPaint(
                   painter: _ShimmerPainter(
                     progress: _shimmer.value,
-                    color: TabuColors.neonCyan.withOpacity(0.18),
+                    color: Colors.white.withOpacity(0.2),
                   ),
                   size: const Size(double.infinity, 54),
                 ),
@@ -620,7 +624,7 @@ class _ActionButtonState extends State<_ActionButton>
               widget.label,
               style: theme.textTheme.labelLarge?.copyWith(
                 fontSize: 12, letterSpacing: 5, fontWeight: FontWeight.w700,
-                color: widget.enabled ? TabuColors.rosaPrincipal : TabuColors.textoMuted,
+                color: widget.enabled ? TabuColors.branco : TabuColors.subtle,
               ),
             ),
           ],
@@ -630,24 +634,25 @@ class _ActionButtonState extends State<_ActionButton>
   }
 }
 
-// ─── Ícone: Cadeado Neon ──────────────────────────────────────────────────────
-class _LockNeonIcon extends CustomPainter {
+// ─── Ícone: Cadeado Rosa ──────────────────────────────────────────────────────
+class _LockRosaIcon extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
 
+    // Halo de fundo
     canvas.drawCircle(Offset(cx, cy), cx,
-        Paint()..color = TabuColors.neonCyan.withOpacity(0.12)..style = PaintingStyle.fill);
+        Paint()..color = TabuColors.rosaPrincipal.withOpacity(0.12)..style = PaintingStyle.fill);
     canvas.drawCircle(Offset(cx, cy), cx,
         Paint()
-          ..color = TabuColors.neonCyan.withOpacity(0.35)
+          ..color = TabuColors.rosaPrincipal.withOpacity(0.4)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3));
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4));
 
     final bodyPaint = Paint()
-      ..color = TabuColors.branco
+      ..color = TabuColors.rosaPrincipal
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.2
       ..strokeCap = StrokeCap.round
@@ -662,51 +667,57 @@ class _LockNeonIcon extends CustomPainter {
     );
     canvas.drawRRect(bodyRect, bodyPaint);
     canvas.drawCircle(Offset(cx, cy + 7), 3,
-        Paint()..color = TabuColors.branco..style = PaintingStyle.fill);
+        Paint()..color = TabuColors.rosaPrincipal..style = PaintingStyle.fill);
 
+    // Glow
     canvas.drawRRect(bodyRect,
         Paint()
-          ..color = TabuColors.neonCyan.withOpacity(0.45)
+          ..color = TabuColors.glow
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4));
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5));
   }
 
   @override
-  bool shouldRepaint(_LockNeonIcon old) => false;
+  bool shouldRepaint(_LockRosaIcon old) => false;
 }
 
-// ─── Ícone: Check Sucesso ─────────────────────────────────────────────────────
-class _SuccessNeonIcon extends CustomPainter {
+// ─── Ícone: Check Sucesso Rosa ────────────────────────────────────────────────
+class _SuccessRosaIcon extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
 
+    // Círculo de fundo
     canvas.drawCircle(Offset(cx, cy), cx,
-        Paint()..color = TabuColors.neonCyan.withOpacity(0.15)..style = PaintingStyle.fill);
+        Paint()..color = TabuColors.rosaPrincipal.withOpacity(0.15)..style = PaintingStyle.fill);
+    // Borda com glow
     canvas.drawCircle(Offset(cx, cy), cx,
         Paint()
-          ..color = TabuColors.neonCyan
+          ..color = TabuColors.rosaPrincipal
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.5
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5));
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6));
+    // Borda fina branca
     canvas.drawCircle(Offset(cx, cy), cx,
-        Paint()..color = TabuColors.branco.withOpacity(0.6)..style = PaintingStyle.stroke..strokeWidth = 1.0);
+        Paint()..color = TabuColors.branco.withOpacity(0.4)..style = PaintingStyle.stroke..strokeWidth = 1.0);
 
     final check = Path()
       ..moveTo(cx - 18, cy)
       ..lineTo(cx - 5, cy + 13)
       ..lineTo(cx + 18, cy - 15);
 
+    // Glow do check
     canvas.drawPath(check,
         Paint()
-          ..color = TabuColors.neonCyan.withOpacity(0.6)
+          ..color = TabuColors.glow
           ..style = PaintingStyle.stroke
           ..strokeWidth = 4
           ..strokeCap = StrokeCap.round
           ..strokeJoin = StrokeJoin.round
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3));
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4));
+    // Check branco
     canvas.drawPath(check,
         Paint()
           ..color = TabuColors.branco
@@ -717,7 +728,7 @@ class _SuccessNeonIcon extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SuccessNeonIcon old) => false;
+  bool shouldRepaint(_SuccessRosaIcon old) => false;
 }
 
 // ─── Shimmer ──────────────────────────────────────────────────────────────────
@@ -744,16 +755,18 @@ class _ShimmerPainter extends CustomPainter {
   bool shouldRepaint(_ShimmerPainter old) => old.progress != progress;
 }
 
-// ─── Fundo Rosa Animado ───────────────────────────────────────────────────────
-class _FundoRosaPainter extends CustomPainter {
+// ─── Fundo Escuro Animado ─────────────────────────────────────────────────────
+class _FundoEscuroPainter extends CustomPainter {
   final double progress;
-  const _FundoRosaPainter({required this.progress});
+  const _FundoEscuroPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Base escura
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
-        Paint()..color = TabuColors.rosaPrincipal);
+        Paint()..color = TabuColors.bg);
 
+    // Halo rosa superior animado
     final neonRadius = size.width * (0.85 + progress * 0.18);
     canvas.drawCircle(
       Offset(size.width * 0.55, -size.height * 0.06),
@@ -761,8 +774,8 @@ class _FundoRosaPainter extends CustomPainter {
       Paint()
         ..shader = RadialGradient(
           colors: [
-            TabuColors.neonCyan.withOpacity(0.18 - progress * 0.05),
-            TabuColors.neonGlow.withOpacity(0.06),
+            TabuColors.rosaPrincipal.withOpacity(0.18 - progress * 0.05),
+            TabuColors.rosaDeep.withOpacity(0.06),
             Colors.transparent,
           ],
           stops: const [0.0, 0.45, 1.0],
@@ -772,19 +785,21 @@ class _FundoRosaPainter extends CustomPainter {
         )),
     );
 
+    // Halo bgAlt inferior
     final sombraRadius = size.width * (0.5 + (1 - progress) * 0.12);
     canvas.drawCircle(
       Offset(size.width * 1.1, size.height * 0.85),
       sombraRadius,
       Paint()
         ..shader = RadialGradient(
-          colors: [TabuColors.rosaEscuro.withOpacity(0.22), Colors.transparent],
+          colors: [TabuColors.bgAlt.withOpacity(0.9), Colors.transparent],
         ).createShader(Rect.fromCircle(
           center: Offset(size.width * 1.1, size.height * 0.85),
           radius: sombraRadius,
         )),
     );
 
+    // Brilho central suave
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
       Paint()
@@ -792,7 +807,7 @@ class _FundoRosaPainter extends CustomPainter {
           center: const Alignment(0.0, -0.2),
           radius: 0.65,
           colors: [
-            TabuColors.rosaClaro.withOpacity(0.08 + progress * 0.04),
+            TabuColors.rosaDeep.withOpacity(0.10 + progress * 0.04),
             Colors.transparent,
           ],
         ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
@@ -800,5 +815,5 @@ class _FundoRosaPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_FundoRosaPainter old) => old.progress != progress;
+  bool shouldRepaint(_FundoEscuroPainter old) => old.progress != progress;
 }
