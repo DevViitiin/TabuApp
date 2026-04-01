@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tabuapp/core/theme/tabu_theme.dart';
@@ -127,26 +128,43 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
       _hasError  = false;
       _errorMsg  = '';
     });
-    await Future.delayed(const Duration(milliseconds: 1800));
-    if (!mounted) return;
-    final code = _fullCode.toUpperCase();
-    if (code == 'TABUUM') {
-      setState(() { _isLoading = false; _isSuccess = true; });
-      _successController.forward();
-      HapticFeedback.heavyImpact();
-    } else {
+
+    try {
+      // Busca o código diretamente do banco
+      final snapshot = await FirebaseDatabase.instance
+          .ref('Invitation_code')
+          .get();
+
+      if (!mounted) return;
+
+      final validCode = snapshot.value?.toString().toUpperCase() ?? '';
+      final inputCode = _fullCode.toUpperCase();
+
+      if (inputCode == validCode) {
+        setState(() { _isLoading = false; _isSuccess = true; });
+        _successController.forward();
+        HapticFeedback.heavyImpact();
+      } else {
+        setState(() {
+          _isLoading = false;
+          _hasError  = true;
+          _errorMsg  = 'Código inválido ou expirado';
+        });
+        HapticFeedback.vibrate();
+        _errorShakeController.forward(from: 0);
+        Future.delayed(const Duration(milliseconds: 900), () {
+          if (!mounted) return;
+          for (final c in _controllers) c.clear();
+          _focusNodes[0].requestFocus();
+          setState(() => _hasError = false);
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _hasError  = true;
-        _errorMsg  = 'Código inválido ou expirado';
-      });
-      HapticFeedback.vibrate();
-      _errorShakeController.forward(from: 0);
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (!mounted) return;
-        for (final c in _controllers) c.clear();
-        _focusNodes[0].requestFocus();
-        setState(() => _hasError = false);
+        _errorMsg  = 'Erro ao verificar código';
       });
     }
   }

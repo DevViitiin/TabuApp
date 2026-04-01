@@ -1,8 +1,9 @@
+// lib/screens/screens_auth/register_screen/register_screen.dart
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tabuapp/core/theme/tabu_theme.dart';
-import 'package:tabuapp/screens/screens_home/home_screen/home_screen.dart';
+import 'package:tabuapp/routes/auth_guard.dart';
 import 'package:tabuapp/services/services_app/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -97,28 +98,23 @@ class _RegisterScreenState extends State<RegisterScreen>
     setState(() { _isLoading = true; _errorMsg = null; });
 
     try {
-      final credential = await _authService.registerWithEmail(
+      await _authService.registerWithEmail(
         email: email,
         password: senha,
         displayName: nome,
       );
 
-      final uid = credential?.user?.uid;
-      print('✅ Cadastro efetuado — UID: $uid');
-
-      if (uid != null && mounted) {
-        final dados = await _authService.getUserData(uid);
-        print('📦 Dados salvos: $dados');
-
-        if (mounted && dados != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => HomeScreen(userData: dados)),
-          );
-        }
+      // Após o registro o AuthGuard detecta o novo usuário via stream
+      // e redireciona automaticamente. Apenas garantimos que estamos
+      // na raiz da navegação para o guard funcionar corretamente.
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthGuard()),
+          (route) => false,
+        );
       }
     } catch (e) {
-      print('❌ Erro no cadastro: $e');
-      if (mounted) setState(() => _errorMsg = e.toString());
+      if (mounted) setState(() => _errorMsg = e.toString().replaceFirst(RegExp(r'^Exception:\s*'), ''));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -140,7 +136,6 @@ class _RegisterScreenState extends State<RegisterScreen>
               builder: (_, __) => CustomPaint(painter: _FundoEscuroPainter(progress: _bgController.value)),
             ),
           ),
-          // Linha neon rosa no topo
           Positioned(
             top: 0, left: 0, right: 0,
             child: Container(
@@ -372,12 +367,10 @@ class _RosaGlowIcon extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
-    // Halo externo
     canvas.drawCircle(Offset(cx, cy), cx, Paint()
       ..color = TabuColors.rosaPrincipal.withOpacity(0.25)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5);
-    // Ícone rosa
     final rosa = Paint()..color = TabuColors.rosaPrincipal;
     canvas.drawCircle(Offset(cx, cy + 3), 10, rosa);
     canvas.drawCircle(Offset(cx - 8, cy + 6), 7, rosa);
@@ -385,7 +378,6 @@ class _RosaGlowIcon extends CustomPainter {
     canvas.drawCircle(Offset(cx - 4, cy), 8.5, rosa);
     canvas.drawCircle(Offset(cx + 4, cy), 8.5, rosa);
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(cx - 15, cy + 3, 30, 11), const Radius.circular(3)), rosa);
-    // Glow
     final glow = Paint()
       ..color = TabuColors.glow
       ..style = PaintingStyle.stroke
@@ -738,10 +730,8 @@ class _FundoEscuroPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Base escura
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = TabuColors.bg);
 
-    // Halo rosa superior
     final r1 = size.width * (0.9 + progress * 0.15);
     canvas.drawCircle(
       Offset(size.width * 0.65, -size.height * 0.06), r1,
@@ -751,7 +741,6 @@ class _FundoEscuroPainter extends CustomPainter {
       ).createShader(Rect.fromCircle(center: Offset(size.width * 0.65, -size.height * 0.06), radius: r1)),
     );
 
-    // Halo bgAlt lateral
     final r2 = size.width * (0.5 + (1 - progress) * 0.1);
     canvas.drawCircle(
       Offset(size.width * 1.08, size.height * 0.12), r2,
@@ -760,7 +749,6 @@ class _FundoEscuroPainter extends CustomPainter {
       ).createShader(Rect.fromCircle(center: Offset(size.width * 1.08, size.height * 0.12), radius: r2)),
     );
 
-    // Brilho central suave
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
       Paint()..shader = RadialGradient(

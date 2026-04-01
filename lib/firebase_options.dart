@@ -90,4 +90,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'tabuapp-4325a.firebasestorage.app',
     measurementId: 'G-KSS71E0LT3',
   );
+
 }

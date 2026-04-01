@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:tabuapp/services/services_app/presence_service.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth     _auth     = FirebaseAuth.instance;
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
-  Stream<User?> get user => _auth.authStateChanges();
-  Stream<User?> getcurrentUser() => _auth.userChanges();
+  Stream<User?> get user             => _auth.authStateChanges();
+  Stream<User?> getcurrentUser()     => _auth.userChanges();
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   Future<UserCredential?> signInWithEmail({
@@ -23,58 +24,57 @@ class AuthService {
     }
   }
 
-  //Busca os dados do usuario no Realtime Database usando o UID
+  /// Busca os dados do usuário no Realtime Database usando o UID.
+  /// Sempre inclui o campo 'uid' no map retornado.
   Future<Map<String, dynamic>?> getUserData(String uid) async {
     final snapshot = await _database.ref('Users/$uid').get();
-    if (snapshot.exists) {
-      return Map<String, dynamic>.from(snapshot.value as Map);
+    if (snapshot.exists && snapshot.value != null) {
+      final data = Map<String, dynamic>.from(snapshot.value as Map);
+      data['uid'] = uid; // garante que uid está sempre presente
+      return data;
     }
     return null;
   }
-  // ─── Registro + criação do nó no Realtime Database ───────────────
+
+  // ─── Registro + criação do nó no Realtime Database ───────────────────────
   Future<UserCredential?> registerWithEmail({
-  required String email,
-  required String password,
-  String? displayName,
-}) async {
-  try {
-    final credential = await _auth.createUserWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
+    required String email,
+    required String password,
+    String? displayName,
+  }) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email:    email.trim(),
+        password: password,
+      );
 
-    if (displayName != null) {
-      await credential.user?.updateDisplayName(displayName);
-    }
-
-    final uid = credential.user?.uid;
-    print('✅ Usuário criado — UID: $uid');
-
-    if (uid != null) {
-      try {
-        await _database.ref('Users/$uid').set({
-          'uid': uid,
-          'nome': displayName ?? '',
-          'email': email.trim(),
-          'criadoEm': DateTime.now().toIso8601String(),
-          'ativo': true,
-        });
-        print('✅ Dados salvos no Realtime Database');
-      } catch (dbError) {
-        print('❌ Erro ao salvar no Database: $dbError');
-        rethrow;
+      if (displayName != null) {
+        await credential.user?.updateDisplayName(displayName);
       }
-    }
 
-    return credential;
-  } on FirebaseAuthException catch (e) {
-    print('❌ FirebaseAuthException: ${e.code} — ${e.message}');
-    throw _handleException(e);
-  } catch (e) {
-    print('❌ Erro inesperado: $e');
-    rethrow;
+      final uid = credential.user?.uid;
+
+      if (uid != null) {
+        // Campos compatíveis com o que o app lê: name, email, avatar, etc.
+        await _database.ref('Users/$uid').set({
+          'uid':   uid,
+          'name':  displayName ?? '',    // lido como userData['name']
+          'email': email.trim(),
+          'avatar': '',                  // vazio — usuário pode adicionar depois
+          'bio':   '',
+          'city':  '',
+          'state': '',
+          'partys':       0,
+          'reservations': 0,
+          'vip_lists':    0,
+        });
+      }
+
+      return credential;
+    } on FirebaseAuthException catch (e) {
+      throw _handleException(e);
+    }
   }
-}
 
   Future<void> sendPasswordResetEmail(String email) async {
     try {
@@ -85,8 +85,9 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
-  }
+  await PresenceService.instance.setOffline(); // ← marca offline primeiro
+  await FirebaseAuth.instance.signOut();
+}
 
   String _handleException(FirebaseAuthException e) {
     switch (e.code) {
@@ -105,7 +106,7 @@ class AuthService {
       case 'too-many-requests':
         return 'Muitas tentativas. Tente novamente mais tarde.';
       default:
-        return 'Erro: ${e.message}';
+        return 'Erro: \${e.message}';
     }
   }
 }
