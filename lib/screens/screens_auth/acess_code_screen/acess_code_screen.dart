@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tabuapp/core/theme/tabu_theme.dart';
 import 'package:tabuapp/screens/screens_auth/login_screen/login_screen.dart';
+import 'package:tabuapp/screens/screens_auth/requests_code_screen/requests_code_screen.dart';
 
 // ─── Access Code Screen ───────────────────────────────────────────────────────
 class AccessCodeScreen extends StatefulWidget {
@@ -298,7 +299,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                     ],
                   ),
 
-                  const Spacer(flex: 2),
+                  const Spacer(flex: 1),
 
                   // Ícone cadeado animado
                   AnimatedBuilder(
@@ -315,7 +316,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                   const SizedBox(height: 20),
 
                   Text(
-                    'CÓDIGO DE ACESSO',
+                    'CONVITE DE ACESSO',
                     style: theme.textTheme.headlineLarge?.copyWith(
                       fontSize: 20, letterSpacing: 4,
                       color: TabuColors.branco, fontWeight: FontWeight.w400,
@@ -375,8 +376,30 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                           )
                         : const SizedBox(key: ValueKey('no-error'), height: 14),
                   ),
-
-                  const Spacer(flex: 2),
+                  
+                  ButtonBar(
+                    alignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const RequestInviteScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Solicitar novo código',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: TabuColors.rosaPrincipal,
+                            fontSize: 11,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(flex: 1),
 
                   _ActionButton(
                     label: 'VALIDAR CÓDIGO',

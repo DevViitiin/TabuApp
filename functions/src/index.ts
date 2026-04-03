@@ -864,3 +864,219 @@ export const updateUnreadChatsCount = onValueWritten(
     return null;
   }
 );
+
+type AcaoPedidoConvite = "aprovar" | "rejeitar";
+
+interface ProcessarPedidoConviteData {
+  pedidoId:        string;
+  acao:            AcaoPedidoConvite;
+  motivoRejeicao?: string;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  TEMPLATE — CONVITE APROVADO (enviado ao solicitante)
+// ══════════════════════════════════════════════════════════════════════════════
+function emailConviteAprovado(opts: {
+  nome: string; codigo: string; protocolo: string; agora: number;
+}): string {
+  const corpo = `
+    <div class="card-accent">
+      <div class="sucesso"><p>✅ &nbsp;<strong>Sua solicitação de acesso foi aprovada.</strong></p></div>
+      <p class="val" style="margin-bottom:16px;">Prezado(a) <strong>${opts.nome}</strong>,</p>
+      <p class="val">
+        Após análise da sua solicitação, a equipe administrativa do Tabu tem o prazer 
+        de informar que seu acesso à plataforma foi <strong>aprovado</strong>.
+      </p>
+    </div>
+    <div class="card">
+      <span class="lbl">SEU CÓDIGO DE CONVITE</span>
+      <div style="background:rgba(255,45,122,0.08);border:1px solid rgba(255,45,122,0.45);
+                  padding:28px;text-align:center;margin:14px 0 10px;">
+        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;
+                    letter-spacing:8px;color:#FF2D7A;">${opts.codigo}</div>
+      </div>
+      <p class="val" style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.7;">
+        Este código é <strong>pessoal e intransferível</strong>. 
+        Não o compartilhe com terceiros. O Tabu nunca solicitará seu código por outros meios.
+      </p>
+    </div>
+    <div class="conseq">
+      <span class="lbl" style="margin-bottom:10px;">COMO UTILIZAR</span>
+      <ul>
+        <li>Abra o aplicativo Tabu e selecione <strong>Criar conta</strong>.</li>
+        <li>Quando solicitado, insira o código de convite acima.</li>
+        <li>Complete o cadastro com as informações requeridas.</li>
+        <li>Ao criar sua conta, você concorda com os Termos de Uso e a Política de Privacidade do Tabu.</li>
+      </ul>
+    </div>
+    <p class="val" style="color:rgba(255,255,255,0.3);font-size:11px;line-height:1.7;margin-top:16px;">
+      Seja bem-vindo(a) à plataforma. Esperamos que aproveite a experiência.
+    </p>`;
+
+  return baseTemplate({
+    accentColor: "#FF2D7A",
+    badgeLabel:  "ACESSO · APROVADO",
+    titulo:      "BEM-VINDO AO TABU",
+    subtitulo:   "SUA SOLICITAÇÃO FOI APROVADA · ACESSO LIBERADO",
+    corpo,
+    protocolo:   opts.protocolo,
+    agora:       opts.agora,
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  TEMPLATE — CONVITE RECUSADO (enviado ao solicitante)
+// ══════════════════════════════════════════════════════════════════════════════
+function emailConviteRecusado(opts: {
+  nome: string; motivo: string; protocolo: string; agora: number;
+}): string {
+  const motivoFinal = opts.motivo.trim() ||
+    "Sua solicitação não atendeu aos critérios necessários para acesso à plataforma neste momento.";
+
+  const corpo = `
+    <div class="card-accent">
+      <div class="aviso"><p>⚠️ &nbsp;<strong>Sua solicitação de acesso não foi aprovada.</strong></p></div>
+      <p class="val" style="margin-bottom:16px;">Prezado(a) <strong>${opts.nome}</strong>,</p>
+      <p class="val">
+        Agradecemos seu interesse na plataforma Tabu. Após análise detalhada da sua 
+        solicitação pela equipe administrativa, informamos que, no momento, não é 
+        possível conceder o acesso requerido.
+      </p>
+    </div>
+    <div class="card">
+      <span class="lbl">FUNDAMENTAÇÃO DA DECISÃO</span>
+      <div class="motivo-box"><p>${motivoFinal}</p></div>
+    </div>
+    <div class="conseq">
+      <span class="lbl" style="margin-bottom:10px;">INFORMAÇÕES ADICIONAIS</span>
+      <ul>
+        <li>Esta decisão foi tomada com base nas políticas internas de acesso da plataforma.</li>
+        <li>O Tabu reserva-se o direito de recusar acessos sem necessidade de justificativa adicional.</li>
+        <li>Não é possível fornecer detalhes suplementares sobre os critérios de avaliação.</li>
+        <li>Em caso de questionamento formal, entre em contato pelo e-mail abaixo, informando o protocolo.</li>
+      </ul>
+    </div>
+    <p class="val" style="color:rgba(255,255,255,0.3);font-size:11px;line-height:1.7;margin-top:16px;">
+      Agradecemos a compreensão. Atenciosamente, Equipe Tabu.
+    </p>`;
+
+  return baseTemplate({
+    accentColor: "#E85D5D",
+    badgeLabel:  "ACESSO · RECUSADO",
+    titulo:      "SOLICITAÇÃO RECUSADA",
+    subtitulo:   "SEU PEDIDO DE ACESSO NÃO FOI APROVADO · TABU",
+    corpo,
+    protocolo:   opts.protocolo,
+    agora:       opts.agora,
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  5. PROCESSAR PEDIDO DE CONVITE
+// ══════════════════════════════════════════════════════════════════════════════
+export const processarPedidoConvite = onCall<ProcessarPedidoConviteData>(
+  { region: "us-central1" },
+  async (request) => {
+    const db = getDatabase();
+
+    if (!request.auth)
+      throw new HttpsError("unauthenticated", "Não autenticado.");
+
+    const adminSnap = await db.ref(`Administratives/${request.auth.uid}`).get();
+    if (!adminSnap.val())
+      throw new HttpsError("permission-denied", "Acesso negado.");
+
+    const { pedidoId, acao, motivoRejeicao } = request.data;
+
+    if (!pedidoId || !acao)
+      throw new HttpsError("invalid-argument", "Dados insuficientes.");
+
+    const pedidoRef  = db.ref(`InviteRequests/${pedidoId}`);
+    const pedidoSnap = await pedidoRef.get();
+
+    if (!pedidoSnap.exists())
+      throw new HttpsError("not-found", "Pedido não encontrado.");
+
+    const pedido = pedidoSnap.val() as {
+      uid: string; name: string; email: string; status: string;
+    };
+
+    if (pedido.status !== "pending")
+      throw new HttpsError("failed-precondition", "Este pedido já foi processado.");
+
+    const protocolo   = gerarProtocolo();
+    const agora       = Date.now();
+    const transporter = getTransporter();
+    const emailUser   = process.env.EMAIL_USER ?? "";
+
+    // ── APROVAR ─────────────────────────────────────────────────────────────
+    if (acao === "aprovar") {
+      // Busca o código de convite vigente
+      // Ajuste o caminho conforme onde você armazena o código (InviteCode/code)
+      const codigoSnap = await db.ref("Invitation_code").get();
+      const codigo     = codigoSnap.val() as string | null;
+
+      if (!codigo)
+        throw new HttpsError("not-found", "Código de convite não configurado.");
+
+      const updates: Record<string, unknown> = {
+        [`InviteRequests/${pedidoId}/status`]:      "approved",
+        [`InviteRequests/${pedidoId}/resolved_at`]: agora,
+        [`InviteRequests/${pedidoId}/resolved_by`]: request.auth.uid,
+        [`InviteRequests/${pedidoId}/protocolo`]:   protocolo,
+        [`InviteRequestsArquivo/${protocolo}`]: {
+          ...pedido, status: "approved",
+          resolved_at: agora, resolved_by: request.auth.uid, protocolo,
+        },
+      };
+      await db.ref().update(updates);
+
+      if (pedido.email) {
+        await transporter.sendMail({
+          from:    `"Tabu · Suporte" <${emailUser}>`,
+          to:      pedido.email,
+          subject: `[${protocolo}] Seu acesso ao Tabu foi aprovado — Bem-vindo!`,
+          html:    emailConviteAprovado({
+            nome: pedido.name, codigo, protocolo, agora,
+          }),
+        });
+      }
+
+      return { sucesso: true, protocolo, acao: "aprovado" };
+    }
+
+    // ── REJEITAR ─────────────────────────────────────────────────────────────
+    if (acao === "rejeitar") {
+      const motivo = motivoRejeicao?.trim() ?? "";
+
+      const updates: Record<string, unknown> = {
+        [`InviteRequests/${pedidoId}/status`]:          "rejected",
+        [`InviteRequests/${pedidoId}/resolved_at`]:     agora,
+        [`InviteRequests/${pedidoId}/resolved_by`]:     request.auth.uid,
+        [`InviteRequests/${pedidoId}/motivo_rejeicao`]: motivo,
+        [`InviteRequests/${pedidoId}/protocolo`]:       protocolo,
+        [`InviteRequestsArquivo/${protocolo}`]: {
+          ...pedido, status: "rejected",
+          resolved_at: agora, resolved_by: request.auth.uid,
+          motivo_rejeicao: motivo, protocolo,
+        },
+      };
+      await db.ref().update(updates);
+
+      if (pedido.email) {
+        await transporter.sendMail({
+          from:    `"Tabu · Suporte" <${emailUser}>`,
+          to:      pedido.email,
+          subject: `[${protocolo}] Resposta à sua solicitação de acesso — Tabu`,
+          html:    emailConviteRecusado({
+            nome: pedido.name, motivo, protocolo, agora,
+          }),
+        });
+      }
+
+      return { sucesso: true, protocolo, acao: "rejeitado" };
+    }
+
+    throw new HttpsError("invalid-argument", "Ação inválida.");
+  }
+);

@@ -13,40 +13,40 @@ class PartyService {
 
   // ── Criar ──────────────────────────────────────────────────────────────────
   Future<String> createFesta({
-    required String   creatorId,
-    required String   creatorName,
-    String?           creatorAvatar,
-    required String   nome,
-    required String   descricao,
-    String?           local,        // agora opcional — null = "não confirmado"
-    String?           bairro,
-    String?           city,
-    String?           state,
-    double?           latitude,
-    double?           longitude,
+    required String creatorId,
+    required String creatorName,
+    String? creatorAvatar,
+    required String nome,
+    required String descricao,
+    String? local, // agora opcional — null = "não confirmado"
+    String? bairro,
+    String? city,
+    String? state,
+    double? latitude,
+    double? longitude,
     required DateTime dataInicio,
     required DateTime dataFim,
-    String?           bannerUrl,
+    String? bannerUrl,
   }) async {
     final ref = _festasRef.push();
     final festa = PartyModel(
-      id:            ref.key!,
-      creatorId:     creatorId,
-      creatorName:   creatorName,
+      id: ref.key!,
+      creatorId: creatorId,
+      creatorName: creatorName,
       creatorAvatar: creatorAvatar,
-      nome:          nome,
-      descricao:     descricao,
-      local:         (local != null && local.trim().isNotEmpty) ? local : null,
-      bairro:        bairro,
-      city:          city,
-      state:         state,
-      latitude:      latitude,
-      longitude:     longitude,
-      dataInicio:    dataInicio,
-      dataFim:       dataFim,
-      bannerUrl:     bannerUrl,
-      createdAt:     DateTime.now(),
-      status:        'ativa',
+      nome: nome,
+      descricao: descricao,
+      local: (local != null && local.trim().isNotEmpty) ? local : null,
+      bairro: bairro,
+      city: city,
+      state: state,
+      latitude: latitude,
+      longitude: longitude,
+      dataInicio: dataInicio,
+      dataFim: dataFim,
+      bannerUrl: bannerUrl,
+      createdAt: DateTime.now(),
+      status: 'ativa',
     );
     await ref.set(festa.toMap());
     return ref.key!;
@@ -57,7 +57,7 @@ class PartyService {
     final snap = await _festasRef.get();
     if (!snap.exists || snap.value == null) return [];
 
-    final raw  = Map<dynamic, dynamic>.from(snap.value as Map);
+    final raw = Map<dynamic, dynamic>.from(snap.value as Map);
     final list = <PartyModel>[];
 
     for (final entry in raw.entries) {
@@ -82,7 +82,7 @@ class PartyService {
     final snap = await _festasRef.get();
     if (!snap.exists || snap.value == null) return [];
 
-    final raw  = Map<dynamic, dynamic>.from(snap.value as Map);
+    final raw = Map<dynamic, dynamic>.from(snap.value as Map);
     final list = <PartyModel>[];
 
     for (final entry in raw.entries) {
@@ -110,7 +110,7 @@ class PartyService {
     final snap = await _db.ref('Festas/$festaId/presenca/$uid').get();
     if (!snap.exists) return FestaPresenca.nenhuma;
     final v = snap.value as String?;
-    if (v == 'confirmado')  return FestaPresenca.confirmado;
+    if (v == 'confirmado') return FestaPresenca.confirmado;
     if (v == 'interessado') return FestaPresenca.interessado;
     return FestaPresenca.nenhuma;
   }
@@ -128,16 +128,16 @@ class PartyService {
 
       case FestaPresenca.interessado:
         await ref.set('confirmado');
-        await _db.ref('Festas/$festaId/interessados').runTransaction(
-            (val) => Transaction.success((val is int && val > 0) ? val - 1 : 0));
+        await _db.ref('Festas/$festaId/interessados').runTransaction((val) =>
+            Transaction.success((val is int && val > 0) ? val - 1 : 0));
         await _db.ref('Festas/$festaId/confirmados').runTransaction(
             (val) => Transaction.success((val is int) ? val + 1 : 1));
         return FestaPresenca.confirmado;
 
       case FestaPresenca.confirmado:
         await ref.remove();
-        await _db.ref('Festas/$festaId/confirmados').runTransaction(
-            (val) => Transaction.success((val is int && val > 0) ? val - 1 : 0));
+        await _db.ref('Festas/$festaId/confirmados').runTransaction((val) =>
+            Transaction.success((val is int && val > 0) ? val - 1 : 0));
         return FestaPresenca.nenhuma;
     }
   }
@@ -147,7 +147,7 @@ class PartyService {
     final snap = await _db.ref('Festas/$festaId/comentarios').get();
     if (!snap.exists || snap.value == null) return [];
 
-    final raw  = Map<dynamic, dynamic>.from(snap.value as Map);
+    final raw = Map<dynamic, dynamic>.from(snap.value as Map);
     final list = <Map<String, dynamic>>[];
 
     for (final entry in raw.entries) {
@@ -166,16 +166,16 @@ class PartyService {
     required String festaId,
     required String uid,
     required String userName,
-    String?         userAvatar,
+    String? userAvatar,
     required String texto,
   }) async {
     final ref = _db.ref('Festas/$festaId/comentarios').push();
     await ref.set({
-      'user_id':     uid,
-      'user_name':   userName,
+      'user_id': uid,
+      'user_name': userName,
       if (userAvatar != null) 'user_avatar': userAvatar,
-      'texto':       texto,
-      'created_at':  DateTime.now().millisecondsSinceEpoch,
+      'texto': texto,
+      'created_at': DateTime.now().millisecondsSinceEpoch,
     });
     await _db.ref('Festas/$festaId/comment_count').runTransaction(
         (val) => Transaction.success((val is int) ? val + 1 : 1));
@@ -184,12 +184,13 @@ class PartyService {
   Future<void> deleteFesta(String festaId) async {
     await _festaRef(festaId).remove();
   }
-    Future<void> updateFesta(String festaId, Map<String, dynamic> updates) async {
+
+  Future<void> updateFesta(String festaId, Map<String, dynamic> updates) async {
     // Firebase RTDB não aceita update de chave com valor null para remoção.
     // É necessário separar os campos que devem ser removidos dos que serão escritos.
-    final toWrite  = <String, dynamic>{};
+    final toWrite = <String, dynamic>{};
     final toRemove = <String>[];
- 
+
     for (final entry in updates.entries) {
       if (entry.value == null) {
         toRemove.add(entry.key);
@@ -197,18 +198,17 @@ class PartyService {
         toWrite[entry.key] = entry.value;
       }
     }
- 
+
     final ref = _festaRef(festaId);
- 
+
     // Grava os campos preenchidos
     if (toWrite.isNotEmpty) {
       await ref.update(toWrite);
     }
- 
+
     // Remove os campos nulos um a um
     for (final key in toRemove) {
       await ref.child(key).remove();
     }
   }
- 
 }

@@ -1,13 +1,12 @@
 // lib/screens/screens_home/home_screen/posts/story_viewer_screen.dart
 //
 // MUDANÇAS vs versão anterior:
-//   • Suporte completo a vídeos no viewer (type == 'video')
-//   • VideoPlayerController instanciado e gerenciado por story
-//   • Barra de progresso usa duração real do vídeo (ao invés de 5s fixos)
-//   • Sincronização de pause/resume com o player de vídeo
-//   • Pré-carregamento do próximo vídeo em background
-//   • Fade suave entre stories
-//   • Badge de duração + seek bar visual no player de vídeo
+//   • Cache interno de VideoPlayerController já inicializados (_videoCache)
+//   • _initVideo usa o controller do cache quando disponível (play instantâneo)
+//   • _preloadNext realmente pré-inicializa o próximo vídeo em background
+//   • _preloadStoryVideo carrega silenciosamente sem bloquear a UI
+//   • dispose() limpa todo o cache de controllers
+//   • VideoPreloadService.instance.preload() chamado para warming de rede
 //
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +17,7 @@ import 'package:tabuapp/screens/screens_administrative/reports_screens/report_st
 import 'package:tabuapp/services/services_administrative/reports/report_story_service.dart';
 import 'package:tabuapp/services/services_app/cached_avatar.dart';
 import 'package:tabuapp/services/services_app/story_service.dart';
+import 'package:tabuapp/services/services_app/video_preload_service.dart';
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  STORY VIEWER SCREEN
@@ -57,9 +57,14 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
   bool _videoLoading = false;
   bool _videoError   = false;
 
+  // ── Cache de controllers pré-inicializados (key = story.id) ───────────────
+  final Map<String, VideoPlayerController> _videoCache = {};
+
   final Set<String> _markedIds = {};
 
   static const Duration _imageDuration = Duration(seconds: 5);
+  // Quantos stories à frente pré-carregar
+  static const int _preloadAhead = 2;
 
   List<StoryModel> get _currentStories =>
       widget.storiesByUser[_userOrder[_userIndex]] ?? [];
@@ -87,7 +92,6 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
 
     _pageCtrl = PageController(initialPage: _userIndex);
 
-    // Duração inicial — será sobrescrita para vídeos
     _progressCtrl = AnimationController(vsync: this, duration: _imageDuration)
       ..addStatusListener(_onProgressStatus);
 
@@ -99,59 +103,112 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
     _progressCtrl.removeStatusListener(_onProgressStatus);
     _progressCtrl.dispose();
     _pageCtrl.dispose();
-    _disposeVideoCtrl();
+    _disposeCurrent();
+    _disposeAllCache();
     super.dispose();
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  VÍDEO
+  //  CACHE DE VÍDEO
   // ══════════════════════════════════════════════════════════════════════════
 
-  Future<void> _disposeVideoCtrl() async {
+  /// Remove o controller ativo da referência (sem descartar se estiver no cache).
+  void _disposeCurrent() {
     final ctrl = _videoCtrl;
     _videoCtrl = null;
-    await ctrl?.dispose();
+    // Só dispose se não estiver cacheado (o cache gerencia o ciclo de vida)
+    if (ctrl != null && !_videoCache.containsValue(ctrl)) {
+      ctrl.dispose();
+    }
   }
+
+  /// Descarta todo o cache ao fechar o viewer.
+  void _disposeAllCache() {
+    for (final ctrl in _videoCache.values) {
+      ctrl.dispose();
+    }
+    _videoCache.clear();
+  }
+
+  /// Pré-inicializa silenciosamente um story de vídeo e coloca no cache.
+  Future<void> _preloadStoryVideo(String storyId, String url) async {
+    if (_videoCache.containsKey(storyId)) return; // já cacheado
+    try {
+      final ctrl = VideoPlayerController.networkUrl(Uri.parse(url));
+      await ctrl.initialize();
+      if (!mounted) {
+        ctrl.dispose();
+        return;
+      }
+      _videoCache[storyId] = ctrl;
+      debugPrint('[StoryViewer] ✅ Pré-carregado: $storyId');
+      // Também marca no VideoPreloadService para que o badge apareça
+      VideoPreloadService.instance.preload(storyId, url);
+    } catch (e) {
+      debugPrint('[StoryViewer] ⚠️ Erro no preload de $storyId: $e');
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  VÍDEO ATIVO
+  // ══════════════════════════════════════════════════════════════════════════
 
   Future<void> _initVideo(String url) async {
     if (!mounted) return;
+
+    final story = _currentStory;
+    if (story == null) return;
 
     setState(() {
       _videoLoading = true;
       _videoError   = false;
     });
 
-    // Para e descarta o controller anterior
-    await _disposeVideoCtrl();
+    // Desconecta o listener do controller anterior (sem destruir se estiver cacheado)
+    _videoCtrl?.removeListener(_onVideoTick);
+    _videoCtrl = null;
 
     try {
-      final ctrl = VideoPlayerController.networkUrl(Uri.parse(url));
-      await ctrl.initialize();
+      VideoPlayerController ctrl;
+      bool fromCache = false;
 
-      if (!mounted) {
-        ctrl.dispose();
-        return;
+      if (_videoCache.containsKey(story.id)) {
+        // ✅ INSTANTÂNEO — usa controller já inicializado
+        ctrl      = _videoCache[story.id]!;
+        fromCache = true;
+        debugPrint('[StoryViewer] ⚡ Usando cache para: ${story.id}');
+        // Reinicia do começo caso o usuário já tenha assistido antes
+        await ctrl.seekTo(Duration.zero);
+      } else {
+        // Criação normal (primeiro acesso ou cache evict)
+        ctrl = VideoPlayerController.networkUrl(Uri.parse(url));
+        await ctrl.initialize();
+        if (!mounted) {
+          ctrl.dispose();
+          return;
+        }
+        _videoCache[story.id] = ctrl; // guarda para reusos futuros
       }
 
-      // Listener para atualizar seekbar e detectar fim
       ctrl.addListener(_onVideoTick);
 
+      if (!mounted) return;
       setState(() {
         _videoCtrl    = ctrl;
         _videoLoading = false;
         _videoError   = false;
       });
 
-      // Ajusta a duração da barra de progresso para a duração real do vídeo
       final dur = ctrl.value.duration;
       _progressCtrl.stop();
       _progressCtrl.reset();
       _progressCtrl.duration = dur.inSeconds > 0 ? dur : _imageDuration;
 
       await ctrl.play();
-      _progressCtrl.forward();
+      if (!fromCache) _progressCtrl.forward();
+      // Se veio do cache, _onVideoTick vai sincronizar o progressCtrl automaticamente
 
-      // Pré-carrega o próximo story em background
+      // Pré-carrega próximos vídeos em background
       _preloadNext();
 
     } catch (e) {
@@ -161,7 +218,6 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
         _videoLoading = false;
         _videoError   = true;
       });
-      // Avança após 3s em caso de erro
       await Future.delayed(const Duration(seconds: 3));
       if (mounted) _nextStory();
     }
@@ -176,14 +232,11 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
     final pos   = ctrl.value.position;
     final total = ctrl.value.duration;
 
-    // Sincroniza a barra visual com a posição real do vídeo
     if (total.inMilliseconds > 0) {
       final pct = (pos.inMilliseconds / total.inMilliseconds).clamp(0.0, 1.0);
-      // Atualiza sem acionar o listener de status (evita loop)
       _progressCtrl.value = pct;
     }
 
-    // Detecta fim do vídeo
     if (pos >= total && total.inSeconds > 0) {
       _onVideoEnded();
     }
@@ -215,11 +268,11 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
     if (story == null) return;
 
     if (story.isVideo && story.mediaUrl != null) {
-      // Para vídeos, o controller de progresso é controlado pelo _onVideoTick
       await _initVideo(story.mediaUrl!);
     } else {
-      // Para fotos/textos/emoji: 5s fixos
-      await _disposeVideoCtrl();
+      // Para fotos/textos/emoji — desconecta vídeo atual (sem destruir cache)
+      _videoCtrl?.removeListener(_onVideoTick);
+      _videoCtrl = null;
       if (!mounted) return;
       setState(() {
         _videoLoading = false;
@@ -227,13 +280,14 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
       });
       _progressCtrl.duration = _imageDuration;
       if (!_paused) _progressCtrl.forward();
+
+      // Aproveita para pré-carregar próximos vídeos enquanto exibe imagem
+      _preloadNext();
     }
   }
 
   void _onProgressStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
-      // Para imagens o completed dispara normalmente.
-      // Para vídeos o completed é disparado pelo _onVideoTick.
       if (!_isVideoStory) {
         _markFullyWatched();
         _nextStory();
@@ -253,24 +307,38 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
     setState(() => _paused = false);
     if (_isVideoStory) {
       _videoCtrl?.play();
-      // Não chama _progressCtrl.forward() — ele é dirigido pelo _onVideoTick
     } else {
       _progressCtrl.forward();
     }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  PRÉ-CARREGAMENTO DO PRÓXIMO STORY
+  //  PRÉ-CARREGAMENTO DOS PRÓXIMOS STORIES
   // ══════════════════════════════════════════════════════════════════════════
 
   void _preloadNext() {
-    // Tenta pré-carregar o próximo story de vídeo no mesmo usuário
     final stories = _currentStories;
-    final nextIdx = _storyIndex + 1;
-    if (nextIdx < stories.length && stories[nextIdx].isVideo) {
-      // Apenas inicia o buffering sem guardar o controller
-      // (o _initVideo vai criar um novo quando necessário)
-      debugPrint('[StoryViewer] Pré-carregando próximo story de vídeo...');
+
+    // Pré-carrega até _preloadAhead stories à frente no mesmo usuário
+    for (int i = 1; i <= _preloadAhead; i++) {
+      final nextIdx = _storyIndex + i;
+      if (nextIdx >= stories.length) break;
+      final next = stories[nextIdx];
+      if (next.isVideo && next.mediaUrl != null) {
+        _preloadStoryVideo(next.id, next.mediaUrl!);
+      }
+    }
+
+    // Pré-carrega o primeiro vídeo do próximo usuário também
+    if (_userIndex + 1 < _userOrder.length) {
+      final nextUserStories =
+          widget.storiesByUser[_userOrder[_userIndex + 1]] ?? [];
+      for (final s in nextUserStories) {
+        if (s.isVideo && s.mediaUrl != null) {
+          _preloadStoryVideo(s.id, s.mediaUrl!);
+          break; // só o primeiro
+        }
+      }
     }
   }
 
@@ -424,6 +492,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
     if (confirmar != true) { _resumeStory(); return; }
 
     try {
+      // Remove do cache também
+      final cachedCtrl = _videoCache.remove(story.id);
+      if (cachedCtrl != null) cachedCtrl.dispose();
+
       await StoryService.instance.deleteStory(storyId: story.id);
       if (!mounted) return;
 
@@ -552,6 +624,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
               videoError:    isActive && _videoError,
               paused:        isActive && _paused,
               isActive:      isActive,
+              // Indica se o story atual já está no cache (badge ⚡)
+              isPreloaded:   isActive &&
+                             _currentStory != null &&
+                             _videoCache.containsKey(_currentStory!.id),
               onTapLeft:     _prevStory,
               onTapRight:    _nextStory,
               onLongPress:   _pauseStory,
@@ -581,6 +657,7 @@ class _UserStoriesPage extends StatelessWidget {
   final bool                 videoError;
   final bool                 paused;
   final bool                 isActive;
+  final bool                 isPreloaded; // ← NOVO
   final VoidCallback         onTapLeft;
   final VoidCallback         onTapRight;
   final VoidCallback         onLongPress;
@@ -600,6 +677,7 @@ class _UserStoriesPage extends StatelessWidget {
     required this.videoError,
     required this.paused,
     required this.isActive,
+    required this.isPreloaded,
     required this.onTapLeft,
     required this.onTapRight,
     required this.onLongPress,
@@ -621,7 +699,7 @@ class _UserStoriesPage extends StatelessWidget {
 
     return Stack(fit: StackFit.expand, children: [
 
-      // ── 1. Fundo (imagem / vídeo / gradiente + overlays) ───────────────
+      // ── 1. Fundo ───────────────────────────────────────────────────────
       _StoryBackground(
         story:        story,
         videoCtrl:    videoCtrl,
@@ -643,7 +721,7 @@ class _UserStoriesPage extends StatelessWidget {
             begin: Alignment.bottomCenter, end: Alignment.topCenter,
             colors: [Color(0x88000000), Colors.transparent])))),
 
-      // ── 4. Gestos (abaixo do header) ───────────────────────────────────
+      // ── 4. Gestos ──────────────────────────────────────────────────────
       Positioned(top: 130, bottom: 0, left: 0, right: 0,
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -672,7 +750,6 @@ class _UserStoriesPage extends StatelessWidget {
                   filled: i < storyIndex,
                   active: i == storyIndex && isActive,
                   ctrl:   i == storyIndex ? progressCtrl : null,
-                  // Para vídeos, a barra é atualizada pelo progressCtrl.value diretamente
                   isVideo: story.isVideo,
                 )))))),
 
@@ -713,6 +790,27 @@ class _UserStoriesPage extends StatelessWidget {
                               color: TabuColors.rosaPrincipal)),
                         ])),
                     ],
+                    // Badge ⚡ INSTANTÂNEO quando veio do cache
+                    if (story.isVideo && isPreloaded && !videoLoading) ...[
+                      const SizedBox(width: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A6B3A).withOpacity(0.85),
+                          border: Border.all(
+                              color: const Color(0xFF4ECDC4).withOpacity(0.6),
+                              width: 0.7)),
+                        child: Row(mainAxisSize: MainAxisSize.min, children: const [
+                          Icon(Icons.bolt_rounded,
+                              color: Color(0xFF4ECDC4), size: 9),
+                          SizedBox(width: 2),
+                          Text('PRONTO', style: TextStyle(
+                              fontFamily: TabuTypography.bodyFont,
+                              fontSize: 7, fontWeight: FontWeight.w700,
+                              letterSpacing: 1,
+                              color: Color(0xFF4ECDC4))),
+                        ])),
+                    ],
                   ]),
                   Text(_formatTime(story.createdAt),
                     style: TextStyle(fontFamily: TabuTypography.bodyFont,
@@ -720,7 +818,6 @@ class _UserStoriesPage extends StatelessWidget {
                         shadows: const [Shadow(color: Colors.black54, blurRadius: 4)])),
                 ])),
 
-              // Indicador de pause
               if (paused)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -732,7 +829,6 @@ class _UserStoriesPage extends StatelessWidget {
                         fontSize: 8, letterSpacing: 2, color: Colors.white60))),
               const SizedBox(width: 6),
 
-              // Menu opções
               GestureDetector(
                 onTap: () => _showOptionsMenu(context),
                 child: const Padding(
@@ -750,21 +846,19 @@ class _UserStoriesPage extends StatelessWidget {
             ])),
         ])),
 
-      // ── 6. Seekbar de vídeo + duração (rodapé) ─────────────────────────
+      // ── 6. Seekbar de vídeo + duração ──────────────────────────────────
       if (story.isVideo)
         Positioned(bottom: 0, left: 0, right: 0,
           child: SafeArea(top: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                // Duração
                 Row(children: [
                   Text(
                     _fmtDur(videoCtrl?.value.position ?? Duration.zero),
                     style: const TextStyle(fontFamily: TabuTypography.bodyFont,
                         fontSize: 10, color: Colors.white60, letterSpacing: 0.5)),
                   const Spacer(),
-                  // Badge duração total do story
                   if (story.videoDuration != null)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -784,7 +878,6 @@ class _UserStoriesPage extends StatelessWidget {
                       ])),
                 ]),
                 const SizedBox(height: 4),
-                // Seekbar visual (somente leitura — tap left/right navega stories)
                 _VideoSeekBarReadOnly(
                   position: videoCtrl?.value.position ?? Duration.zero,
                   duration: videoCtrl?.value.duration ?? Duration.zero,
@@ -876,7 +969,7 @@ class _UserStoriesPage extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  FUNDO DO STORY — com suporte completo a vídeo
+//  FUNDO DO STORY
 // ══════════════════════════════════════════════════════════════════════════════
 class _StoryBackground extends StatelessWidget {
   final StoryModel              story;
@@ -903,13 +996,9 @@ class _StoryBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // ── VÍDEO ──────────────────────────────────────────────────────────────
     if (story.isVideo) {
       return Stack(fit: StackFit.expand, children: [
-        // Fundo escuro enquanto carrega
         _bg(),
-
-        // Thumbnail (se disponível) — visível enquanto o vídeo carrega
         if (story.thumbUrl != null)
           AnimatedOpacity(
             opacity: (videoCtrl == null || videoLoading) ? 1.0 : 0.0,
@@ -920,8 +1009,6 @@ class _StoryBackground extends StatelessWidget {
               errorBuilder: (_, __, ___) => const SizedBox.shrink(),
             ),
           ),
-
-        // Player de vídeo
         if (videoCtrl != null && videoCtrl!.value.isInitialized)
           Center(
             child: AspectRatio(
@@ -929,8 +1016,6 @@ class _StoryBackground extends StatelessWidget {
               child: VideoPlayer(videoCtrl!),
             ),
           ),
-
-        // Loading spinner
         if (videoLoading)
           Center(
             child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -948,8 +1033,6 @@ class _StoryBackground extends StatelessWidget {
                     fontSize: 9, letterSpacing: 2.5, color: Colors.white54)),
             ]),
           ),
-
-        // Erro
         if (videoError)
           Center(
             child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -961,13 +1044,10 @@ class _StoryBackground extends StatelessWidget {
                     fontSize: 9, letterSpacing: 2, color: Color(0xFFE85D5D))),
             ]),
           ),
-
-        // Overlays sobre o vídeo
         ..._buildOverlays(context),
       ]);
     }
 
-    // ── FOTO (camera) ──────────────────────────────────────────────────────
     if (story.type == 'camera' && story.mediaUrl != null) {
       return Stack(fit: StackFit.expand, children: [
         Image.network(story.mediaUrl!, fit: BoxFit.cover,
@@ -976,7 +1056,6 @@ class _StoryBackground extends StatelessWidget {
       ]);
     }
 
-    // ── TEXTO / EMOJI ──────────────────────────────────────────────────────
     return Stack(fit: StackFit.expand, children: [
       _bg(),
       if (story.type == 'texto' && story.centralText != null)
@@ -992,7 +1071,6 @@ class _StoryBackground extends StatelessWidget {
     ]);
   }
 
-  // ── Overlays posicionados ─────────────────────────────────────────────────
   List<Widget> _buildOverlays(BuildContext context) {
     if (story.overlays.isEmpty) return [];
     return [
@@ -1071,7 +1149,7 @@ class _StoryBackground extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  BARRA DE PROGRESSO — suporta modo vídeo (valor direto) e imagem (animado)
+//  BARRA DE PROGRESSO
 // ══════════════════════════════════════════════════════════════════════════════
 class _ProgressBar extends StatelessWidget {
   final bool               filled;
@@ -1109,7 +1187,7 @@ class _ProgressBar extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  SEEKBAR SOMENTE LEITURA (story de vídeo)
+//  SEEKBAR SOMENTE LEITURA
 // ══════════════════════════════════════════════════════════════════════════════
 class _VideoSeekBarReadOnly extends StatelessWidget {
   final Duration position;

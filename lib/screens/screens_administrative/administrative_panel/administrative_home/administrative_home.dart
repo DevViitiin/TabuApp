@@ -4,6 +4,7 @@
 //  ▸ Ações rápidas (Ignorar / Remover) mantidas no card
 //  ▸ Toque no card inteiro abre detalhes + formulário disciplinar
 //
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -39,15 +40,20 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
   List<Map<String, dynamic>> _reportsChats   = [];
   bool _loadingReports = true;
 
+  // Adicione junto aos outros campos de estado:
+  List<Map<String, dynamic>> _pedidosConvite = [];
+  bool _loadingConvites = true;
+  int  _pendingConvites = 0;
+
   List<Map<String, dynamic>> _users = [];
   bool _loadingUsers = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _tabCtrl = TabController(length: 3, vsync: this);
-    _carregarTudo();
-  }
+@override
+void initState() {
+  super.initState();
+  _tabCtrl = TabController(length: 4, vsync: this); // ← era 3
+  _carregarTudo();
+}
 
   @override
   void dispose() {
@@ -55,13 +61,15 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
     super.dispose();
   }
 
+  // Substitua _carregarTudo:
   Future<void> _carregarTudo() async {
-    await Future.wait([
-      _carregarStats(),
-      _carregarReports(),
-      _carregarUsuarios(),
-    ]);
-  }
+  await Future.wait([
+    _carregarStats(),
+    _carregarReports(),     // 1º - Denúncias
+    _carregarUsuarios(),    // 2º - Usuários  
+    _carregarPedidosConvite(), // 3º - Convites
+  ]);
+}
 
   Future<void> _carregarStats() async {
     setState(() => _loadingStats = true);
@@ -225,17 +233,247 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
           _buildStats(),
           _buildTabBar(),
           Expanded(child: TabBarView(
-            controller: _tabCtrl,
-            children: [
-              _buildDenuncias(),
-              _buildUsuarios(),
-              _buildSistema(),
-            ],
-          )),
-        ]),
+          controller: _tabCtrl,
+          children: [
+            _buildDenuncias(),    // Tab 0: DENÚNCIAS
+            _buildUsuarios(),     // Tab 1: USUÁRIOS  
+            _buildConvites(),     // Tab 2: CONVITES
+            _buildSistema(),      // Tab 3: SISTEMA
+          ]),
+                  
+        ),
+        ]
+
       ),
+    ));
+  }
+
+  // Novo método:
+Widget _buildConvites() {
+  if (_loadingConvites) return _loadingWidget();
+
+  final pendentes  = _pedidosConvite.where((p) => p['status'] == 'pending').toList();
+  final resolvidos = _pedidosConvite.where((p) => p['status'] != 'pending').toList();
+
+  if (_pedidosConvite.isEmpty) {
+    return _emptyState(
+      icon:  Icons.mail_outline_rounded,
+      label: 'SEM PEDIDOS DE CONVITE',
     );
   }
+
+  return RefreshIndicator(
+    color:           TabuColors.rosaPrincipal,
+    backgroundColor: const Color(0xFF0D0020),
+    onRefresh:       _carregarPedidosConvite,
+    child: ListView(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      children: [
+
+        // ── Pendentes ─────────────────────────────────────────────────────
+        if (pendentes.isNotEmpty) ...[
+          _SectionLabel(label: 'AGUARDANDO ANÁLISE (${pendentes.length})'),
+          const SizedBox(height: 8),
+          ...pendentes.map((p) => _ConviteTile(
+            pedido:    p,
+            onAprovar: () => _processarPedidoConvite(
+              pedidoId: p['_key'] as String, acao: 'aprovar'),
+            onRejeitar: () => _confirmarRejeicao(
+              p['_key'] as String, p['name'] as String? ?? '?'),
+          )),
+        ],
+
+        // ── Resolvidos ────────────────────────────────────────────────────
+        if (resolvidos.isNotEmpty) ...[
+          Container(
+            height: 0.5, color: Colors.white.withOpacity(0.06),
+            margin: const EdgeInsets.symmetric(vertical: 16)),
+          _SectionLabel(label: 'HISTÓRICO (${resolvidos.length})'),
+          const SizedBox(height: 8),
+          ...resolvidos.map((p) => _ConviteTile(
+            pedido:    p,
+            onAprovar: null,
+            onRejeitar: null,
+          )),
+        ],
+
+        const SizedBox(height: 80),
+      ],
+    ),
+  );
+}
+
+  Future<void> _carregarPedidosConvite() async {
+  setState(() => _loadingConvites = true);
+  try {
+    final snap = await _db.child('InviteRequests').get();
+    if (!snap.exists || snap.value == null) {
+      if (mounted) setState(() { _pedidosConvite = []; _loadingConvites = false; });
+      return;
+    }
+    final m = snap.value as Map;
+    final list = m.entries.map((e) {
+      final v = Map<String, dynamic>.from(e.value as Map);
+      v['_key'] = e.key;
+      return v;
+    }).toList()
+      ..sort((a, b) => (b['created_at'] as int? ?? 0)
+          .compareTo(a['created_at'] as int? ?? 0));
+
+    if (mounted) setState(() {
+      _pedidosConvite  = list;
+      _pendingConvites = list.where((p) => p['status'] == 'pending').length;
+      _loadingConvites = false;
+    });
+  } catch (e) {
+    debugPrint('_carregarPedidosConvite error: $e');
+    if (mounted) setState(() => _loadingConvites = false);
+  }
+}
+
+Future<void> _processarPedidoConvite({
+  required String pedidoId,
+  required String acao,          // 'aprovar' | 'rejeitar'
+  String? motivoRejeicao,
+}) async {
+  HapticFeedback.mediumImpact();
+  try {
+    // Marcar como "processando" na UI imediatamente
+    setState(() {
+      final idx = _pedidosConvite.indexWhere((p) => p['_key'] == pedidoId);
+      if (idx != -1) _pedidosConvite[idx]['_processing'] = true;
+    });
+
+    await FirebaseFunctions.instance
+        .httpsCallable('processarPedidoConvite')
+        .call({'pedidoId': pedidoId, 'acao': acao, if (motivoRejeicao != null) 'motivoRejeicao': motivoRejeicao});
+
+    await _carregarPedidosConvite();
+    await _carregarStats();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: acao == 'aprovar'
+            ? const Color(0xFF1A4A2A)
+            : const Color(0xFF4A1010),
+        behavior: SnackBarBehavior.floating,
+        shape: const RoundedRectangleBorder(),
+        content: Text(
+          acao == 'aprovar'
+              ? 'Convite aprovado — e-mail enviado com sucesso.'
+              : 'Pedido recusado — e-mail enviado ao solicitante.',
+          style: const TextStyle(
+            fontFamily: 'SpaceMono',
+            fontSize: 11, letterSpacing: 0.5, color: Colors.white70),
+        ),
+      ));
+    }
+  } catch (e) {
+    debugPrint('_processarPedidoConvite error: $e');
+    if (mounted) {
+      setState(() {
+        final idx = _pedidosConvite.indexWhere((p) => p['_key'] == pedidoId);
+        if (idx != -1) _pedidosConvite[idx].remove('_processing');
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Color(0xFF4A1010),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(),
+        content: Text('Erro ao processar pedido. Tente novamente.',
+          style: TextStyle(fontFamily: 'SpaceMono', fontSize: 11, color: Colors.white70)),
+      ));
+    }
+  }
+}
+
+void _confirmarRejeicao(String pedidoId, String nome) {
+  final ctrl = TextEditingController();
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: const Color(0xFF0D0020),
+    shape: const RoundedRectangleBorder(),
+    builder: (_) => Padding(
+      padding: EdgeInsets.fromLTRB(
+        24, 20, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Container(width: 36, height: 3,
+          decoration: BoxDecoration(color: Colors.white12,
+            borderRadius: BorderRadius.circular(2))),
+        const SizedBox(height: 20),
+        Container(width: 52, height: 52,
+          color: const Color(0xFFE85D5D).withOpacity(0.12),
+          child: const Icon(Icons.block_rounded,
+            color: Color(0xFFE85D5D), size: 24)),
+        const SizedBox(height: 14),
+        Text('RECUSAR PEDIDO DE ${nome.toUpperCase()}',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: TabuTypography.displayFont,
+            fontSize: 13, letterSpacing: 3, color: Colors.white)),
+        const SizedBox(height: 8),
+        Text('Informe o motivo (opcional). Será incluído no e-mail enviado ao solicitante.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: TabuTypography.bodyFont,
+            fontSize: 10, height: 1.6,
+            color: Colors.white.withOpacity(0.35))),
+        const SizedBox(height: 16),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.04),
+            border: Border.all(color: Colors.white12)),
+          child: TextField(
+            controller: ctrl,
+            style: const TextStyle(
+              fontFamily: TabuTypography.bodyFont,
+              fontSize: 12, color: Colors.white70),
+            cursorColor: TabuColors.rosaPrincipal,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              hintText: 'Ex: Perfil não elegível para acesso neste momento...',
+              hintStyle: TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 11, color: Colors.white24),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.all(12)),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Row(children: [
+          Expanded(child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                border: Border.all(color: Colors.white12)),
+              child: const Center(child: Text('CANCELAR',
+                style: TextStyle(
+                  fontFamily: TabuTypography.bodyFont,
+                  fontSize: 10, fontWeight: FontWeight.w700,
+                  letterSpacing: 2.5, color: Colors.white38)))))),
+          const SizedBox(width: 12),
+          Expanded(child: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+              _processarPedidoConvite(
+                pedidoId: pedidoId,
+                acao: 'rejeitar',
+                motivoRejeicao: ctrl.text.trim(),
+              );
+            },
+            child: Container(height: 46,
+              color: const Color(0xFFE85D5D),
+              child: const Center(child: Text('RECUSAR',
+                style: TextStyle(
+                  fontFamily: TabuTypography.bodyFont,
+                  fontSize: 10, fontWeight: FontWeight.w700,
+                  letterSpacing: 2.5, color: Colors.white)))))),
+        ]),
+      ]),
+    ),
+  );
+}
 
   Widget _buildHeader() {
     return Container(
@@ -330,30 +568,34 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
     );
   }
 
-  Widget _buildTabBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0x1AFFFFFF), width: 0.5))),
-      child: TabBar(
-        controller:           _tabCtrl,
-        indicatorColor:       TabuColors.rosaPrincipal,
-        indicatorWeight:      1.5,
-        labelColor:           Colors.white,
-        unselectedLabelColor: Colors.white38,
-        labelStyle: const TextStyle(
-          fontFamily: TabuTypography.bodyFont,
-          fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 2),
-        unselectedLabelStyle: const TextStyle(
-          fontFamily: TabuTypography.bodyFont,
-          fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 2),
-        tabs: [
-          Tab(text: 'DENÚNCIAS${_pendingReports > 0 ? " ($_pendingReports)" : ""}'),
-          const Tab(text: 'USUÁRIOS'),
-          const Tab(text: 'SISTEMA'),
-        ],
-      ),
-    );
-  }
+  // No build(), atualize o TabBar (eram 3 tabs, agora 4):
+Widget _buildTabBar() {
+  return Container(
+    decoration: const BoxDecoration(
+      border: Border(bottom: BorderSide(color: Color(0x1AFFFFFF), width: 0.5))),
+    child: TabBar(
+      controller:           _tabCtrl,
+      indicatorColor:       TabuColors.rosaPrincipal,
+      indicatorWeight:      1.5,
+      labelColor:           Colors.white,
+      unselectedLabelColor: Colors.white38,
+      isScrollable:         true,
+      tabAlignment:         TabAlignment.start,
+      labelStyle: const TextStyle(
+        fontFamily: TabuTypography.bodyFont,
+        fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 2),
+      unselectedLabelStyle: const TextStyle(
+        fontFamily: TabuTypography.bodyFont,
+        fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 2),
+      tabs: [
+        Tab(text: 'DENÚNCIAS${_pendingReports > 0 ? " ($_pendingReports)" : ""}'),     // Tab 0
+        const Tab(text: 'USUÁRIOS'),                                                    // Tab 1
+        Tab(text: 'CONVITES${_pendingConvites > 0 ? " ($_pendingConvites)" : ""}'),    // Tab 2
+        const Tab(text: 'SISTEMA'),                                                     // Tab 3
+      ],
+    ),
+  );
+}
 
   // ══════════════════════════════════════════════════════════════════════════
   //  TAB: DENÚNCIAS
@@ -511,6 +753,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
     );
   }
 
+  
   // ══════════════════════════════════════════════════════════════════════════
   //  TAB: SISTEMA
   // ══════════════════════════════════════════════════════════════════════════
@@ -857,6 +1100,7 @@ class _UserAdminTile extends StatelessWidget {
   final Map<String, dynamic> user;
   const _UserAdminTile({required this.user});
 
+  
   @override
   Widget build(BuildContext context) {
     final name    = (user['name']   as String? ?? '—').toUpperCase();
@@ -1040,4 +1284,205 @@ class _SectionLabel extends StatelessWidget {
       fontSize: 9, fontWeight: FontWeight.w700,
       letterSpacing: 2.5, color: Colors.white38)),
   ]);
+}
+
+//══════════════════════════════════════════════════════════════════════════════
+//  CONVITE TILE
+// ══════════════════════════════════════════════════════════════════════════════
+class _ConviteTile extends StatelessWidget {
+  final Map<String, dynamic> pedido;
+  final VoidCallback?        onAprovar;
+  final VoidCallback?        onRejeitar;
+
+  const _ConviteTile({
+    required this.pedido,
+    required this.onAprovar,
+    required this.onRejeitar,
+  });
+
+  Color get _statusColor {
+    switch (pedido['status'] as String? ?? 'pending') {
+      case 'pending':  return const Color(0xFFD4AF37);
+      case 'approved': return const Color(0xFF4CAF50);
+      case 'rejected': return const Color(0xFFE85D5D);
+      default:         return Colors.white24;
+    }
+  }
+
+  String get _statusLabel {
+    switch (pedido['status'] as String? ?? 'pending') {
+      case 'pending':  return 'PENDENTE';
+      case 'approved': return 'APROVADO';
+      case 'rejected': return 'RECUSADO';
+      default:         return '—';
+    }
+  }
+
+  String _formatTs(int? ms) {
+    if (ms == null) return '—';
+    final dt   = DateTime.fromMillisecondsSinceEpoch(ms);
+    final diff = DateTime.now().difference(dt);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}min atrás';
+    if (diff.inHours   < 24) return '${diff.inHours}h atrás';
+    return '${diff.inDays}d atrás';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isPending   = pedido['status'] == 'pending';
+    final processing  = pedido['_processing'] as bool? ?? false;
+    final name        = pedido['name']    as String? ?? '—';
+    final email       = pedido['email']   as String? ?? '—';
+    final message     = pedido['message'] as String? ?? '';
+    final protocolo   = pedido['protocolo'] as String?;
+    final ts          = pedido['created_at'] as int?;
+    final motivoRej   = pedido['motivo_rejeicao'] as String?;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isPending
+            ? const Color(0xFFD4AF37).withOpacity(0.03)
+            : Colors.transparent,
+        border: Border(bottom: BorderSide(
+          color: Colors.white.withOpacity(0.06), width: 0.5))),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+          // ── Cabeçalho ──────────────────────────────────────────────────
+          Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: _statusColor.withOpacity(0.4), width: 0.7)),
+              child: Text(_statusLabel, style: TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 8, fontWeight: FontWeight.w700,
+                letterSpacing: 2, color: _statusColor))),
+            const Spacer(),
+            Text(_formatTs(ts), style: const TextStyle(
+              fontFamily: TabuTypography.bodyFont,
+              fontSize: 9, color: Colors.white24, letterSpacing: 0.3)),
+          ]),
+
+          const SizedBox(height: 10),
+
+          // ── Dados do solicitante ────────────────────────────────────────
+          Text(name.toUpperCase(), style: const TextStyle(
+            fontFamily: TabuTypography.bodyFont,
+            fontSize: 14, fontWeight: FontWeight.w700,
+            color: Colors.white, letterSpacing: 1)),
+          const SizedBox(height: 3),
+          Row(children: [
+            const Icon(Icons.email_outlined, color: Colors.white24, size: 11),
+            const SizedBox(width: 5),
+            Text(email, style: const TextStyle(
+              fontFamily: TabuTypography.bodyFont,
+              fontSize: 10, color: Colors.white38, letterSpacing: 0.3)),
+          ]),
+
+          // ── Mensagem do solicitante ─────────────────────────────────────
+          if (message.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.03),
+                border: Border(left: BorderSide(
+                  color: Colors.white.withOpacity(0.12), width: 2))),
+              child: Text(message, maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: TabuTypography.bodyFont,
+                  fontSize: 11, height: 1.5,
+                  color: Colors.white54, letterSpacing: 0.2))),
+          ],
+
+          // ── Motivo rejeição (se aplicável) ─────────────────────────────
+          if (!isPending && motivoRej != null && motivoRej.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Icon(Icons.block_rounded,
+                color: Color(0xFFE85D5D), size: 10),
+              const SizedBox(width: 5),
+              Expanded(child: Text(motivoRej, style: const TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 10, color: Color(0xFFE85D5D),
+                height: 1.5, letterSpacing: 0.2))),
+            ]),
+          ],
+
+          // ── Protocolo ──────────────────────────────────────────────────
+          if (protocolo != null) ...[
+            const SizedBox(height: 8),
+            Row(children: [
+              const Icon(Icons.tag_rounded, color: Colors.white12, size: 10),
+              const SizedBox(width: 4),
+              Text(protocolo, style: const TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 8, color: Colors.white24, letterSpacing: 1)),
+            ]),
+          ],
+
+          // ── Ações (só pendentes) ────────────────────────────────────────
+          if (isPending) ...[
+            const SizedBox(height: 14),
+            if (processing)
+              const Center(child: SizedBox(width: 18, height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 1.5,
+                  valueColor: AlwaysStoppedAnimation(TabuColors.rosaPrincipal))))
+            else
+              Row(children: [
+                // APROVAR
+                Expanded(child: GestureDetector(
+                  onTap: onAprovar,
+                  child: Container(height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4CAF50).withOpacity(0.12),
+                      border: Border.all(
+                        color: const Color(0xFF4CAF50).withOpacity(0.5),
+                        width: 0.8)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.check_rounded,
+                          color: Color(0xFF4CAF50), size: 13),
+                        SizedBox(width: 6),
+                        Text('APROVAR', style: TextStyle(
+                          fontFamily: TabuTypography.bodyFont,
+                          fontSize: 9, fontWeight: FontWeight.w700,
+                          letterSpacing: 2, color: Color(0xFF4CAF50))),
+                      ]),
+                  ))),
+                const SizedBox(width: 8),
+                // RECUSAR
+                Expanded(child: GestureDetector(
+                  onTap: onRejeitar,
+                  child: Container(height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE85D5D).withOpacity(0.08),
+                      border: Border.all(
+                        color: const Color(0xFFE85D5D).withOpacity(0.4),
+                        width: 0.8)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.block_rounded,
+                          color: Color(0xFFE85D5D), size: 13),
+                        SizedBox(width: 6),
+                        Text('RECUSAR', style: TextStyle(
+                          fontFamily: TabuTypography.bodyFont,
+                          fontSize: 9, fontWeight: FontWeight.w700,
+                          letterSpacing: 2, color: Color(0xFFE85D5D))),
+                      ]),
+                  ))),
+              ]),
+          ],
+        ]),
+      ),
+    );
+  }
 }

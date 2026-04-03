@@ -26,6 +26,9 @@ import 'package:tabuapp/models/gallery_item_model.dart';
 import 'package:tabuapp/screens/screens_home/home_screen/home/full_screen_image.dart';
 import 'package:tabuapp/services/services_app/video_preload_service.dart';
 
+// ── Tamanho de página para grids ──────────────────────────────────────────────
+const int _kPageSize = 15; // múltiplo de 3 (colunas do grid)
+
 class PerfilScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
   const PerfilScreen({super.key, required this.userData});
@@ -39,24 +42,39 @@ class _PerfilScreenState extends State<PerfilScreen>
   late Map<String, dynamic> _localUserData;
   late TabController _tabController;
 
+  // ── Posts (paginado) ───────────────────────────────────────────────────────
   List<PostModel> _posts = [];
+  bool _loadingPosts = true;
+  bool _loadingMorePosts = false;
+  bool _hasMorePosts = true;
+  DateTime? _postsCursor;
+
+  // ── Stories ────────────────────────────────────────────────────────────────
   List<StoryModel> _myStories = [];
+  bool _loadingStories = true;
+
+  // ── Follow / VIP ──────────────────────────────────────────────────────────
   List<String> _followers = [];
   List<String> _vipFriends = [];
-
-  bool _hasGallery = false;
-  List<GalleryItem> _galleryItems = [];
-  bool _loadingGallery = true;
-
-  bool _loadingPosts = true;
-  bool _loadingStories = true;
   bool _loadingFollow = true;
   bool _loadingVip = true;
 
+  // ── Galeria (paginada) ─────────────────────────────────────────────────────
+  bool _hasGallery = false;
+  List<GalleryItem> _galleryItems = [];
+  bool _loadingGallery = true;
+  bool _loadingMoreGallery = false;
+  bool _hasMoreGallery = true;
+  DateTime? _galleryCursor;
+
+  // ── Admin ──────────────────────────────────────────────────────────────────
   bool _isAdmin = false;
   bool _loadingAdmin = true;
 
   late final String _uid;
+
+  // ── Scroll controller para paginação ──────────────────────────────────────
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -77,12 +95,11 @@ class _PerfilScreenState extends State<PerfilScreen>
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_tabController.index == 1) {
-            _carregarGaleria();
-          }
+          if (_tabController.index == 1) _carregarGaleria();
         });
       }
     });
+    _scrollController.addListener(_onScroll);
     _carregarTudo();
     _verificarAdmin();
   }
@@ -90,8 +107,34 @@ class _PerfilScreenState extends State<PerfilScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _scrollController.dispose();
     _evictGaleriaPreloads();
+    _evictPostPreloads();
     super.dispose();
+  }
+
+  // ── Scroll infinito ────────────────────────────────────────────────────────
+
+  void _onScroll() {
+    final max = _scrollController.position.maxScrollExtent;
+    final cur = _scrollController.position.pixels;
+    if (cur < max - 400) return;
+
+    if (_tabController.index == 0 && !_loadingMorePosts && _hasMorePosts) {
+      _carregarMaisPosts();
+    } else if (_tabController.index == 1 && !_loadingMoreGallery && _hasMoreGallery) {
+      _carregarMaisGaleria();
+    }
+  }
+
+  // ── Preload de vídeos ──────────────────────────────────────────────────────
+
+  void _preloadPostVideos(List<PostModel> posts) {
+    for (final p in posts) {
+      if (p.tipo == 'video' && p.mediaUrl != null) {
+        VideoPreloadService.instance.preload(p.id, p.mediaUrl!);
+      }
+    }
   }
 
   void _preloadGaleriaVideos(List<GalleryItem> items) {
@@ -104,11 +147,17 @@ class _PerfilScreenState extends State<PerfilScreen>
 
   void _evictGaleriaPreloads() {
     for (final item in _galleryItems) {
-      if (item.type == 'video') {
-        VideoPreloadService.instance.evict(item.id);
-      }
+      if (item.type == 'video') VideoPreloadService.instance.evict(item.id);
     }
   }
+
+  void _evictPostPreloads() {
+    for (final p in _posts) {
+      if (p.tipo == 'video') VideoPreloadService.instance.evict(p.id);
+    }
+  }
+
+  // ── Carregamento inicial ───────────────────────────────────────────────────
 
   Future<void> _carregarTudo() async {
     _carregarPosts();
@@ -121,59 +170,76 @@ class _PerfilScreenState extends State<PerfilScreen>
   Future<void> _verificarAdmin() async {
     setState(() => _loadingAdmin = true);
     final admin = await AdminService.instance.isAdmin(_uid);
-    if (mounted) {
-      setState(() {
-        _isAdmin = admin;
-        _loadingAdmin = false;
-      });
-    }
+    if (mounted) setState(() { _isAdmin = admin; _loadingAdmin = false; });
   }
 
+  // ── Posts: primeira página ─────────────────────────────────────────────────
+
   Future<void> _carregarPosts() async {
-    setState(() => _loadingPosts = true);
+    setState(() { _loadingPosts = true; _hasMorePosts = true; _postsCursor = null; });
     try {
-      final posts = await PostService.instance.fetchPostsByUser(_uid);
+      final posts = await PostService.instance.fetchPostsByUser(
+        _uid,
+        limit: _kPageSize,
+      );
       if (mounted) {
         setState(() {
           _posts = posts;
           _loadingPosts = false;
+          _hasMorePosts = posts.length >= _kPageSize;
+          _postsCursor = posts.isNotEmpty ? posts.last.createdAt : null;
         });
-        for (final p in _posts) {
-          if (p.tipo == 'video' && p.mediaUrl != null) {
-            VideoPreloadService.instance.preload(p.id, p.mediaUrl!);
-          }
-        }
+        _preloadPostVideos(posts);
       }
     } catch (_) {
       if (mounted) setState(() => _loadingPosts = false);
     }
   }
 
+  // ── Posts: próximas páginas ────────────────────────────────────────────────
+
+  Future<void> _carregarMaisPosts() async {
+    if (_loadingMorePosts || !_hasMorePosts || _postsCursor == null) return;
+    setState(() => _loadingMorePosts = true);
+    try {
+      final mais = await PostService.instance.fetchPostsByUser(
+        _uid,
+        limit: _kPageSize,
+        startAfter: _postsCursor,
+      );
+      if (mounted) {
+        setState(() {
+          _posts.addAll(mais);
+          _loadingMorePosts = false;
+          _hasMorePosts = mais.length >= _kPageSize;
+          if (mais.isNotEmpty) _postsCursor = mais.last.createdAt;
+        });
+        _preloadPostVideos(mais);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingMorePosts = false);
+    }
+  }
+
+  // ── Stories ────────────────────────────────────────────────────────────────
+
   Future<void> _carregarStories() async {
     setState(() => _loadingStories = true);
     try {
       final s = await StoryService.instance.fetchStoriesByUser(_uid);
-      if (mounted) {
-        setState(() {
-          _myStories = s;
-          _loadingStories = false;
-        });
-      }
+      if (mounted) setState(() { _myStories = s; _loadingStories = false; });
     } catch (_) {
       if (mounted) setState(() => _loadingStories = false);
     }
   }
 
+  // ── Followers / VIP (lista completa para contagem) ─────────────────────────
+
   Future<void> _carregarFollowers() async {
     setState(() => _loadingFollow = true);
     try {
       final f = await FollowService.instance.getFollowers(_uid);
-      if (mounted) {
-        setState(() {
-          _followers = f;
-          _loadingFollow = false;
-        });
-      }
+      if (mounted) setState(() { _followers = f; _loadingFollow = false; });
     } catch (_) {
       if (mounted) setState(() => _loadingFollow = false);
     }
@@ -183,56 +249,74 @@ class _PerfilScreenState extends State<PerfilScreen>
     setState(() => _loadingVip = true);
     try {
       final v = await FollowService.instance.getVipFriends(_uid);
-      if (mounted) {
-        setState(() {
-          _vipFriends = v;
-          _loadingVip = false;
-        });
-      }
+      if (mounted) setState(() { _vipFriends = v; _loadingVip = false; });
     } catch (_) {
       if (mounted) setState(() => _loadingVip = false);
     }
   }
 
-  Future<void> _carregarGaleria() async {
-    setState(() => _loadingGallery = true);
-    try {
-      final items = await GalleryService.instance.fetchItems(_uid);
-      debugPrint('🎨 GALERIA: ${items.length} itens');
+  // ── Galeria: primeira página ───────────────────────────────────────────────
 
+  Future<void> _carregarGaleria() async {
+    setState(() {
+      _loadingGallery = true;
+      _hasMoreGallery = true;
+      _galleryCursor = null;
+    });
+    try {
+      final items = await GalleryService.instance.fetchItems(_uid, limit: _kPageSize);
       if (mounted) {
         _evictGaleriaPreloads();
-
         setState(() {
           _galleryItems = items;
           _hasGallery = items.isNotEmpty;
           _loadingGallery = false;
+          _hasMoreGallery = items.length >= _kPageSize;
+          _galleryCursor = items.isNotEmpty ? items.last.createdAt : null;
         });
-
         _preloadGaleriaVideos(items);
       }
     } catch (e) {
-      debugPrint('❌ Erro galeria: $e');
       if (mounted) {
-        setState(() {
-          _loadingGallery = false;
-          _hasGallery = false;
-          _galleryItems = [];
-        });
+        setState(() { _loadingGallery = false; _hasGallery = false; _galleryItems = []; });
       }
     }
   }
+
+  // ── Galeria: próximas páginas ──────────────────────────────────────────────
+
+  Future<void> _carregarMaisGaleria() async {
+    if (_loadingMoreGallery || !_hasMoreGallery || _galleryCursor == null) return;
+    setState(() => _loadingMoreGallery = true);
+    try {
+      final mais = await GalleryService.instance.fetchItems(
+        _uid,
+        limit: _kPageSize,
+        startAfter: _galleryCursor,
+      );
+      if (mounted) {
+        setState(() {
+          _galleryItems.addAll(mais);
+          _hasGallery = _galleryItems.isNotEmpty;
+          _loadingMoreGallery = false;
+          _hasMoreGallery = mais.length >= _kPageSize;
+          if (mais.isNotEmpty) _galleryCursor = mais.last.createdAt;
+        });
+        _preloadGaleriaVideos(mais);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingMoreGallery = false);
+    }
+  }
+
+  // ── Ações de galeria ───────────────────────────────────────────────────────
 
   Future<void> _criarGaleria() async {
     HapticFeedback.mediumImpact();
     try {
       await GalleryService.instance.createGallery(_uid);
-      if (mounted) {
-        setState(() => _hasGallery = true);
-        _snack('Galeria criada! ✨', success: true);
-      }
+      if (mounted) { setState(() => _hasGallery = true); _snack('Galeria criada! ✨', success: true); }
     } catch (e) {
-      debugPrint('_criarGaleria error: $e');
       if (mounted) _snack('Erro ao criar galeria. Tente novamente.');
     }
   }
@@ -241,9 +325,7 @@ class _PerfilScreenState extends State<PerfilScreen>
     HapticFeedback.selectionClick();
     final ok = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (_) => CreateGalleryItemScreen(userData: widget.userData),
-      ),
+      MaterialPageRoute(builder: (_) => CreateGalleryItemScreen(userData: widget.userData)),
     );
     if (ok == true) _carregarGaleria();
   }
@@ -251,26 +333,15 @@ class _PerfilScreenState extends State<PerfilScreen>
   void _abrirGalleryItem(GalleryItem item) {
     HapticFeedback.selectionClick();
     if (item.type == 'video') {
-      Navigator.push(
-        context,
-        FullscreenVideoScreen.route(
-          postId: item.id,
-          videoUrl: item.mediaUrl,
-          thumbUrl: item.thumbUrl,
-          userName: _localUserData['name'] ?? 'Você',
-          titulo: 'Galeria',
-          duration: item.videoDuration,
-        ),
-      );
+      Navigator.push(context, FullscreenVideoScreen.route(
+        postId: item.id, videoUrl: item.mediaUrl, thumbUrl: item.thumbUrl,
+        userName: _localUserData['name'] ?? 'Você', titulo: 'Galeria',
+        duration: item.videoDuration,
+      ));
     } else {
-      Navigator.push(
-        context,
-        FullscreenImageScreen.route(
-          imageUrl: item.mediaUrl,
-          userName: _localUserData['name'] ?? 'Você',
-          titulo: 'Galeria',
-        ),
-      );
+      Navigator.push(context, FullscreenImageScreen.route(
+        imageUrl: item.mediaUrl, userName: _localUserData['name'] ?? 'Você', titulo: 'Galeria',
+      ));
     }
   }
 
@@ -279,81 +350,49 @@ class _PerfilScreenState extends State<PerfilScreen>
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: TabuColors.bgAlt,
-        title: const Text(
-          'EXCLUIR DA GALERIA?',
-          style: TextStyle(
-            fontFamily: TabuTypography.displayFont,
-            fontSize: 14,
-            letterSpacing: 4,
-            color: TabuColors.branco,
-          ),
-        ),
-        content: const Text(
-          'Esta ação não pode ser desfeita.',
-          style: TextStyle(
-            fontFamily: TabuTypography.bodyFont,
-            fontSize: 12,
-            color: TabuColors.subtle,
-          ),
-        ),
+        title: const Text('EXCLUIR DA GALERIA?', style: TextStyle(
+            fontFamily: TabuTypography.displayFont, fontSize: 14,
+            letterSpacing: 4, color: TabuColors.branco)),
+        content: const Text('Esta ação não pode ser desfeita.', style: TextStyle(
+            fontFamily: TabuTypography.bodyFont, fontSize: 12, color: TabuColors.subtle)),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('CANCELAR',
-                style: TextStyle(color: TabuColors.dim)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('EXCLUIR',
-                style: TextStyle(color: Color(0xFFE85D5D))),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false),
+              child: const Text('CANCELAR', style: TextStyle(color: TabuColors.dim))),
+          TextButton(onPressed: () => Navigator.pop(context, true),
+              child: const Text('EXCLUIR', style: TextStyle(color: Color(0xFFE85D5D)))),
         ],
       ),
     );
-
     if (confirm == true) {
       HapticFeedback.mediumImpact();
       try {
-        if (item.type == 'video') {
-          await VideoPreloadService.instance.evict(item.id);
-        }
+        if (item.type == 'video') await VideoPreloadService.instance.evict(item.id);
         await GalleryService.instance.deleteItem(_uid, item.id);
         _carregarGaleria();
         if (mounted) _snack('Item removido da galeria', success: true);
       } catch (e) {
-        debugPrint('_deletarGalleryItem error: $e');
         if (mounted) _snack('Erro ao remover item.');
       }
     }
   }
 
+  // ── Abrir post ─────────────────────────────────────────────────────────────
+
   void _abrirPost(PostModel post) {
     HapticFeedback.selectionClick();
     if (post.tipo == 'video' && post.mediaUrl != null) {
-      Navigator.push(
-        context,
-        FullscreenVideoScreen.route(
-          postId: post.id,
-          videoUrl: post.mediaUrl!,
-          thumbUrl: post.thumbUrl,
-          userName: _localUserData['name'] ?? 'Você',
-          titulo: post.titulo,
-          duration: post.videoDuration,
-        ),
-      );
+      Navigator.push(context, FullscreenVideoScreen.route(
+        postId: post.id, videoUrl: post.mediaUrl!, thumbUrl: post.thumbUrl,
+        userName: _localUserData['name'] ?? 'Você', titulo: post.titulo,
+        duration: post.videoDuration,
+      ));
     } else if (post.tipo == 'foto' && post.mediaUrl != null) {
-      Navigator.push(
-        context,
-        FullscreenImageScreen.route(
-          imageUrl: post.mediaUrl!,
-          userName: _localUserData['name'] ?? 'Você',
-          titulo: post.titulo,
-        ),
-      );
+      Navigator.push(context, FullscreenImageScreen.route(
+        imageUrl: post.mediaUrl!, userName: _localUserData['name'] ?? 'Você', titulo: post.titulo,
+      ));
     } else {
       showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
+        context: context, isScrollControlled: true,
         backgroundColor: Colors.transparent,
         barrierColor: Colors.black.withOpacity(0.75),
         builder: (_) => PostDetailSheet(post: post, myUid: _uid),
@@ -361,45 +400,31 @@ class _PerfilScreenState extends State<PerfilScreen>
     }
   }
 
+  // ── Snack / menus ──────────────────────────────────────────────────────────
+
   void _snack(String msg, {bool success = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor:
-            success ? TabuColors.rosaDeep : const Color(0xFF3D0A0A),
-        behavior: SnackBarBehavior.floating,
-        shape: const RoundedRectangleBorder(),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
-        content: Text(
-          msg,
-          style: const TextStyle(
-            fontFamily: TabuTypography.bodyFont,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.5,
-            color: TabuColors.branco,
-          ),
-        ),
-      ),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: success ? TabuColors.rosaDeep : const Color(0xFF3D0A0A),
+      behavior: SnackBarBehavior.floating,
+      shape: const RoundedRectangleBorder(),
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 3),
+      content: Text(msg, style: const TextStyle(
+          fontFamily: TabuTypography.bodyFont, fontSize: 12,
+          fontWeight: FontWeight.w700, letterSpacing: 1.5, color: TabuColors.branco)),
+    ));
   }
 
   void _showConfigMenu() {
     showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => ConfigMenu(
-        isAdmin: _isAdmin,
-        onSignOut: _signOut,
-        onAbrirAdmin: _abrirAdmin,
-      ),
+      context: context, backgroundColor: Colors.transparent,
+      builder: (_) => ConfigMenu(isAdmin: _isAdmin, onSignOut: _signOut, onAbrirAdmin: _abrirAdmin),
     );
   }
 
   Future<void> _signOut() async {
     final confirm = await showModalBottomSheet<bool>(
-      context: context,
-      backgroundColor: Colors.transparent,
+      context: context, backgroundColor: Colors.transparent,
       builder: (_) => const SignOutSheet(),
     );
     if (confirm == true && mounted) {
@@ -409,11 +434,8 @@ class _PerfilScreenState extends State<PerfilScreen>
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
             pageBuilder: (_, animation, __) => const AccessCodeScreen(),
-            transitionsBuilder: (_, animation, __, child) => FadeTransition(
-              opacity:
-                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
-              child: child,
-            ),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut), child: child),
             transitionDuration: const Duration(milliseconds: 400),
           ),
           (route) => false,
@@ -424,31 +446,24 @@ class _PerfilScreenState extends State<PerfilScreen>
 
   void _abrirAdmin() {
     HapticFeedback.mediumImpact();
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (_, animation, __) => AdminPanelScreen(adminUid: _uid),
-        transitionsBuilder: (_, animation, __, child) => SlideTransition(
-          position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-              .animate(CurvedAnimation(
-                  parent: animation, curve: Curves.easeOutCubic)),
-          child: child,
-        ),
-        transitionDuration: const Duration(milliseconds: 300),
+    Navigator.push(context, PageRouteBuilder(
+      pageBuilder: (_, animation, __) => AdminPanelScreen(adminUid: _uid),
+      transitionsBuilder: (_, animation, __, child) => SlideTransition(
+        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
+            .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+        child: child,
       ),
-    );
+      transitionDuration: const Duration(milliseconds: 300),
+    ));
   }
 
   Future<void> _openEdit() async {
     final updated = await Navigator.push<Map<String, dynamic>>(
       context,
-      MaterialPageRoute(
-        builder: (_) => EditPerfilScreen(
-          userData: _localUserData,
-          onSaved: (data) =>
-              setState(() => _localUserData = {..._localUserData, ...data}),
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => EditPerfilScreen(
+        userData: _localUserData,
+        onSaved: (data) => setState(() => _localUserData = {..._localUserData, ...data}),
+      )),
     );
     if (updated != null && mounted) {
       setState(() => _localUserData = {..._localUserData, ...updated});
@@ -458,33 +473,21 @@ class _PerfilScreenState extends State<PerfilScreen>
   void _abrirStoryViewer() {
     if (_myStories.isEmpty) return;
     HapticFeedback.selectionClick();
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (_, animation, __) => StoryViewerScreen(
-          storiesByUser: {_uid: _myStories},
-          initialUserId: _uid,
-          myUid: _uid,
-          onStoriesChanged: _carregarStories,
-        ),
-        transitionsBuilder: (_, animation, __, child) => FadeTransition(
-          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-          child: child,
-        ),
-        transitionDuration: const Duration(milliseconds: 200),
+    Navigator.push(context, PageRouteBuilder(
+      pageBuilder: (_, animation, __) => StoryViewerScreen(
+        storiesByUser: {_uid: _myStories}, initialUserId: _uid,
+        myUid: _uid, onStoriesChanged: _carregarStories,
       ),
-    );
+      transitionsBuilder: (_, animation, __, child) =>
+          FadeTransition(opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut), child: child),
+      transitionDuration: const Duration(milliseconds: 200),
+    ));
   }
 
   void _abrirPerfil(String userId) {
     HapticFeedback.selectionClick();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            PublicProfileScreen(userId: userId, userName: userId),
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(
+        builder: (_) => PublicProfileScreen(userId: userId, userName: userId)));
   }
 
   void _openSheet({
@@ -494,18 +497,12 @@ class _PerfilScreenState extends State<PerfilScreen>
     required Widget content,
   }) {
     showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => MetricSheet(
-        title: title,
-        icon: icon,
-        accentColor: accentColor,
-        content: content,
-      ),
+      context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
+      builder: (_) => MetricSheet(title: title, icon: icon, accentColor: accentColor, content: content),
     );
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final data = UserDataNotifier.instance.value.isNotEmpty
@@ -513,745 +510,528 @@ class _PerfilScreenState extends State<PerfilScreen>
         : _localUserData;
     final name = (data['name'] as String? ?? 'Usuário').toUpperCase();
     final email = data['email'] as String? ?? '';
-    final bio =
-        ((data['bio'] as String?) ?? (data['bio '] as String?) ?? '').trim();
+    final bio = ((data['bio'] as String?) ?? (data['bio '] as String?) ?? '').trim();
     final avatarUrl = data['avatar'] as String? ?? '';
     final bairro = (data['bairro'] as String? ?? '').trim();
     final cidade = (data['city'] as String? ?? '').trim();
     final estado = (data['state'] as String? ?? '').trim();
-    final localizacao =
-        [bairro, cidade, estado].where((s) => s.isNotEmpty).join(', ');
+    final localizacao = [bairro, cidade, estado].where((s) => s.isNotEmpty).join(', ');
     final temStory = _myStories.isNotEmpty;
 
     return Scaffold(
       backgroundColor: TabuColors.bg,
-      body: Stack(
-        children: [
-          Positioned.fill(child: CustomPaint(painter: PerfilBg())),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 3,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    TabuColors.rosaDeep,
-                    TabuColors.rosaPrincipal,
-                    TabuColors.rosaClaro,
-                    TabuColors.rosaPrincipal,
-                    TabuColors.rosaDeep,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SafeArea(
-            child: RefreshIndicator(
-              color: TabuColors.rosaPrincipal,
-              backgroundColor: TabuColors.bgAlt,
-              onRefresh: _carregarTudo,
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 12),
-
-                          // ── Top bar ──────────────────────────────────────
-                          Row(
-                            children: [
-                              if (_isAdmin && !_loadingAdmin)
-                                GestureDetector(
-                                  onTap: _abrirAdmin,
-                                  child: Container(
-                                    height: 38,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: TabuColors.rosaDeep
-                                          .withOpacity(0.2),
-                                      border: Border.all(
-                                        color: TabuColors.rosaPrincipal
-                                            .withOpacity(0.5),
-                                        width: 0.8,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Icon(Icons.shield_rounded,
-                                            color: TabuColors.rosaPrincipal,
-                                            size: 13),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          'ADMIN',
-                                          style: TextStyle(
-                                            fontFamily:
-                                                TabuTypography.bodyFont,
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 2,
-                                            color: TabuColors.rosaPrincipal,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              else
-                                const SizedBox(width: 38),
-                              const Spacer(),
-                              GestureDetector(
-                                onTap: _showConfigMenu,
-                                child: Container(
-                                  width: 38,
-                                  height: 38,
-                                  decoration: BoxDecoration(
-                                    color: TabuColors.bgCard,
-                                    border: Border.all(
-                                        color: TabuColors.border, width: 0.8),
-                                  ),
-                                  child: const Icon(
-                                      Icons.settings_outlined,
-                                      color: TabuColors.subtle,
-                                      size: 18),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Avatar
+      body: Stack(children: [
+        Positioned.fill(child: CustomPaint(painter: PerfilBg())),
+        Positioned(top: 0, left: 0, right: 0,
+          child: Container(height: 3, decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [
+              TabuColors.rosaDeep, TabuColors.rosaPrincipal,
+              TabuColors.rosaClaro, TabuColors.rosaPrincipal, TabuColors.rosaDeep,
+            ])))),
+        SafeArea(
+          child: RefreshIndicator(
+            color: TabuColors.rosaPrincipal, backgroundColor: TabuColors.bgAlt,
+            onRefresh: _carregarTudo,
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                      const SizedBox(height: 12),
+                      // ── Top bar ──────────────────────────────────────────
+                      Row(children: [
+                        if (_isAdmin && !_loadingAdmin)
                           GestureDetector(
-                            onTap:
-                                temStory ? _abrirStoryViewer : _openEdit,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                AnimatedContainer(
-                                  duration:
-                                      const Duration(milliseconds: 300),
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: temStory
-                                        ? const LinearGradient(
-                                            colors: [
-                                              TabuColors.rosaDeep,
-                                              TabuColors.rosaPrincipal,
-                                              TabuColors.rosaClaro,
-                                            ],
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                          )
-                                        : null,
-                                    color: temStory
-                                        ? null
-                                        : TabuColors.border,
-                                    boxShadow: temStory
-                                        ? [
-                                            BoxShadow(
-                                              color: TabuColors.glow,
-                                              blurRadius: 20,
-                                              spreadRadius: 2,
-                                            )
-                                          ]
-                                        : null,
-                                  ),
-                                ),
-                                Container(
-                                  width: 93,
-                                  height: 93,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: TabuColors.bg, width: 2.5),
-                                  ),
-                                ),
-                                Avatar(
-                                    avatarUrl: avatarUrl,
-                                    showCamera: !temStory),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Nome
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall
-                                    ?.copyWith(
-                                  fontSize: 30,
-                                  letterSpacing: 6,
-                                  color: TabuColors.branco,
-                                  fontWeight: FontWeight.w400,
-                                  shadows: [
-                                    Shadow(
-                                        color: TabuColors.glow,
-                                        blurRadius: 20)
-                                  ],
-                                ),
-                              ),
-                              if (_isAdmin && !_loadingAdmin) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: TabuColors.rosaDeep
-                                        .withOpacity(0.25),
-                                    border: Border.all(
-                                      color: TabuColors.rosaPrincipal
-                                          .withOpacity(0.5),
-                                      width: 0.8,
-                                    ),
-                                  ),
-                                  child: const Icon(Icons.shield_rounded,
-                                      color: TabuColors.rosaPrincipal,
-                                      size: 10),
-                                ),
-                              ],
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-
-                          Text(
-                            email,
-                            style: const TextStyle(
-                              fontFamily: TabuTypography.bodyFont,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 1.5,
-                              color: TabuColors.dim,
-                            ),
-                          ),
-
-                          if (localizacao.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.location_on_outlined,
-                                      color: TabuColors.rosaPrincipal,
-                                      size: 12),
-                                  const SizedBox(width: 4),
-                                  Flexible(
-                                    child: Text(
-                                      localizacao.toUpperCase(),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      style: const TextStyle(
-                                        fontFamily: TabuTypography.bodyFont,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 2,
-                                        color: TabuColors.rosaPrincipal,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-
-                          if (bio.isNotEmpty) ...[
-                            const SizedBox(height: 10),
-                            Text(
-                              bio,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: TabuTypography.bodyFont,
-                                fontSize: 13,
-                                letterSpacing: 0.5,
-                                color: TabuColors.dim,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
-
-                          const SizedBox(height: 24),
-                          Container(
-                              height: 0.5, color: TabuColors.border),
-                          const SizedBox(height: 16),
-
-                          // Editar perfil
-                          GestureDetector(
-                            onTap: _openEdit,
+                            onTap: _abrirAdmin,
                             child: Container(
-                              width: double.infinity,
-                              height: 46,
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
-                                color: TabuColors.bgCard,
-                                border: Border.all(
-                                    color: TabuColors.borderMid, width: 0.8),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.edit_outlined,
-                                      color: TabuColors.rosaPrincipal,
-                                      size: 15),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'EDITAR PERFIL',
-                                    style: TextStyle(
-                                      fontFamily: TabuTypography.bodyFont,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 3,
-                                      color: TabuColors.rosaPrincipal,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                color: TabuColors.rosaDeep.withOpacity(0.2),
+                                border: Border.all(color: TabuColors.rosaPrincipal.withOpacity(0.5), width: 0.8)),
+                              child: Row(mainAxisSize: MainAxisSize.min, children: const [
+                                Icon(Icons.shield_rounded, color: TabuColors.rosaPrincipal, size: 13),
+                                SizedBox(width: 6),
+                                Text('ADMIN', style: TextStyle(
+                                    fontFamily: TabuTypography.bodyFont, fontSize: 9,
+                                    fontWeight: FontWeight.w700, letterSpacing: 2,
+                                    color: TabuColors.rosaPrincipal)),
+                              ]),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 38),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: _showConfigMenu,
+                          child: Container(
+                            width: 38, height: 38,
+                            decoration: BoxDecoration(color: TabuColors.bgCard,
+                                border: Border.all(color: TabuColors.border, width: 0.8)),
+                            child: const Icon(Icons.settings_outlined, color: TabuColors.subtle, size: 18)),
+                        ),
+                      ]),
+                      const SizedBox(height: 20),
+
+                      // ── Avatar ─────────────────────────────────────────
+                      GestureDetector(
+                        onTap: temStory ? _abrirStoryViewer : _openEdit,
+                        child: Stack(alignment: Alignment.center, children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: 100, height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: temStory ? const LinearGradient(colors: [
+                                TabuColors.rosaDeep, TabuColors.rosaPrincipal, TabuColors.rosaClaro],
+                                  begin: Alignment.topLeft, end: Alignment.bottomRight) : null,
+                              color: temStory ? null : TabuColors.border,
+                              boxShadow: temStory ? [BoxShadow(color: TabuColors.glow, blurRadius: 20, spreadRadius: 2)] : null,
                             ),
                           ),
+                          Container(width: 93, height: 93, decoration: BoxDecoration(
+                              shape: BoxShape.circle, border: Border.all(color: TabuColors.bg, width: 2.5))),
+                          Avatar(avatarUrl: avatarUrl, showCamera: !temStory),
+                        ]),
+                      ),
+                      const SizedBox(height: 16),
 
-                          if (_isAdmin && !_loadingAdmin) ...[
-                            const SizedBox(height: 10),
-                            GestureDetector(
-                              onTap: _abrirAdmin,
-                              child: Container(
-                                width: double.infinity,
-                                height: 46,
-                                decoration: BoxDecoration(
-                                  color: TabuColors.rosaDeep
-                                      .withOpacity(0.15),
-                                  border: Border.all(
-                                    color: TabuColors.rosaPrincipal
-                                        .withOpacity(0.5),
-                                    width: 0.8,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: TabuColors.glow
-                                          .withOpacity(0.15),
-                                      blurRadius: 12,
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(Icons.shield_rounded,
-                                        color: TabuColors.rosaPrincipal,
-                                        size: 15),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      'PAINEL PROFISSIONAL',
-                                      style: TextStyle(
-                                        fontFamily: TabuTypography.bodyFont,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 3,
-                                        color: TabuColors.rosaPrincipal,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Icon(Icons.arrow_forward_ios_rounded,
-                                        color: TabuColors.rosaPrincipal,
-                                        size: 10),
-                                  ],
-                                ),
-                              ),
+                      // ── Nome ───────────────────────────────────────────
+                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        Text(name, style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          fontSize: 30, letterSpacing: 6, color: TabuColors.branco,
+                          fontWeight: FontWeight.w400,
+                          shadows: [Shadow(color: TabuColors.glow, blurRadius: 20)],
+                        )),
+                        if (_isAdmin && !_loadingAdmin) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: TabuColors.rosaDeep.withOpacity(0.25),
+                              border: Border.all(color: TabuColors.rosaPrincipal.withOpacity(0.5), width: 0.8)),
+                            child: const Icon(Icons.shield_rounded, color: TabuColors.rosaPrincipal, size: 10)),
+                        ],
+                      ]),
+                      const SizedBox(height: 6),
+                      Text(email, style: const TextStyle(
+                          fontFamily: TabuTypography.bodyFont, fontSize: 11,
+                          fontWeight: FontWeight.w500, letterSpacing: 1.5, color: TabuColors.dim)),
+
+                      if (localizacao.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                            const Icon(Icons.location_on_outlined, color: TabuColors.rosaPrincipal, size: 12),
+                            const SizedBox(width: 4),
+                            Flexible(child: Text(localizacao.toUpperCase(),
+                              textAlign: TextAlign.center, overflow: TextOverflow.ellipsis, maxLines: 2,
+                              style: const TextStyle(fontFamily: TabuTypography.bodyFont,
+                                  fontSize: 10, fontWeight: FontWeight.w600,
+                                  letterSpacing: 2, color: TabuColors.rosaPrincipal))),
+                          ]),
+                        ),
+                      ],
+
+                      if (bio.isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        Text(bio, textAlign: TextAlign.center, style: const TextStyle(
+                            fontFamily: TabuTypography.bodyFont, fontSize: 13,
+                            letterSpacing: 0.5, color: TabuColors.dim, height: 1.5)),
+                      ],
+
+                      const SizedBox(height: 24),
+                      Container(height: 0.5, color: TabuColors.border),
+                      const SizedBox(height: 16),
+
+                      // ── Editar perfil ──────────────────────────────────
+                      GestureDetector(
+                        onTap: _openEdit,
+                        child: Container(
+                          width: double.infinity, height: 46,
+                          decoration: BoxDecoration(color: TabuColors.bgCard,
+                              border: Border.all(color: TabuColors.borderMid, width: 0.8)),
+                          child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            Icon(Icons.edit_outlined, color: TabuColors.rosaPrincipal, size: 15),
+                            SizedBox(width: 10),
+                            Text('EDITAR PERFIL', style: TextStyle(
+                                fontFamily: TabuTypography.bodyFont, fontSize: 11,
+                                fontWeight: FontWeight.w700, letterSpacing: 3,
+                                color: TabuColors.rosaPrincipal)),
+                          ]),
+                        ),
+                      ),
+
+                      if (_isAdmin && !_loadingAdmin) ...[
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: _abrirAdmin,
+                          child: Container(
+                            width: double.infinity, height: 46,
+                            decoration: BoxDecoration(
+                              color: TabuColors.rosaDeep.withOpacity(0.15),
+                              border: Border.all(color: TabuColors.rosaPrincipal.withOpacity(0.5), width: 0.8),
+                              boxShadow: [BoxShadow(color: TabuColors.glow.withOpacity(0.15), blurRadius: 12)]),
+                            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+                              Icon(Icons.shield_rounded, color: TabuColors.rosaPrincipal, size: 15),
+                              SizedBox(width: 10),
+                              Text('PAINEL PROFISSIONAL', style: TextStyle(
+                                  fontFamily: TabuTypography.bodyFont, fontSize: 11,
+                                  fontWeight: FontWeight.w700, letterSpacing: 3,
+                                  color: TabuColors.rosaPrincipal)),
+                              SizedBox(width: 10),
+                              Icon(Icons.arrow_forward_ios_rounded, color: TabuColors.rosaPrincipal, size: 10),
+                            ]),
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 20),
+
+                      // ── Stats ──────────────────────────────────────────
+                      Row(children: [
+                        StatCard(
+                          value: _loadingPosts ? '—' : '${_posts.length}',
+                          label: 'POSTS', icon: Icons.grid_view_rounded, onTap: () {},
+                        ),
+                        const SizedBox(width: 10),
+                        StatCard(
+                          value: _loadingFollow ? '—' : '${_followers.length}',
+                          label: 'SEGUIDORES', icon: Icons.people_outline_rounded,
+                          onTap: () => _openSheet(
+                            title: 'SEGUIDORES', icon: Icons.people_outline_rounded,
+                            accentColor: TabuColors.rosaClaro,
+                            content: PaginatedUserList(
+                              uids: _followers, emptyLabel: 'Nenhum seguidor ainda',
+                              onTap: _abrirPerfil,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        StatCard(
+                          value: _loadingVip ? '—' : '${_vipFriends.length}',
+                          label: 'AMIGOS VIP', icon: Icons.star_border_rounded,
+                          highlight: true,
+                          onTap: () => _openSheet(
+                            title: 'AMIGOS VIP', icon: Icons.star_rounded,
+                            accentColor: const Color(0xFFD4AF37),
+                            content: PaginatedUserList(
+                              uids: _vipFriends, emptyLabel: 'Nenhum amigo VIP ainda',
+                              onTap: _abrirPerfil, isVip: true,
+                            ),
+                          ),
+                        ),
+                      ]),
+
+                      const SizedBox(height: 16),
+                      VipFriendsBadge(count: _loadingVip ? 0 : _vipFriends.length),
+
+                      // ── Tabs ───────────────────────────────────────────
+                      const SizedBox(height: 24),
+                      Container(
+                        decoration: BoxDecoration(color: TabuColors.bgCard,
+                            border: Border.all(color: TabuColors.border, width: 0.8)),
+                        child: TabBar(
+                          controller: _tabController,
+                          indicatorColor: TabuColors.rosaPrincipal, indicatorWeight: 2,
+                          labelColor: TabuColors.rosaPrincipal,
+                          unselectedLabelColor: TabuColors.subtle,
+                          dividerColor: Colors.transparent,
+                          labelStyle: const TextStyle(fontFamily: TabuTypography.bodyFont,
+                              fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 2.5),
+                          unselectedLabelStyle: const TextStyle(fontFamily: TabuTypography.bodyFont,
+                              fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 2.5),
+                          tabs: [
+                            Tab(
+                              icon: const Icon(Icons.grid_view_rounded, size: 14),
+                              text: 'PUBLICAÇÕES${_loadingPosts ? '' : ' · ${_posts.length}'}',
+                            ),
+                            Tab(
+                              icon: const Icon(Icons.photo_library_outlined, size: 14),
+                              text: 'GALERIA${_loadingGallery ? '' : _hasGallery ? ' · ${_galleryItems.length}' : ''}',
                             ),
                           ],
-
-                          const SizedBox(height: 20),
-
-                          // Stats
-                          Row(
-                            children: [
-                              StatCard(
-                                value: _loadingPosts
-                                    ? '—'
-                                    : '${_posts.length}',
-                                label: 'POSTS',
-                                icon: Icons.grid_view_rounded,
-                                onTap: () {},
-                              ),
-                              const SizedBox(width: 10),
-                              StatCard(
-                                value: _loadingFollow
-                                    ? '—'
-                                    : '${_followers.length}',
-                                label: 'SEGUIDORES',
-                                icon: Icons.people_outline_rounded,
-                                onTap: () => _openSheet(
-                                  title: 'SEGUIDORES',
-                                  icon: Icons.people_outline_rounded,
-                                  accentColor: TabuColors.rosaClaro,
-                                  content: UserList(
-                                    uids: _followers,
-                                    emptyLabel: 'Nenhum seguidor ainda',
-                                    onTap: _abrirPerfil,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              StatCard(
-                                value: _loadingVip
-                                    ? '—'
-                                    : '${_vipFriends.length}',
-                                label: 'AMIGOS VIP',
-                                icon: Icons.star_border_rounded,
-                                highlight: true,
-                                onTap: () => _openSheet(
-                                  title: 'AMIGOS VIP',
-                                  icon: Icons.star_rounded,
-                                  accentColor: const Color(0xFFD4AF37),
-                                  content: UserList(
-                                    uids: _vipFriends,
-                                    emptyLabel: 'Nenhum amigo VIP ainda',
-                                    onTap: _abrirPerfil,
-                                    isVip: true,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 16),
-                          VipFriendsBadge(
-                              count:
-                                  _loadingVip ? 0 : _vipFriends.length),
-
-                          // Tabs
-                          const SizedBox(height: 24),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: TabuColors.bgCard,
-                              border: Border.all(
-                                  color: TabuColors.border, width: 0.8),
-                            ),
-                            child: TabBar(
-                              controller: _tabController,
-                              indicatorColor: TabuColors.rosaPrincipal,
-                              indicatorWeight: 2,
-                              labelColor: TabuColors.rosaPrincipal,
-                              unselectedLabelColor: TabuColors.subtle,
-                              dividerColor: Colors.transparent,
-                              labelStyle: const TextStyle(
-                                fontFamily: TabuTypography.bodyFont,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 2.5,
-                              ),
-                              unselectedLabelStyle: const TextStyle(
-                                fontFamily: TabuTypography.bodyFont,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 2.5,
-                              ),
-                              tabs: [
-                                Tab(
-                                  icon: const Icon(
-                                      Icons.grid_view_rounded,
-                                      size: 14),
-                                  text:
-                                      'PUBLICAÇÕES${_loadingPosts ? '' : ' · ${_posts.length}'}',
-                                ),
-                                Tab(
-                                  icon: const Icon(
-                                      Icons.photo_library_outlined,
-                                      size: 14),
-                                  text:
-                                      'GALERIA${_loadingGallery ? '' : _hasGallery ? ' · ${_galleryItems.length}' : ''}',
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 4),
+                    ]),
                   ),
+                ),
 
-                  // ── CONTEÚDO DAS TABS ──────────────────────────────────
-                  if (_tabController.index == 0) ...[
-                    if (_loadingPosts)
-                      const GaleriaSkeleton()
-                    else if (_posts.isEmpty)
-                      SliverFillRemaining(
-                          hasScrollBody: false, child: _buildVazio())
-                    else
-                      // ✅ FIX: EdgeInsets.zero evita overflow lateral
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        sliver: SliverGrid(
-                          delegate: SliverChildBuilderDelegate(
-                            (_, i) => _PostGridTile(
+                // ── CONTEÚDO DAS TABS ────────────────────────────────────────
+                if (_tabController.index == 0) ...[
+                  if (_loadingPosts)
+                    const GaleriaSkeleton()
+                  else if (_posts.isEmpty)
+                    SliverFillRemaining(hasScrollBody: false, child: _buildVazio())
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), // Adicionado vertical
+                      sliver: SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 1.5,
+                          mainAxisSpacing: 1.5,
+                          childAspectRatio: 1.0,
+                          mainAxisExtent: 120.0, // Fixa altura para melhor controle
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (_, i) => Padding( // Padding extra em cada tile
+                            padding: const EdgeInsets.all(0.75),
+                            child: _PostGridTile(
                               post: _posts[i],
                               myUid: _uid,
                               onTap: () => _abrirPost(_posts[i]),
                             ),
-                            childCount: _posts.length,
                           ),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 1.5,
-                            mainAxisSpacing: 1.5,
-                            childAspectRatio: 1,
-                          ),
+                          childCount: _posts.length,
                         ),
                       ),
-                  ] else ...[
-                    if (_loadingGallery)
-                      const GaleriaSkeleton()
-                    else if (!_hasGallery)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: _buildGaleriaNaoCriada(),
-                      )
-                    else if (_galleryItems.isEmpty)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: _buildGaleriaVazia(),
-                      )
-                    else
-                      // ✅ FIX: EdgeInsets.zero evita overflow lateral
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        sliver: SliverGrid(
-                          delegate: SliverChildBuilderDelegate(
-                            (_, i) => _GalleryGridTile(
+                    ),
+                  // Indicador de carregamento de mais posts
+                  if (_loadingMorePosts)
+                    const SliverToBoxAdapter(child: _LoadMoreIndicator()),
+                ] else ...[
+                  if (_loadingGallery)
+                    const GaleriaSkeleton()
+                  else if (!_hasGallery)
+                    SliverFillRemaining(hasScrollBody: false, child: _buildGaleriaNaoCriada())
+                  else if (_galleryItems.isEmpty)
+                    SliverFillRemaining(hasScrollBody: false, child: _buildGaleriaVazia())
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), // Mesmo padding
+                      sliver: SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 1.5,
+                          mainAxisSpacing: 1.5,
+                          childAspectRatio: 1.0,
+                          mainAxisExtent: 120.0, // Fixa altura
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (_, i) => Padding(
+                            padding: const EdgeInsets.all(0.75),
+                            child: _GalleryGridTile(
                               item: _galleryItems[i],
-                              isPreloaded: VideoPreloadService.instance
-                                  .isReady(_galleryItems[i].id),
-                              onTap: () =>
-                                  _abrirGalleryItem(_galleryItems[i]),
-                              onDelete: () =>
-                                  _deletarGalleryItem(_galleryItems[i]),
+                              isPreloaded: VideoPreloadService.instance.isReady(_galleryItems[i].id),
+                              onTap: () => _abrirGalleryItem(_galleryItems[i]),
+                              onDelete: () => _deletarGalleryItem(_galleryItems[i]),
                             ),
-                            childCount: _galleryItems.length,
                           ),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 1.5,
-                            mainAxisSpacing: 1.5,
-                            childAspectRatio: 1,
-                          ),
+                          childCount: _galleryItems.length,
                         ),
                       ),
-                  ],
+                    ),
+                  // Indicador de carregamento de mais galeria
+                  if (_loadingMoreGallery)
+                    const SliverToBoxAdapter(child: _LoadMoreIndicator()),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                ],
-              ),
+                  ],
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ]),
       floatingActionButton: _tabController.index == 1 && !_loadingGallery
           ? FloatingActionButton(
               onPressed: _adicionarAGaleria,
               backgroundColor: TabuColors.rosaPrincipal,
-              elevation: 8,
-              heroTag: 'gallery_fab',
-              child: const Icon(Icons.add, color: Colors.white, size: 28),
-            )
+              elevation: 8, heroTag: 'gallery_fab',
+              child: const Icon(Icons.add, color: Colors.white, size: 28))
           : null,
     );
   }
 
   Widget _buildVazio() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              border: Border.all(color: TabuColors.border, width: 0.8),
-              color: TabuColors.bgCard,
-            ),
-            child: const Icon(Icons.photo_library_outlined,
-                color: TabuColors.border, size: 20),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'SEM PUBLICAÇÕES',
-            style: TextStyle(
-              fontFamily: TabuTypography.bodyFont,
-              fontSize: 9,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 4,
-              color: TabuColors.subtle,
-            ),
-          ),
-        ],
-      ),
-    );
+    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(width: 52, height: 52,
+        decoration: BoxDecoration(border: Border.all(color: TabuColors.border, width: 0.8),
+            color: TabuColors.bgCard),
+        child: const Icon(Icons.photo_library_outlined, color: TabuColors.border, size: 20)),
+      const SizedBox(height: 16),
+      const Text('SEM PUBLICAÇÕES', style: TextStyle(
+          fontFamily: TabuTypography.bodyFont, fontSize: 9,
+          fontWeight: FontWeight.w700, letterSpacing: 4, color: TabuColors.subtle)),
+    ]));
   }
 
   Widget _buildGaleriaNaoCriada() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                border: Border.all(color: TabuColors.border, width: 0.8),
-                color: TabuColors.bgCard,
-              ),
-              child: const Icon(Icons.photo_library_outlined,
-                  color: TabuColors.border, size: 28),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'SUA GALERIA PESSOAL',
-              style: TextStyle(
-                fontFamily: TabuTypography.displayFont,
-                fontSize: 16,
-                letterSpacing: 5,
-                color: TabuColors.branco,
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Crie sua galeria para guardar fotos e vídeos que aparecem apenas no seu perfil.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: TabuTypography.bodyFont,
-                fontSize: 12,
-                letterSpacing: 0.3,
-                color: TabuColors.subtle,
-                height: 1.6,
-              ),
-            ),
-            const SizedBox(height: 28),
-            GestureDetector(
-              onTap: _criarGaleria,
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: TabuColors.rosaPrincipal,
-                  boxShadow: [
-                    BoxShadow(
-                      color: TabuColors.glow.withOpacity(0.35),
-                      blurRadius: 16,
-                      spreadRadius: 1,
-                    )
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.add_photo_alternate_rounded,
-                        color: Colors.white, size: 18),
-                    SizedBox(width: 10),
-                    Text(
-                      'CRIAR GALERIA',
-                      style: TextStyle(
-                        fontFamily: TabuTypography.bodyFont,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 3,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+    return Center(child: Padding(
+      padding: const EdgeInsets.all(40),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Container(width: 72, height: 72,
+          decoration: BoxDecoration(border: Border.all(color: TabuColors.border, width: 0.8), color: TabuColors.bgCard),
+          child: const Icon(Icons.photo_library_outlined, color: TabuColors.border, size: 28)),
+        const SizedBox(height: 20),
+        const Text('SUA GALERIA PESSOAL', style: TextStyle(
+            fontFamily: TabuTypography.displayFont, fontSize: 16,
+            letterSpacing: 5, color: TabuColors.branco)),
+        const SizedBox(height: 12),
+        const Text('Crie sua galeria para guardar fotos e vídeos que aparecem apenas no seu perfil.',
+          textAlign: TextAlign.center, style: TextStyle(
+              fontFamily: TabuTypography.bodyFont, fontSize: 12,
+              letterSpacing: 0.3, color: TabuColors.subtle, height: 1.6)),
+        const SizedBox(height: 28),
+        GestureDetector(
+          onTap: _criarGaleria,
+          child: Container(
+            width: double.infinity, height: 50,
+            decoration: BoxDecoration(color: TabuColors.rosaPrincipal,
+              boxShadow: [BoxShadow(color: TabuColors.glow.withOpacity(0.35), blurRadius: 16, spreadRadius: 1)]),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+              Icon(Icons.add_photo_alternate_rounded, color: Colors.white, size: 18),
+              SizedBox(width: 10),
+              Text('CRIAR GALERIA', style: TextStyle(fontFamily: TabuTypography.bodyFont,
+                  fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 3, color: Colors.white)),
+            ]),
+          ),
         ),
-      ),
-    );
+      ]),
+    ));
   }
 
   Widget _buildGaleriaVazia() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: _adicionarAGaleria,
-              child: Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  border: Border.all(color: TabuColors.border, width: 0.8),
-                  color: TabuColors.bgCard,
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    const Icon(Icons.add_photo_alternate_outlined,
-                        color: TabuColors.border, size: 28),
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: TabuColors.rosaPrincipal,
-                        boxShadow: [
-                          BoxShadow(
-                            color: TabuColors.glow.withOpacity(0.4),
-                            blurRadius: 12,
-                            spreadRadius: 1,
-                          )
-                        ],
-                      ),
-                      child: const Icon(Icons.add,
-                          color: Colors.white, size: 20),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'GALERIA VAZIA',
-              style: TextStyle(
-                fontFamily: TabuTypography.bodyFont,
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 4,
-                color: TabuColors.subtle,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Toque no + para adicionar fotos e vídeos',
-              style: TextStyle(
-                fontFamily: TabuTypography.bodyFont,
-                fontSize: 12,
-                color: TabuColors.subtle,
-              ),
-            ),
-          ],
+    return Center(child: Padding(
+      padding: const EdgeInsets.all(40),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        GestureDetector(
+          onTap: _adicionarAGaleria,
+          child: Container(width: 72, height: 72,
+            decoration: BoxDecoration(border: Border.all(color: TabuColors.border, width: 0.8), color: TabuColors.bgCard),
+            child: Stack(alignment: Alignment.center, children: [
+              const Icon(Icons.add_photo_alternate_outlined, color: TabuColors.border, size: 28),
+              Container(width: 36, height: 36,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: TabuColors.rosaPrincipal,
+                  boxShadow: [BoxShadow(color: TabuColors.glow.withOpacity(0.4), blurRadius: 12, spreadRadius: 1)]),
+                child: const Icon(Icons.add, color: Colors.white, size: 20)),
+            ])),
         ),
-      ),
+        const SizedBox(height: 20),
+        const Text('GALERIA VAZIA', style: TextStyle(fontFamily: TabuTypography.bodyFont,
+            fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 4, color: TabuColors.subtle)),
+        const SizedBox(height: 8),
+        const Text('Toque no + para adicionar fotos e vídeos',
+            style: TextStyle(fontFamily: TabuTypography.bodyFont, fontSize: 12, color: TabuColors.subtle)),
+      ]),
+    ));
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  LOAD MORE INDICATOR
+// ══════════════════════════════════════════════════════════════════════════════
+class _LoadMoreIndicator extends StatelessWidget {
+  const _LoadMoreIndicator();
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Center(child: SizedBox(
+        width: 18, height: 18,
+        child: CircularProgressIndicator(
+          color: TabuColors.rosaPrincipal.withOpacity(0.6), strokeWidth: 1.5),
+      )),
     );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  PAGINATED USER LIST — seguidores e VIP com scroll infinito (5 por vez)
+// ══════════════════════════════════════════════════════════════════════════════
+class PaginatedUserList extends StatefulWidget {
+  final List<String> uids;
+  final String emptyLabel;
+  final void Function(String) onTap;
+  final bool isVip;
+
+  const PaginatedUserList({
+    super.key,
+    required this.uids,
+    required this.emptyLabel,
+    required this.onTap,
+    this.isVip = false,
+  });
+
+  @override
+  State<PaginatedUserList> createState() => _PaginatedUserListState();
+}
+
+class _PaginatedUserListState extends State<PaginatedUserList> {
+  static const int _pageSize = 5;
+  int _visibleCount = _pageSize;
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final max = _scrollController.position.maxScrollExtent;
+    final cur = _scrollController.position.pixels;
+    if (cur >= max - 100 && _visibleCount < widget.uids.length) {
+      setState(() => _visibleCount = (_visibleCount + _pageSize).clamp(0, widget.uids.length));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.uids.isEmpty) {
+      return Center(child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Text(widget.emptyLabel, style: const TextStyle(
+            fontFamily: TabuTypography.bodyFont, fontSize: 12, color: TabuColors.subtle)),
+      ));
+    }
+
+    final slice = widget.uids.take(_visibleCount).toList();
+    final hasMore = _visibleCount < widget.uids.length;
+
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount: slice.length + (hasMore ? 1 : 0),
+      itemBuilder: (_, i) {
+        if (i == slice.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: SizedBox(
+              width: 16, height: 16,
+              child: CircularProgressIndicator(
+                  color: TabuColors.rosaPrincipal, strokeWidth: 1.5),
+            )),
+          );
+        }
+        return _UserListTile(uid: slice[i], isVip: widget.isVip, onTap: widget.onTap);
+      },
+    );
+  }
+}
+
+// Tile individual de usuário (usa UserList internamente se já existir, senão implementa aqui)
+class _UserListTile extends StatelessWidget {
+  final String uid;
+  final bool isVip;
+  final void Function(String) onTap;
+
+  const _UserListTile({required this.uid, required this.isVip, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    // Reutiliza o widget UserList passando só 1 uid para manter consistência visual
+    return UserList(uids: [uid], emptyLabel: '', onTap: onTap, isVip: isVip);
   }
 }
 
@@ -1265,10 +1045,7 @@ class _GalleryGridTile extends StatelessWidget {
   final bool isPreloaded;
 
   const _GalleryGridTile({
-    required this.item,
-    required this.onTap,
-    required this.onDelete,
-    this.isPreloaded = false,
+    required this.item, required this.onTap, required this.onDelete, this.isPreloaded = false,
   });
 
   @override
@@ -1278,153 +1055,66 @@ class _GalleryGridTile extends StatelessWidget {
       onLongPress: () {
         HapticFeedback.heavyImpact();
         showModalBottomSheet(
-          context: context,
-          backgroundColor: TabuColors.bgAlt,
-          shape: const RoundedRectangleBorder(),
-          builder: (_) => SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 36,
-                  height: 3,
-                  margin: const EdgeInsets.only(top: 12, bottom: 20),
-                  decoration: BoxDecoration(
-                    color: TabuColors.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                PDSMenuTile(
-                  icon: Icons.delete_outline_rounded,
-                  label: 'REMOVER DA GALERIA',
-                  sublabel: 'Excluir permanentemente',
-                  danger: true,
-                  onTap: () {
-                    Navigator.pop(context);
-                    onDelete();
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
+          context: context, backgroundColor: TabuColors.bgAlt, shape: const RoundedRectangleBorder(),
+          builder: (_) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 36, height: 3,
+              margin: const EdgeInsets.only(top: 12, bottom: 20),
+              decoration: BoxDecoration(color: TabuColors.border, borderRadius: BorderRadius.circular(2))),
+            PDSMenuTile(
+              icon: Icons.delete_outline_rounded, label: 'REMOVER DA GALERIA',
+              sublabel: 'Excluir permanentemente', danger: true,
+              onTap: () { Navigator.pop(context); onDelete(); }),
+            const SizedBox(height: 20),
+          ])),
         );
       },
       child: Container(
         color: TabuColors.bgCard,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (item.type == 'video' && item.thumbUrl != null)
-              Image.network(item.thumbUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _fundo())
-            else if (item.type == 'foto')
-              Image.network(item.mediaUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _fundo())
-            else
-              _fundo(),
-            if (item.type == 'video') ...[
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment.center,
-                      radius: 0.88,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.25),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.6),
-                    border: Border.all(
-                      color: isPreloaded
-                          ? const Color(0xFF22C55E)
-                          : TabuColors.rosaPrincipal,
-                      width: 1.2,
-                    ),
-                  ),
-                  child: const Icon(Icons.play_arrow_rounded,
-                      color: Colors.white, size: 20),
-                ),
-              ),
-              if (item.videoDuration != null)
-                Positioned(
-                  bottom: 6,
-                  right: 6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 5, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: Text(
-                      _formatDuration(item.videoDuration!),
-                      style: const TextStyle(
-                        fontFamily: TabuTypography.bodyFont,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              if (isPreloaded)
-                Positioned(
-                  top: 5,
-                  left: 5,
-                  child: Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF22C55E).withOpacity(0.85),
-                    ),
-                    child: const Icon(Icons.bolt_rounded,
-                        color: Colors.white, size: 11),
-                  ),
-                ),
-            ] else
-              Positioned(
-                top: 6,
-                right: 6,
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: const Icon(Icons.photo_outlined,
-                      color: Colors.white, size: 12),
-                ),
-              ),
-          ],
-        ),
+        child: Stack(fit: StackFit.expand, children: [
+          if (item.type == 'video' && item.thumbUrl != null)
+            Image.network(item.thumbUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fundo())
+          else if (item.type == 'foto')
+            Image.network(item.mediaUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fundo())
+          else
+            _fundo(),
+          if (item.type == 'video') ...[
+            Positioned.fill(child: Container(decoration: BoxDecoration(
+              gradient: RadialGradient(center: Alignment.center, radius: 0.88,
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.25)])))),
+            Center(child: Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black.withOpacity(0.6),
+                border: Border.all(
+                  color: isPreloaded ? const Color(0xFF22C55E) : TabuColors.rosaPrincipal, width: 1.2)),
+              child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 20))),
+            if (item.videoDuration != null)
+              Positioned(bottom: 6, right: 6, child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(2)),
+                child: Text(_formatDuration(item.videoDuration!), style: const TextStyle(
+                    fontFamily: TabuTypography.bodyFont, fontSize: 9,
+                    fontWeight: FontWeight.w700, color: Colors.white)))),
+            if (isPreloaded)
+              Positioned(top: 5, left: 5, child: Container(
+                width: 18, height: 18,
+                decoration: BoxDecoration(shape: BoxShape.circle,
+                    color: const Color(0xFF22C55E).withOpacity(0.85)),
+                child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 11))),
+          ] else
+            Positioned(top: 6, right: 6, child: Container(
+              width: 22, height: 22,
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(2)),
+              child: const Icon(Icons.photo_outlined, color: Colors.white, size: 12))),
+        ]),
       ),
     );
   }
 
-  Widget _fundo() => Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2D0010), Color(0xFF7A0028)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-      );
+  Widget _fundo() => Container(decoration: const BoxDecoration(
+      gradient: LinearGradient(colors: [Color(0xFF2D0010), Color(0xFF7A0028)],
+          begin: Alignment.topLeft, end: Alignment.bottomRight)));
 
   String _formatDuration(int seconds) {
     final m = (seconds ~/ 60).toString().padLeft(2, '0');
@@ -1441,11 +1131,7 @@ class _PostGridTile extends StatelessWidget {
   final String myUid;
   final VoidCallback onTap;
 
-  const _PostGridTile({
-    required this.post,
-    required this.myUid,
-    required this.onTap,
-  });
+  const _PostGridTile({required this.post, required this.myUid, required this.onTap});
 
   List<Color> _gradient() {
     final p = [
@@ -1466,126 +1152,69 @@ class _PostGridTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Verifica se o vídeo já foi pré-carregado
+    final isPreloaded = post.tipo == 'video'
+        ? VideoPreloadService.instance.isReady(post.id)
+        : false;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         color: TabuColors.bgCard,
         child: Stack(fit: StackFit.expand, children: [
           if (post.tipo == 'foto' && post.mediaUrl != null)
-            Image.network(post.mediaUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _fundo())
+            Image.network(post.mediaUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fundo())
           else if (post.tipo == 'video' && post.thumbUrl != null)
-            Image.network(post.thumbUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _fundo())
+            Image.network(post.thumbUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fundo())
           else
             _fundo(),
           if (post.tipo == 'video') ...[
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment.center,
-                    radius: 0.88,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.3),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Center(
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withOpacity(0.6),
-                  border: Border.all(
-                      color: TabuColors.rosaPrincipal, width: 1.2),
-                ),
-                child: const Icon(Icons.play_arrow_rounded,
-                    color: Colors.white, size: 20),
-              ),
-            ),
+            Positioned.fill(child: Container(decoration: BoxDecoration(
+              gradient: RadialGradient(center: Alignment.center, radius: 0.88,
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.3)])))),
+            // Botão play com borda verde se pré-carregado
+            Center(child: Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black.withOpacity(0.6),
+                border: Border.all(
+                  color: isPreloaded ? const Color(0xFF22C55E) : TabuColors.rosaPrincipal,
+                  width: 1.2,
+                )),
+              child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 20))),
             if (post.videoDuration != null)
-              Positioned(
-                bottom: 6,
-                right: 6,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 5, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Text(
-                    _formatDuration(post.videoDuration!),
-                    style: const TextStyle(
-                      fontFamily: TabuTypography.bodyFont,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              Positioned(bottom: 6, right: 6, child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(2)),
+                child: Text(_formatDuration(post.videoDuration!), style: const TextStyle(
+                    fontFamily: TabuTypography.bodyFont, fontSize: 9,
+                    fontWeight: FontWeight.w700, color: Colors.white)))),
+            // Indicador de pronto (igual ao feed e galeria)
+            if (isPreloaded)
+              Positioned(top: 5, left: 5, child: Container(
+                width: 18, height: 18,
+                decoration: BoxDecoration(shape: BoxShape.circle,
+                    color: const Color(0xFF22C55E).withOpacity(0.85)),
+                child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 11))),
           ],
           if (post.tipo == 'emoji' && post.emoji != null)
-            Center(
-                child: Text(post.emoji!,
-                    style: const TextStyle(fontSize: 30))),
+            Center(child: Text(post.emoji!, style: const TextStyle(fontSize: 30))),
           if (post.tipo == 'texto')
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  post.titulo,
-                  maxLines: 4,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: TabuTypography.bodyFont,
-                    fontSize: 8,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ),
+            Center(child: Padding(padding: const EdgeInsets.all(8),
+              child: Text(post.titulo, maxLines: 4, overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: TabuTypography.bodyFont, fontSize: 8,
+                    fontWeight: FontWeight.w600, color: Colors.white,
+                    letterSpacing: 0.5, height: 1.4)))),
           if (post.tipo == 'foto')
-            Positioned(
-              top: 6,
-              right: 6,
-              child: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: const Icon(Icons.photo_outlined,
-                    color: Colors.white, size: 12),
-              ),
-            ),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.center,
-                  radius: 0.88,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.18),
-                  ],
-                ),
-              ),
-            ),
-          ),
+            Positioned(top: 6, right: 6, child: Container(
+              width: 22, height: 22,
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(2)),
+              child: const Icon(Icons.photo_outlined, color: Colors.white, size: 12))),
+          Positioned.fill(child: Container(decoration: BoxDecoration(
+            gradient: RadialGradient(center: Alignment.center, radius: 0.88,
+                colors: [Colors.transparent, Colors.black.withOpacity(0.18)])))),
         ]),
       ),
     );
@@ -1593,14 +1222,7 @@ class _PostGridTile extends StatelessWidget {
 
   Widget _fundo() {
     final g = _gradient();
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: g,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-    );
+    return Container(decoration: BoxDecoration(
+        gradient: LinearGradient(colors: g, begin: Alignment.topLeft, end: Alignment.bottomRight)));
   }
 }

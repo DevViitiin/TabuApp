@@ -88,7 +88,7 @@ class _TabuShellState extends State<TabuShell> with WidgetsBindingObserver {
 
     _screens = [
       HomeScreen(userData: widget.userData, isAdmin: widget.isAdmin),
-      const SearchScreen(),
+      const SearchScreenPaginated(),
       const ChatListScreen(),
       PerfilScreen(userData: widget.userData),
     ];

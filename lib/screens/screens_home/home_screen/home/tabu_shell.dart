@@ -51,14 +51,14 @@ class _TabuShellState extends State<TabuShell> {
       _screens = [
         HomeScreen(userData: widget.userData, isAdmin: true),
         HomeScreenAdministrative(userData: widget.userData),
-        const SearchScreen(),
+        const SearchScreenPaginated(),
         const ChatListScreen(),
         PerfilScreen(userData: widget.userData),
       ];
     } else {
       _screens = [
         HomeScreen(userData: widget.userData, isAdmin: false),
-        const SearchScreen(),
+        const SearchScreenPaginated(),
         const ChatListScreen(),
         PerfilScreen(userData: widget.userData),
       ];

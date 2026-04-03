@@ -25,6 +25,7 @@ class _HomeScreenAdministrativeState extends State<HomeScreenAdministrative> {
   List<PartyModel> _festas  = [];
   bool             _loading = true;
 
+  
   /// Coordenadas de moradia do usuário admin (Users/$uid/latitude + longitude).
   ({double latitude, double longitude})? _homeCoords;
 
@@ -195,37 +196,73 @@ class _HomeScreenAdministrativeState extends State<HomeScreenAdministrative> {
                 ]),
           )),
 
-          // FAB
-          Positioned(
+          // FABs com animação e ícones diferentes
+Positioned(
   bottom: 24,
   right: 20,
   child: Column(
+    mainAxisSize: MainAxisSize.min,
     children: [
-      // FAB GALERIA
+      // GALERIA - ÍCONE GRID
       GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(
-          builder: (_) => CreateGalleryItemScreen(userData: widget.userData),
-        )),
-        child: Container(
-          width: 56, height: 56,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [TabuColors.rosaDeep, TabuColors.rosaPrincipal],
+        onTap: () {
+          
+        },
+        child: Hero(
+          tag: 'fab_gallery',
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [TabuColors.rosaDeep, TabuColors.rosaPrincipal],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: TabuColors.glow.withOpacity(0.4),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(28),
             ),
-            boxShadow: [BoxShadow(
-              color: TabuColors.glow.withOpacity(0.5),
-              blurRadius: 20, offset: const Offset(0, 6),
-            )],
+            child: const Icon(
+              Icons.grid_view_rounded, // ÍCONE MAIS ESPECÍFICO
+              color: Colors.white,
+              size: 24,
+            ),
           ),
-          child: const Icon(Icons.photo_library_outlined,
-              color: Colors.white, size: 24),
         ),
       ),
       const SizedBox(height: 12),
-      // FAB FESTA (já existe)
+      // FESTA - ÍCONE FOGO COM GRADIENTE
       GestureDetector(
         onTap: _criarFesta,
-        child: Container(/* ... seu FAB atual ... */),
+        child: Hero(
+          tag: 'fab_party',
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFF6B6B), TabuColors.rosaPrincipal],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: TabuColors.glow.withOpacity(0.5),
+                  blurRadius: 20,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: const Icon(
+              Icons.local_fire_department_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+        ),
       ),
     ],
   ),
@@ -616,4 +653,205 @@ class _AdmBg extends CustomPainter {
   }
   @override
   bool shouldRepaint(_AdmBg _) => false;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  CONVITE TILE
+// ══════════════════════════════════════════════════════════════════════════════
+class _ConviteTile extends StatelessWidget {
+  final Map<String, dynamic> pedido;
+  final VoidCallback?        onAprovar;
+  final VoidCallback?        onRejeitar;
+
+  const _ConviteTile({
+    required this.pedido,
+    required this.onAprovar,
+    required this.onRejeitar,
+  });
+
+  Color get _statusColor {
+    switch (pedido['status'] as String? ?? 'pending') {
+      case 'pending':  return const Color(0xFFD4AF37);
+      case 'approved': return const Color(0xFF4CAF50);
+      case 'rejected': return const Color(0xFFE85D5D);
+      default:         return Colors.white24;
+    }
+  }
+
+  String get _statusLabel {
+    switch (pedido['status'] as String? ?? 'pending') {
+      case 'pending':  return 'PENDENTE';
+      case 'approved': return 'APROVADO';
+      case 'rejected': return 'RECUSADO';
+      default:         return '—';
+    }
+  }
+
+  String _formatTs(int? ms) {
+    if (ms == null) return '—';
+    final dt   = DateTime.fromMillisecondsSinceEpoch(ms);
+    final diff = DateTime.now().difference(dt);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}min atrás';
+    if (diff.inHours   < 24) return '${diff.inHours}h atrás';
+    return '${diff.inDays}d atrás';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isPending   = pedido['status'] == 'pending';
+    final processing  = pedido['_processing'] as bool? ?? false;
+    final name        = pedido['name']    as String? ?? '—';
+    final email       = pedido['email']   as String? ?? '—';
+    final message     = pedido['message'] as String? ?? '';
+    final protocolo   = pedido['protocolo'] as String?;
+    final ts          = pedido['created_at'] as int?;
+    final motivoRej   = pedido['motivo_rejeicao'] as String?;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isPending
+            ? const Color(0xFFD4AF37).withOpacity(0.03)
+            : Colors.transparent,
+        border: Border(bottom: BorderSide(
+          color: Colors.white.withOpacity(0.06), width: 0.5))),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+          // ── Cabeçalho ──────────────────────────────────────────────────
+          Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: _statusColor.withOpacity(0.4), width: 0.7)),
+              child: Text(_statusLabel, style: TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 8, fontWeight: FontWeight.w700,
+                letterSpacing: 2, color: _statusColor))),
+            const Spacer(),
+            Text(_formatTs(ts), style: const TextStyle(
+              fontFamily: TabuTypography.bodyFont,
+              fontSize: 9, color: Colors.white24, letterSpacing: 0.3)),
+          ]),
+
+          const SizedBox(height: 10),
+
+          // ── Dados do solicitante ────────────────────────────────────────
+          Text(name.toUpperCase(), style: const TextStyle(
+            fontFamily: TabuTypography.bodyFont,
+            fontSize: 14, fontWeight: FontWeight.w700,
+            color: Colors.white, letterSpacing: 1)),
+          const SizedBox(height: 3),
+          Row(children: [
+            const Icon(Icons.email_outlined, color: Colors.white24, size: 11),
+            const SizedBox(width: 5),
+            Text(email, style: const TextStyle(
+              fontFamily: TabuTypography.bodyFont,
+              fontSize: 10, color: Colors.white38, letterSpacing: 0.3)),
+          ]),
+
+          // ── Mensagem do solicitante ─────────────────────────────────────
+          if (message.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.03),
+                border: Border(left: BorderSide(
+                  color: Colors.white.withOpacity(0.12), width: 2))),
+              child: Text(message, maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: TabuTypography.bodyFont,
+                  fontSize: 11, height: 1.5,
+                  color: Colors.white54, letterSpacing: 0.2))),
+          ],
+
+          // ── Motivo rejeição (se aplicável) ─────────────────────────────
+          if (!isPending && motivoRej != null && motivoRej.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Icon(Icons.block_rounded,
+                color: Color(0xFFE85D5D), size: 10),
+              const SizedBox(width: 5),
+              Expanded(child: Text(motivoRej, style: const TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 10, color: Color(0xFFE85D5D),
+                height: 1.5, letterSpacing: 0.2))),
+            ]),
+          ],
+
+          // ── Protocolo ──────────────────────────────────────────────────
+          if (protocolo != null) ...[
+            const SizedBox(height: 8),
+            Row(children: [
+              const Icon(Icons.tag_rounded, color: Colors.white12, size: 10),
+              const SizedBox(width: 4),
+              Text(protocolo, style: const TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 8, color: Colors.white24, letterSpacing: 1)),
+            ]),
+          ],
+
+          // ── Ações (só pendentes) ────────────────────────────────────────
+          if (isPending) ...[
+            const SizedBox(height: 14),
+            if (processing)
+              const Center(child: SizedBox(width: 18, height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 1.5,
+                  valueColor: AlwaysStoppedAnimation(TabuColors.rosaPrincipal))))
+            else
+              Row(children: [
+                // APROVAR
+                Expanded(child: GestureDetector(
+                  onTap: onAprovar,
+                  child: Container(height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4CAF50).withOpacity(0.12),
+                      border: Border.all(
+                        color: const Color(0xFF4CAF50).withOpacity(0.5),
+                        width: 0.8)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.check_rounded,
+                          color: Color(0xFF4CAF50), size: 13),
+                        SizedBox(width: 6),
+                        Text('APROVAR', style: TextStyle(
+                          fontFamily: TabuTypography.bodyFont,
+                          fontSize: 9, fontWeight: FontWeight.w700,
+                          letterSpacing: 2, color: Color(0xFF4CAF50))),
+                      ]),
+                  ))),
+                const SizedBox(width: 8),
+                // RECUSAR
+                Expanded(child: GestureDetector(
+                  onTap: onRejeitar,
+                  child: Container(height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE85D5D).withOpacity(0.08),
+                      border: Border.all(
+                        color: const Color(0xFFE85D5D).withOpacity(0.4),
+                        width: 0.8)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.block_rounded,
+                          color: Color(0xFFE85D5D), size: 13),
+                        SizedBox(width: 6),
+                        Text('RECUSAR', style: TextStyle(
+                          fontFamily: TabuTypography.bodyFont,
+                          fontSize: 9, fontWeight: FontWeight.w700,
+                          letterSpacing: 2, color: Color(0xFFE85D5D))),
+                      ]),
+                  ))),
+              ]),
+          ],
+        ]),
+      ),
+    );
+  }
 }
