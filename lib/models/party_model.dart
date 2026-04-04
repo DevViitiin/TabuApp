@@ -66,29 +66,37 @@ class PartyModel {
     final localRaw = map['local'] as String?;
 
     return PartyModel(
-      id:            id,
-      creatorId:     map['creator_id']     as String,
-      creatorName:   map['creator_name']   as String?  ?? '',
-      creatorAvatar: map['creator_avatar'] as String?,
-      nome:          map['nome']           as String?  ?? '',
-      descricao:     map['descricao']      as String?  ?? '',
-      local:         (localRaw != null && localRaw.trim().isNotEmpty)
-                       ? localRaw
-                       : null,
-      bairro:        map['bairro']         as String?,
-      city:          map['city']           as String?,
-      state:         map['state']          as String?,
-      latitude:      (map['latitude']      as num?)?.toDouble(),
-      longitude:     (map['longitude']     as num?)?.toDouble(),
-      dataInicio:    DateTime.fromMillisecondsSinceEpoch(map['data_inicio'] as int),
-      dataFim:       DateTime.fromMillisecondsSinceEpoch(map['data_fim']    as int),
-      bannerUrl:     map['banner_url']     as String?,
-      interessados:  (map['interessados']  as num? ?? 0).toInt(),
-      confirmados:   (map['confirmados']   as num? ?? 0).toInt(),
-      commentCount:  (map['comment_count'] as num? ?? 0).toInt(),
-      createdAt:     DateTime.fromMillisecondsSinceEpoch(map['created_at']  as int),
-      status:        map['status'] as String? ?? 'ativa',
-    );
+    id:            id,
+    // ✅ Fallback para evitar crash se creator_id vier nulo
+    creatorId:     map['creator_id']     as String?  ?? '',
+    creatorName:   map['creator_name']   as String?  ?? '',
+    creatorAvatar: map['creator_avatar'] as String?,
+    nome:          map['nome']           as String?  ?? '',
+    descricao:     map['descricao']      as String?  ?? '',
+    local:         (localRaw != null && localRaw.trim().isNotEmpty)
+                     ? localRaw
+                     : null,
+    bairro:        map['bairro']         as String?,
+    city:          map['city']           as String?,
+    state:         map['state']          as String?,
+    latitude:      (map['latitude']      as num?)?.toDouble(),
+    longitude:     (map['longitude']     as num?)?.toDouble(),
+
+    // ✅ CORREÇÃO PRINCIPAL: Firebase pode retornar int ou double
+    // "as int" explode quando o valor é double — use (as num).toInt()
+    dataInicio:   DateTime.fromMillisecondsSinceEpoch(
+                    (map['data_inicio'] as num).toInt()),
+    dataFim:      DateTime.fromMillisecondsSinceEpoch(
+                    (map['data_fim']    as num).toInt()),
+    createdAt:    DateTime.fromMillisecondsSinceEpoch(
+                    (map['created_at']  as num).toInt()),
+
+    bannerUrl:     map['banner_url']     as String?,
+    interessados:  (map['interessados']  as num? ?? 0).toInt(),
+    confirmados:   (map['confirmados']   as num? ?? 0).toInt(),
+    commentCount:  (map['comment_count'] as num? ?? 0).toInt(),
+    status:        map['status']         as String?  ?? 'ativa',
+  );
   }
 
   Map<String, dynamic> toMap() => {

@@ -1,5 +1,6 @@
 // lib/services/services_administrative/party_service.dart
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:tabuapp/models/party_model.dart';
 
 class PartyService {
@@ -53,31 +54,32 @@ class PartyService {
   }
 
   // ── Buscar (só ativas) ─────────────────────────────────────────────────────
-  Future<List<PartyModel>> fetchFestas({int limit = 20}) async {
-    final snap = await _festasRef.get();
-    if (!snap.exists || snap.value == null) return [];
+Future<List<PartyModel>> fetchFestas({int limit = 20}) async {
+  final snap = await _festasRef.get();
+  if (!snap.exists || snap.value == null) return [];
 
-    final raw = Map<dynamic, dynamic>.from(snap.value as Map);
-    final list = <PartyModel>[];
+  final raw = Map<dynamic, dynamic>.from(snap.value as Map);
+  final list = <PartyModel>[];
 
-    for (final entry in raw.entries) {
-      if (entry.value is! Map) continue;
-      try {
-        final festa = PartyModel.fromMap(
-          entry.key as String,
-          Map<dynamic, dynamic>.from(entry.value as Map),
-        );
-        if (festa.isAtiva && !festa.estaVencida) {
-          list.add(festa);
-        }
-      } catch (_) {}
+  for (final entry in raw.entries) {
+    if (entry.value is! Map) continue;
+    try {
+      final festa = PartyModel.fromMap(
+        entry.key as String,
+        Map<dynamic, dynamic>.from(entry.value as Map),
+      );
+      if (!festa.estaVencida) {
+        list.add(festa); // ✅ só uma vez
+      }
+    } catch (e) {
+      debugPrint('fetchFestas error ${entry.key}: $e');
     }
-
-    list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return list.take(limit).toList();
   }
 
-  /// Busca festas arquivadas — útil para histórico no painel admin.
+  list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return list.take(limit).toList();
+}
+
   Future<List<PartyModel>> fetchFestasArquivadas({int limit = 50}) async {
     final snap = await _festasRef.get();
     if (!snap.exists || snap.value == null) return [];

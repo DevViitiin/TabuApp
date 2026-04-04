@@ -67,7 +67,7 @@ class DefaultFirebaseOptions {
     projectId: 'tabuapp-4325a',
     databaseURL: 'https://tabuapp-4325a-default-rtdb.firebaseio.com',
     storageBucket: 'tabuapp-4325a.firebasestorage.app',
-    iosBundleId: 'com.example.tabuapp',
+    iosBundleId: 'com.tabu.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -77,7 +77,7 @@ class DefaultFirebaseOptions {
     projectId: 'tabuapp-4325a',
     databaseURL: 'https://tabuapp-4325a-default-rtdb.firebaseio.com',
     storageBucket: 'tabuapp-4325a.firebasestorage.app',
-    iosBundleId: 'com.example.tabuapp',
+    iosBundleId: 'com.tabu.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

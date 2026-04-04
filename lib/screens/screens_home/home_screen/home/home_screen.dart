@@ -679,18 +679,9 @@ class _HomeScreen extends State<HomeScreen>
 
   // ── Festas ─────────────────────────────────────────────────────────────────
   Widget _buildFestasSection() {
-    final festasVisiveis = _homeCoords != null
-        ? _festas.where((f) {
-            if (!f.canShowDistance) return true;
-            final km = LocationService.distanceKm(
-              _homeCoords!.latitude,
-              _homeCoords!.longitude,
-              f.latitude!,
-              f.longitude!,
-            );
-            return km <= 200;
-          }).toList()
-        : _festas;
+    // Dentro de _buildFestasSection()
+    final festasVisiveis = _festas;
+    
 
     if (!_loadingFestas && festasVisiveis.isEmpty)
       return const SizedBox.shrink();

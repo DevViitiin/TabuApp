@@ -1,0 +1,2563 @@
+{
+  "Administratives": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1": true
+  },
+  "Arquivo": {
+    "TABU-MN5B31ZN-I0OA": {
+      "acao_final": "advertencia",
+      "acao_tomada": "advertencia",
+      "arquivado_em": 1774398553043,
+      "artigo": "Art. 7º, III – Política de Uso Responsável",
+      "chat_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+      "created_at": 1774297750206,
+      "descricao": "ela me mandou mensagens sexuais eu não queria isso",
+      "motivo": "assedio",
+      "motivo_label": "Assédio ou mensagens ofensivas",
+      "protocolo": "TABU-MN5B31ZN-I0OA",
+      "reported_name": "Natallia",
+      "reported_uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+      "reporter_uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "resolvido_em": 1774398553043,
+      "status": "actioned"
+    }
+  },
+  "ChatMessages": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "-Op0Leqqcm-BfweGClt5": {
+        "read_at": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": 1775084892036
+        },
+        "read_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "text": "oi boa noite",
+        "timestamp": 1774917954998
+      },
+      "-OpAIV4kyy0WG-h_Erhv": {
+        "read_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": false
+        },
+        "sender_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "text": "boa noite meu bem",
+        "timestamp": 1775084896624
+      },
+      "msg001": {
+        "read_at": {
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": 1774097200000
+        },
+        "read_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "text": "Oi Natallia! Tudo bem? 👋",
+        "timestamp": 1774097100000
+      },
+      "msg002": {
+        "read_at": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": 1774097400000
+        },
+        "read_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "text": "Oi TabuAdm! Tudo ótimo, e você? 🌸",
+        "timestamp": 1774097300000
+      },
+      "msg003": {
+        "read_at": {
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": 1774097700000
+        },
+        "read_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "text": "Ótimo! Queria te convidar para o Tabu Friday semana que vem, vai ser incrível 🔥",
+        "timestamp": 1774097500000
+      },
+      "msg004": {
+        "read_at": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": 1774104693993
+        },
+        "read_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "text": "Amei! Já tô na lista 🥂 Vai ter área VIP?",
+        "timestamp": 1774097900000
+      }
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2_sgu6uc90loVCPVc8gqjwp8aTghE3": {
+      "_placeholder": {
+        "_init": true
+      }
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "-Op0PZLdJKRoeSioRGk9": {
+        "read_at": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": 1774984455396
+        },
+        "read_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "text": "mexendo no app ai",
+        "timestamp": 1774918976937
+      },
+      "-Op4JTajYDxixLCEclKg": {
+        "read_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": false
+        },
+        "sender_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "text": "meu filhote não esqueça da marca dágua",
+        "timestamp": 1774984489391
+      },
+      "_placeholder": {
+        "_init": true
+      },
+      "msg001": {
+        "read_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": false
+        },
+        "sender_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "text": "Nati, você vai no Tabu Friday? 🔥",
+        "timestamp": 1774955500000
+      },
+      "msg002": {
+        "read_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": false
+        },
+        "sender_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "text": "me fala quando chegar lá",
+        "timestamp": 1774956000000
+      }
+    },
+    "sgu6uc90loVCPVc8gqjwp8aTghE3_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "msg001": {
+        "read_at": {
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": 1774101897617
+        },
+        "read_by": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "text": "Natallia! Vai no Rodeio Goiânia semana que vem? 🤠",
+        "timestamp": 1774101800000
+      },
+      "msg002": {
+        "read_at": {
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": 1774101897617
+        },
+        "read_by": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "sender_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "text": "Tô confirmado, vai ser incrível 🔥",
+        "timestamp": 1774102000000
+      },
+      "msg003": {
+        "read_by": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": false
+        },
+        "sender_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "text": "Natallia, sumiu!! Tudo bem?",
+        "timestamp": 1774953000000
+      },
+      "msg004": {
+        "read_by": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": false
+        },
+        "sender_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "text": "Tô confirmado no Rodeio Goiânia semana que vem 🤠",
+        "timestamp": 1774954000000
+      },
+      "msg005": {
+        "read_by": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": false
+        },
+        "sender_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "text": "Vai aparecer no Rodeio essa semana?",
+        "timestamp": 1774955000000
+      }
+    }
+  },
+  "ChatRequests": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1_TqlEzYtMedY5nncyJ8VcIWxvrHk1": {
+      "created_at": 1774100932297,
+      "from_avatar": "",
+      "from_name": "Alberto",
+      "from_uid": "TqlEzYtMedY5nncyJ8VcIWxvrHk1",
+      "seen": true,
+      "status": "pending",
+      "to_uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+    },
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "created_at": 1774096000000,
+      "from_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+      "from_name": "TabuAdm",
+      "from_uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "seen": true,
+      "status": "accepted",
+      "to_uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    },
+    "TqlEzYtMedY5nncyJ8VcIWxvrHk1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "created_at": 1774954500000,
+      "from_avatar": "",
+      "from_name": "Alberto",
+      "from_uid": "TqlEzYtMedY5nncyJ8VcIWxvrHk1",
+      "seen": true,
+      "status": "pending",
+      "to_uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2_sgu6uc90loVCPVc8gqjwp8aTghE3": {
+      "created_at": 1774091809091,
+      "from_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2Fsgu6uc90loVCPVc8gqjwp8aTghE3.jpg?alt=media&token=fd7c9cb4-6de5-4bb0-b94e-1203e480b24f",
+      "from_name": "Victor",
+      "from_uid": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+      "seen": true,
+      "status": "accepted",
+      "to_uid": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "created_at": 1774095000000,
+      "from_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+      "from_name": "Roberto",
+      "from_uid": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+      "seen": true,
+      "status": "accepted",
+      "to_uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    },
+    "sgu6uc90loVCPVc8gqjwp8aTghE3_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "created_at": 1774091833240,
+      "from_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2Fsgu6uc90loVCPVc8gqjwp8aTghE3.jpg?alt=media&token=fd7c9cb4-6de5-4bb0-b94e-1203e480b24f",
+      "from_name": "Victor",
+      "from_uid": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+      "seen": true,
+      "status": "accepted",
+      "to_uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    },
+    "zGe2wH7hfWWIHrrsLpfUlkRVQ842_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "created_at": 1774955800000,
+      "from_avatar": "",
+      "from_name": "Ichigo",
+      "from_uid": "zGe2wH7hfWWIHrrsLpfUlkRVQ842",
+      "seen": true,
+      "status": "pending",
+      "to_uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    }
+  },
+  "Chats": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "metadata": {
+        "created_at": 1774097000000,
+        "last_message": "boa noite meu bem",
+        "last_sender": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "last_timestamp": 1775084896624
+      },
+      "participants": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+          "last_seen": 1775217361689,
+          "status": "offline"
+        },
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+          "last_seen": 1774917976188,
+          "status": "offline"
+        }
+      },
+      "report_count": 1,
+      "unreadCount": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": 0,
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": 1
+      },
+      "user1": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "user2": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2_sgu6uc90loVCPVc8gqjwp8aTghE3": {
+      "metadata": {
+        "created_at": 1774917597378,
+        "last_message": "",
+        "last_sender": "",
+        "last_timestamp": 0
+      },
+      "participants": {
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+          "last_seen": 1774984779018,
+          "status": "offline"
+        },
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+          "last_seen": 1774917597378,
+          "status": "offline"
+        }
+      },
+      "unreadCount": {
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": 0,
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": 0
+      },
+      "user1": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+      "user2": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "metadata": {
+        "created_at": 1774918957243,
+        "last_message": "meu filhote não esqueça da marca dágua",
+        "last_sender": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "last_timestamp": 1774984489391
+      },
+      "participants": {
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+          "last_seen": 1775147236808,
+          "status": "offline"
+        },
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+          "last_seen": 1774957200287,
+          "status": "offline"
+        }
+      },
+      "unreadCount": {
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": 0,
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": 3
+      },
+      "user1": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+      "user2": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    },
+    "sgu6uc90loVCPVc8gqjwp8aTghE3_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "metadata": {
+        "created_at": 1774091833240,
+        "last_message": "Vai aparecer no Rodeio essa semana?",
+        "last_sender": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "last_timestamp": 1774955000000
+      },
+      "participants": {
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+          "last_seen": 1774102000000,
+          "status": "offline"
+        },
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+          "last_seen": 1774957200287,
+          "status": "offline"
+        }
+      },
+      "unreadCount": {
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": 0,
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": 3
+      },
+      "user1": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+      "user2": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+    }
+  },
+  "Festas": {
+    "-OoAsR1eRsMofMBpHeKQ": {
+      "bairro": "Serra Dourada",
+      "banner_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/festas%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774020831391.jpg?alt=media&token=8f8273b5-30fc-4838-b1d4-3036fb91f46f",
+      "city": "Aparecida de Goiânia",
+      "comment_count": 0,
+      "confirmados": 1,
+      "created_at": 1774020837569,
+      "creator_avatar": "",
+      "creator_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "creator_name": "TabuAdm",
+      "data_fim": 1774164600000,
+      "data_inicio": 1774092600000,
+      "descricao": "",
+      "interessados": 1,
+      "latitude": -16.8224683,
+      "local": "Avenida Independência - Setor Serra Dourada - 3ª Etapa, Aparecida de Goiânia - GO",
+      "longitude": -49.2563886,
+      "nome": "NEON SHADOWS",
+      "presenca": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": "confirmado",
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": "interessado"
+      },
+      "state": "GO",
+      "status": "arquivada"
+    },
+    "-OoFesta002": {
+      "bairro": "Setor Bueno",
+      "banner_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800",
+      "city": "Goiânia",
+      "comment_count": 3,
+      "confirmados": 47,
+      "created_at": 1774100000000,
+      "creator_avatar": "",
+      "creator_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "creator_name": "TabuAdm",
+      "data_fim": 1774360800000,
+      "data_inicio": 1774317600000,
+      "descricao": "A noite mais eletrônica de Goiânia. Line-up internacional, open bar premium e área VIP exclusiva. Dress code: all black.",
+      "interessados": 132,
+      "latitude": -16.69,
+      "local": "Rua T-30, Setor Bueno, Goiânia - GO",
+      "longitude": -49.262,
+      "nome": "TABU FRIDAY",
+      "presenca": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": "confirmado",
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": "confirmado",
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": "confirmado",
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "interessado"
+      },
+      "state": "GO",
+      "status": "arquivada"
+    },
+    "-OoFesta003": {
+      "bairro": "Asa Sul",
+      "banner_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800",
+      "city": "Brasília",
+      "comment_count": 1,
+      "confirmados": 89,
+      "created_at": 1774110000000,
+      "creator_avatar": "",
+      "creator_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "creator_name": "TabuAdm",
+      "data_fim": 1774450800000,
+      "data_inicio": 1774404000000,
+      "descricao": "Rave do Cerrado volta com tudo. Palco principal + palco alternativo. 12 horas de música sem parar no coração do DF.",
+      "interessados": 318,
+      "latitude": -15.81,
+      "local": "SCES Trecho 2 - Asa Sul, Brasília - DF",
+      "longitude": -47.89,
+      "nome": "RAVE DO CERRADO",
+      "presenca": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": "confirmado",
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": "confirmado",
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "confirmado"
+      },
+      "state": "DF",
+      "status": "arquivada"
+    },
+    "-OoFesta004": {
+      "bairro": "Taguatinga Norte",
+      "banner_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+      "city": "Brasília",
+      "comment_count": 0,
+      "confirmados": 12,
+      "created_at": 1774120000000,
+      "creator_avatar": "",
+      "creator_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "creator_name": "TabuAdm",
+      "data_fim": 1774537200000,
+      "data_inicio": 1774490400000,
+      "descricao": "Open bar de volta. Entrada gratuita até meia-noite para quem estiver na lista VIP. Forró, sertanejo e muito axé.",
+      "interessados": 56,
+      "latitude": -15.8267,
+      "local": "QNA 40, Taguatinga Norte, Brasília - DF",
+      "longitude": -48.05,
+      "nome": "OPEN BAR CALIXTO",
+      "presenca": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": "confirmado",
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": "interessado",
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "confirmado"
+      },
+      "state": "DF",
+      "status": "arquivada"
+    },
+    "-OoXYgSLV0pi1yxQzp7Q": {
+      "banner_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/festas%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774401270567.jpg?alt=media&token=03de72c0-bb90-405d-9da2-b940d6766904",
+      "comment_count": 0,
+      "confirmados": 0,
+      "created_at": 1774401275742,
+      "creator_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+      "creator_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "creator_name": "TabuAdm",
+      "data_fim": 1774508400000,
+      "data_inicio": 1774481400000,
+      "descricao": "tuioy",
+      "interessados": 0,
+      "latitude": -16.8227476,
+      "local": "Avenida Independência - Independência, Aparecida de Goiânia - Goiás, Brazil",
+      "longitude": -49.2866258,
+      "nome": "Xion Ling",
+      "status": "arquivada"
+    },
+    "-OogKCikuo5yOvMfjZBT": {
+      "banner_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/festas%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774566745334.jpg?alt=media&token=361a2c7d-20ff-4273-af4b-33a136cc1d7a",
+      "comment_count": 0,
+      "confirmados": 0,
+      "created_at": 1774565252020,
+      "creator_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+      "creator_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "creator_name": "TabuAdm",
+      "data_fim": 1774834800000,
+      "data_inicio": 1774525200000,
+      "descricao": "espetacular",
+      "interessados": 0,
+      "nome": "Shadows Often",
+      "status": "arquivada"
+    }
+  },
+  "Gallery": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+      "created": true,
+      "created_at": 1774985128108,
+      "items": {
+        "-Op4M5oo8-Fd9aAjKaoV": {
+          "created_at": 1774985178421,
+          "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774985156760.mp4?alt=media&token=775c0878-aad9-4a42-9bf1-23d315e9b392",
+          "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fthumbs%2F1774985156760.jpg?alt=media&token=abce3066-2bbf-4e70-b0ed-82dea5f53fcd",
+          "type": "video",
+          "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+          "video_duration": 7
+        },
+        "-OpFW1VerH6gKIGm5caH": {
+          "created_at": 1775172331568,
+          "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1775172310103.mp4?alt=media&token=771b6974-3a99-4bc4-8643-82093aae02cc",
+          "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fthumbs%2F1775172310103.jpg?alt=media&token=611703ac-6da0-494f-8017-80c4767af894",
+          "type": "video",
+          "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+          "video_duration": 17
+        }
+      }
+    },
+    "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "created": true,
+      "created_at": 1774980403550,
+      "items": {
+        "-Op446wlQSMkawXnr1Lb": {
+          "created_at": 1774980464442,
+          "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fvideos%2F1774980446383.mp4?alt=media&token=d7e7cbec-7124-4e85-a82a-3231d0afd3ae",
+          "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fthumbs%2F1774980446383.jpg?alt=media&token=34d5e416-eeb7-4abb-92e1-423a87e963ac",
+          "type": "video",
+          "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+          "video_duration": 13
+        },
+        "-Op4ACz5MEoT1e0DtQTk": {
+          "created_at": 1774982062028,
+          "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fvideos%2F1774982039234.mp4?alt=media&token=b1657f64-d2bd-46f8-96b7-f03f7afd17df",
+          "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/gallery%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fthumbs%2F1774982039234.jpg?alt=media&token=629f2e4e-a9ae-4203-aa11-bfa9b8a6a995",
+          "type": "video",
+          "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+          "video_duration": 25
+        }
+      }
+    }
+  },
+  "Invitation_code": "XU2YX2",
+  "InviteRequests": {
+    "-OpINb-W3ltKDPV6-GtX": {
+      "created_at": 1775220453415,
+      "email": "orihimecifertenza@gmail.com",
+      "name": "VICTOR HUGO",
+      "phone": "62993560986",
+      "protocolo": "TABU-MNIZAATY-GJDG",
+      "request_id": "-OpINb-W3ltKDPV6-GtX",
+      "resolved_at": 1775225262166,
+      "resolved_by": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "status": "approved"
+    }
+  },
+  "InviteRequestsArquivo": {
+    "TABU-MNIZAATY-GJDG": {
+      "created_at": 1775220453415,
+      "email": "orihimecifertenza@gmail.com",
+      "name": "VICTOR HUGO",
+      "phone": "62993560986",
+      "protocolo": "TABU-MNIZAATY-GJDG",
+      "request_id": "-OpINb-W3ltKDPV6-GtX",
+      "resolved_at": 1775225262166,
+      "resolved_by": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "status": "approved"
+    }
+  },
+  "Posts": {
+    "event": {
+      "sr": "sr"
+    },
+    "post": {
+      "-OotdwGmB8LFmGGsad8e": {
+        "comment_count": 0,
+        "created_at": 1774788789367,
+        "descricao": "respeite o seus limites...",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true
+        },
+        "likes": 1,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774788782952.mp4?alt=media&token=6dcc24aa-117b-4008-9274-e60f5df1761d",
+        "tipo": "video",
+        "titulo": "...",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "video_duration": 13,
+        "visibilidade": "publico"
+      },
+      "-Ootw8j2KW_m_oP5MbGR": {
+        "comment_count": 0,
+        "created_at": 1774793563082,
+        "descricao": "os limites devem ser respeitados",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true
+        },
+        "likes": 2,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774793549942.mp4?alt=media&token=5d0b71c0-ec86-4d13-b18e-9c2ea623ba86",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fthumbs%2F1774793549942.jpg?alt=media&token=353a3cf6-e61f-4e51-ad62-5aa6e5fe3c08",
+        "tipo": "video",
+        "titulo": "...",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "video_duration": 13,
+        "visibilidade": "publico"
+      },
+      "-OotwcCl5GLG1xiPzo6b": {
+        "comment_count": 0,
+        "created_at": 1774793687921,
+        "descricao": "acorda pra realidade 🙌",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true
+        },
+        "likes": 2,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774793673190.mp4?alt=media&token=5dc6bed4-d079-40f8-a39d-0c2bac1565de",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fthumbs%2F1774793673190.jpg?alt=media&token=a3d59eaf-87e6-44a7-974d-d1044b3a6578",
+        "tipo": "video",
+        "titulo": "Madara",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "video_duration": 24,
+        "visibilidade": "publico"
+      },
+      "-OotzosHyApRW8syiEWZ": {
+        "comment_count": 0,
+        "created_at": 1774794526233,
+        "descricao": "testando",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true
+        },
+        "likes": 2,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774794508993.mp4?alt=media&token=0e1ff4c1-6ffb-4d31-b0f2-ddcaadf2943e",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fthumbs%2F1774794508993.jpg?alt=media&token=a7f91f8b-ab65-419a-8ec5-42682acc1b31",
+        "tipo": "video",
+        "titulo": "...",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "video_duration": 27,
+        "visibilidade": "publico"
+      },
+      "-Oou21ltgTKE1cbgj1P9": {
+        "comment_count": 1,
+        "comments": {
+          "-Op0PeIfhDapryBwRdu-": {
+            "created_at": 1774919001323,
+            "likes": 0,
+            "post_id": "-Oou21ltgTKE1cbgj1P9",
+            "texto": "Vídeo show de bola",
+            "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2.jpg?alt=media&token=5947becf-7620-4346-ab53-9a37f7e7aa3a",
+            "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+            "user_name": "ROBERTO"
+          }
+        },
+        "created_at": 1774795369593,
+        "descricao": "dinheiro não é a solução",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "zGe2wH7hfWWIHrrsLpfUlkRVQ842": true
+        },
+        "likes": 2,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774795349982.mp4?alt=media&token=d0d72890-5b29-4679-80e0-ef42cacde0a5",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fthumbs%2F1774795349982.jpg?alt=media&token=834ff98e-830c-410a-91a6-67c9daff24d6",
+        "tipo": "video",
+        "titulo": "Sentido",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "video_duration": 27,
+        "visibilidade": "publico"
+      },
+      "-Op0L7ZocgeFpuVk9p5e": {
+        "comment_count": 0,
+        "created_at": 1774917814580,
+        "descricao": "gatão do pai",
+        "likes": 0,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2F1774917810704.jpg?alt=media&token=7a5b13ca-8888-47c3-be4a-35bd79b538bf",
+        "tipo": "foto",
+        "titulo": "Teste",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "visibilidade": "publico"
+      },
+      "-Op2hblqXmFutM77n-gL": {
+        "comment_count": 0,
+        "created_at": 1774957526140,
+        "descricao": "sentindo cheiro de festa kkkk",
+        "liked_by": {
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 1,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2F1774957521315.jpg?alt=media&token=af4e739b-c614-44d4-a77f-90f65cd92e48",
+        "tipo": "foto",
+        "titulo": "Que venha a próxima",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "publico"
+      },
+      "-Op2q_u5qqa8VQ0CibuC": {
+        "comment_count": 0,
+        "created_at": 1774959877771,
+        "likes": 0,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2F1774959872323.jpg?alt=media&token=1c112f29-5b18-417d-83fd-de11a9e77f92",
+        "tipo": "foto",
+        "titulo": "UAI",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "publico"
+      },
+      "-Op2sgCQ5AkVVf6FDQ1_": {
+        "comment_count": 0,
+        "created_at": 1774960427873,
+        "likes": 0,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2F1774960422272.jpg?alt=media&token=21e26a75-37d9-474b-8116-0654e22e5d43",
+        "tipo": "foto",
+        "titulo": "Calem a boca",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "publico"
+      },
+      "-Op2tALtDY3XxvpwwYZi": {
+        "comment_count": 0,
+        "created_at": 1774960555449,
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true
+        },
+        "likes": 1,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fvideos%2F1774960543553.mp4?alt=media&token=2a510c83-a789-406b-9b33-e4e8fca17a2c",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fthumbs%2F1774960543553.jpg?alt=media&token=76fa73ba-4f80-49a0-8556-222530e56408",
+        "tipo": "video",
+        "titulo": "I can do it",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "video_duration": 14,
+        "visibilidade": "publico"
+      },
+      "-Op35mu5dn47cb2imLfN": {
+        "comment_count": 0,
+        "created_at": 1774964125323,
+        "likes": 0,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fvideos%2F1774964107846.mp4?alt=media&token=095439a7-593d-4f37-b2e6-87398661f9b4",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fthumbs%2F1774964107846.jpg?alt=media&token=0c020a32-c0e1-4d61-8cce-ce84b6241e3b",
+        "tipo": "video",
+        "titulo": "Brutal",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "video_duration": 8,
+        "visibilidade": "publico"
+      },
+      "-Op36D1AY_JyP_qKV4kC": {
+        "comment_count": 0,
+        "created_at": 1774964236428,
+        "likes": 0,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fvideos%2F1774964207023.mp4?alt=media&token=45acf161-1a89-4908-aa68-ffd8a54d240c",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fthumbs%2F1774964207023.jpg?alt=media&token=f53daf37-4aa7-4180-8168-9d5c757caad7",
+        "tipo": "video",
+        "titulo": "Fofinho",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "video_duration": 27,
+        "visibilidade": "publico"
+      },
+      "-Op36ZFdqoFoTFXtCMfq": {
+        "comment_count": 0,
+        "created_at": 1774964327466,
+        "liked_by": {
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 1,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2F1774964320237.jpg?alt=media&token=03b12747-386f-4b41-88d4-57a9bc6f037c",
+        "tipo": "foto",
+        "titulo": "Kkkkkk",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "publico"
+      },
+      "-Op3VrR8l2UuRvJhQXY5": {
+        "comment_count": 0,
+        "created_at": 1774970959629,
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "6mrxsCc7FDSNwnRY7T165FSC4Jq2": true
+        },
+        "likes": 2,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2F1774970952284.jpg?alt=media&token=0796408b-3ab9-42df-8c2d-17d7a3155ce5",
+        "tipo": "foto",
+        "titulo": "Red queen",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "publico"
+      },
+      "-Op3WDjiLcr9WYjTSoxU": {
+        "comment_count": 2,
+        "comments": {
+          "-Op4LSauDQtJ7nmSuSkj": {
+            "created_at": 1774985009599,
+            "likes": 0,
+            "post_id": "-Op3WDjiLcr9WYjTSoxU",
+            "texto": "Doeu",
+            "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+            "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+            "user_name": "TABUADM"
+          },
+          "-OpAZ6s85wG-djNHRT3e": {
+            "created_at": 1775089253897,
+            "likes": 0,
+            "post_id": "-Op3WDjiLcr9WYjTSoxU",
+            "texto": "Idea",
+            "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2.jpg?alt=media&token=5947becf-7620-4346-ab53-9a37f7e7aa3a",
+            "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+            "user_name": "ROBERTO"
+          }
+        },
+        "created_at": 1774971055086,
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true
+        },
+        "likes": 2,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fvideos%2F1774971030680.mp4?alt=media&token=fefd735f-fe6c-4f83-89f9-30d19ac41b19",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1%2Fthumbs%2F1774971030680.jpg?alt=media&token=a96f48e9-474a-402b-94ac-110a2b9979f1",
+        "tipo": "video",
+        "titulo": "Real",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "video_duration": 21,
+        "visibilidade": "publico"
+      },
+      "-OpAWtg3d8J8iF9hS6_V": {
+        "comment_count": 0,
+        "created_at": 1775088671492,
+        "descricao": "boa noite",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 2,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2F1775088664340.jpg?alt=media&token=afc15112-f6c1-4698-b124-cf33db7bcd35",
+        "tipo": "foto",
+        "titulo": "Boa noite",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2.jpg?alt=media&token=5947becf-7620-4346-ab53-9a37f7e7aa3a",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "visibilidade": "publico"
+      },
+      "-OpF4j3oiALam3wgnUyx": {
+        "comment_count": 0,
+        "created_at": 1775165174068,
+        "descricao": "testando vídeo",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true
+        },
+        "likes": 1,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2Fvideos%2F1775165153120.mp4?alt=media&token=1bb1cdc3-0fb1-4d09-9b37-9d08f109075f",
+        "thumb_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2Fthumbs%2F1775165153120.jpg?alt=media&token=39be3ef8-181a-45af-af85-41d444d85550",
+        "tipo": "video",
+        "titulo": "Testando vídeo",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2.jpg?alt=media&token=5947becf-7620-4346-ab53-9a37f7e7aa3a",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "video_duration": 15,
+        "visibilidade": "publico"
+      },
+      "-OpJDNz-bJukqdLpcm6c": {
+        "comment_count": 0,
+        "created_at": 1775234551749,
+        "likes": 0,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/posts%2F6mrxsCc7FDSNwnRY7T165FSC4Jq2%2F1775234544198.jpg?alt=media&token=9f0f2e6a-e45a-4e3a-9943-2fdba6478963",
+        "tipo": "foto",
+        "titulo": "🍷❤️‍🔥",
+        "user_avatar": "",
+        "user_id": "6mrxsCc7FDSNwnRY7T165FSC4Jq2",
+        "user_name": "TESTER",
+        "visibilidade": "publico"
+      },
+      "-PostN001": {
+        "comment_count": 1,
+        "comments": {
+          "-ComN001a": {
+            "created_at": 1773942188329,
+            "likes": 0,
+            "post_id": "-PostN001",
+            "texto": "Brasília te adotou sim!! 🥂",
+            "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+            "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+            "user_name": "VICTOR"
+          }
+        },
+        "created_at": 1773934988329,
+        "descricao": "Mas Brasília me adotou e eu adotei ela 💜",
+        "emoji": "🌸",
+        "liked_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+        },
+        "likes": 6,
+        "tipo": "emoji",
+        "titulo": "Saudade de casa",
+        "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "publico"
+      },
+      "-PostN002": {
+        "comment_count": 1,
+        "comments": {
+          "-ComN002a": {
+            "created_at": 1773927788329,
+            "likes": 0,
+            "post_id": "-PostN002",
+            "texto": "Verdade absoluta irmã 🤠",
+            "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+            "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+            "user_name": "ROBERTO"
+          }
+        },
+        "created_at": 1773920588329,
+        "descricao": "Pode vir com funk, sertanejo, eletrônico... mas no final todo mundo cai no forró.",
+        "liked_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+        },
+        "likes": 9,
+        "tipo": "texto",
+        "titulo": "Forró é sagrado",
+        "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "publico"
+      },
+      "-PostN003": {
+        "comment_count": 0,
+        "created_at": 1773895388329,
+        "descricao": "Quinta é o novo sábado em BSB",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+        },
+        "likes": 6,
+        "media_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800",
+        "tipo": "foto",
+        "titulo": "Rolê de quinta 🍹",
+        "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "visibilidade": "seguidores"
+      },
+      "-PostR001": {
+        "comment_count": 2,
+        "comments": {
+          "-ComR001a": {
+            "created_at": 1773945788329,
+            "likes": 0,
+            "post_id": "-PostR001",
+            "texto": "Goiano é brabo de verdade kkk",
+            "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+            "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+            "user_name": "VICTOR"
+          },
+          "-ComR001b": {
+            "created_at": 1773946688329,
+            "likes": 0,
+            "post_id": "-PostR001",
+            "texto": "Orgulho do Centro-Oeste 💪",
+            "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+            "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+            "user_name": "NATALLIA"
+          }
+        },
+        "created_at": 1773938588329,
+        "descricao": "Aqui a gente curte de verdade. Sem frescura.",
+        "emoji": "🤠",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 9,
+        "tipo": "emoji",
+        "titulo": "Goiânia é diferente",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "visibilidade": "publico"
+      },
+      "-PostR002": {
+        "comment_count": 1,
+        "comments": {
+          "-ComR002a": {
+            "created_at": 1773942188329,
+            "likes": 0,
+            "post_id": "-PostR002",
+            "texto": "Queria ter ido demais!! 😭",
+            "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+            "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+            "user_name": "NATALLIA"
+          }
+        },
+        "created_at": 1773819788329,
+        "descricao": "Maior festa do agro. Quem perdeu, errou feio.",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "TqlEzYtMedY5nncyJ8VcIWxvrHk1": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 15,
+        "media_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+        "tipo": "foto",
+        "titulo": "Rodeio em Goiânia 🐂",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "visibilidade": "publico"
+      },
+      "-PostR003": {
+        "comment_count": 2,
+        "comments": {
+          "-ComR003a": {
+            "created_at": 1773948788329,
+            "likes": 0,
+            "post_id": "-PostR003",
+            "texto": "Feliz aniversário meu consagrado! 🥂🎉",
+            "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+            "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+            "user_name": "VICTOR"
+          },
+          "-OoD-poimxXk6gNCItxg": {
+            "created_at": 1774056594734,
+            "likes": 0,
+            "post_id": "-PostR003",
+            "texto": "Bom",
+            "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2Fsgu6uc90loVCPVc8gqjwp8aTghE3.jpg?alt=media&token=fd7c9cb4-6de5-4bb0-b94e-1203e480b24f",
+            "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+            "user_name": "VICTOR"
+          }
+        },
+        "created_at": 1773945788329,
+        "descricao": "Mais um ano completado. Gratidão por tudo.",
+        "liked_by": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 8,
+        "report_count": 1,
+        "tipo": "texto",
+        "titulo": "Parabéns pra mim kkkk",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "visibilidade": "vip"
+      },
+      "-PostV001": {
+        "comment_count": 1,
+        "comments": {
+          "-ComV001a": {
+            "created_at": 1773938588329,
+            "likes": 0,
+            "post_id": "-PostV001",
+            "texto": "Conta comigo! 🔥",
+            "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+            "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+            "user_name": "NATALLIA"
+          }
+        },
+        "created_at": 1773931388329,
+        "descricao": "Quem tiver afim de rolar hoje, avisa 🎶",
+        "emoji": "🥂",
+        "liked_by": {
+          "TqlEzYtMedY5nncyJ8VcIWxvrHk1": true,
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 5,
+        "tipo": "emoji",
+        "titulo": "Noitada na Tabu",
+        "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "visibilidade": "publico"
+      },
+      "-PostV002": {
+        "comment_count": 2,
+        "comments": {
+          "-ComV002a": {
+            "created_at": 1773913388329,
+            "likes": 0,
+            "post_id": "-PostV002",
+            "texto": "Goiânia disputa esse título hein kkk",
+            "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+            "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+            "user_name": "ROBERTO"
+          },
+          "-ComV002b": {
+            "created_at": 1773916988329,
+            "likes": 0,
+            "post_id": "-PostV002",
+            "texto": "Concordo demais!! 🌃",
+            "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+            "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+            "user_name": "NATALLIA"
+          }
+        },
+        "created_at": 1773906188329,
+        "descricao": "Brasília tem a melhor cena noturna do Brasil, sem discussão.",
+        "liked_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 7,
+        "tipo": "texto",
+        "titulo": "Quem manda no DF?",
+        "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "visibilidade": "publico"
+      },
+      "-PostV003": {
+        "comment_count": 1,
+        "comments": {
+          "-ComV003a": {
+            "created_at": 1773877388329,
+            "likes": 0,
+            "post_id": "-PostV003",
+            "texto": "Brasília tem coisa bonita sim hein",
+            "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+            "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+            "user_name": "ROBERTO"
+          }
+        },
+        "created_at": 1773870188329,
+        "descricao": "Sexta à tarde, saindo mais cedo hoje.",
+        "liked_by": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 11,
+        "media_url": "https://images.unsplash.com/photo-1555982105-d25af4182e4e?w=800",
+        "tipo": "foto",
+        "titulo": "Aquela vista do lago 🌅",
+        "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "visibilidade": "publico"
+      },
+      "-PostV004": {
+        "comment_count": 1,
+        "comments": {
+          "-OoFdlFpP_CAtLsN4dDs": {
+            "created_at": 1774100878391,
+            "likes": 0,
+            "post_id": "-PostV004",
+            "texto": "Top",
+            "user_id": "TqlEzYtMedY5nncyJ8VcIWxvrHk1",
+            "user_name": "ALBERTO"
+          }
+        },
+        "created_at": 1773841388329,
+        "emoji": "🔥",
+        "liked_by": {
+          "TqlEzYtMedY5nncyJ8VcIWxvrHk1": true,
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+        },
+        "likes": 4,
+        "tipo": "emoji",
+        "titulo": "Fim de semana chegando",
+        "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "visibilidade": "seguidores"
+      },
+      "rs": "rs"
+    },
+    "story": {
+      "-OoGwFyKwQYm-ElIptzU": {
+        "background": "escuro",
+        "created_at": 1774122504090,
+        "expires_at": 1774208904090,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774122498288.jpg?alt=media&token=2609c3ca-970a-4cd1-97de-32ff544a3e59",
+        "overlays": [
+          {
+            "content": "Vem todo mundo rapazeada",
+            "pos_x": 0.319444,
+            "pos_y": 0.194906,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          },
+          {
+            "content": "😈",
+            "pos_x": 0.815904,
+            "pos_y": 0.292555,
+            "scale": 1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": true,
+            "seen_at": 1774123282447,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-OoRPYJK-zfGYxRSJ8_0": {
+        "background": "escuro",
+        "created_at": 1774298215708,
+        "expires_at": 1774384615708,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774298208908.jpg?alt=media&token=a807f3c1-a68b-43c7-acd5-1258fef90f0f",
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774382687682,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-OoRPm7ds4ycUBGhd0_R": {
+        "background": "escuro",
+        "created_at": 1774298276393,
+        "expires_at": 1774384676393,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774298271792.jpg?alt=media&token=d6a05aba-3161-4be9-bd9a-01625bc61c85",
+        "overlays": [
+          {
+            "content": "Um dois três testando",
+            "pos_x": 0.391667,
+            "pos_y": 0.255281,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          },
+          {
+            "content": "💃",
+            "pos_x": 0.85563,
+            "pos_y": 0.448851,
+            "scale": 1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774382689304,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-OoRSsON06W2RRFK4Dt-": {
+        "background": "escuro",
+        "created_at": 1774299088473,
+        "expires_at": 1774385488473,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774299083951.jpg?alt=media&token=502aa177-ad87-4407-a683-2b9ae9d9a213",
+        "overlays": [
+          {
+            "content": "Eitcha kakakakaakkkak",
+            "pos_x": 0.309722,
+            "pos_y": 0.292031,
+            "scale": 1,
+            "style": {
+              "fontStyle": "rosa"
+            },
+            "type": "text"
+          },
+          {
+            "content": "🪩",
+            "pos_x": 0.775067,
+            "pos_y": 0.396526,
+            "scale": 1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "rosa",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774382692884,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-OoRYkjYZc_7WRkJ8jcU": {
+        "background": "escuro",
+        "created_at": 1774300629988,
+        "expires_at": 1774387029988,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2F1774300625476.jpg?alt=media&token=e34e37d2-ac51-4c73-ac37-7eb9f01e39ef",
+        "overlays": [
+          {
+            "content": "Vagabunda demais mano",
+            "pos_x": 0.3583333333333333,
+            "pos_y": 0.24187499999999984,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          },
+          {
+            "content": "😈",
+            "pos_x": 0.7747598844987653,
+            "pos_y": 0.42315854390160923,
+            "scale": 1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774382694650,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-OozhjpdGeMRScAsGa4R": {
+        "background": "escuro",
+        "created_at": 1774890450283,
+        "expires_at": 1774976850283,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774890441209.mp4?alt=media&token=dd852fa7-99c7-46ca-9d8d-420574ad158a",
+        "overlays": [
+          {
+            "content": "✨",
+            "pos_x": 0.8076652601878159,
+            "pos_y": 0.21323827308443627,
+            "scale": 1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "video",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "video_duration": 17,
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": true,
+            "seen_at": 1774891833682,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1774914647087,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": false,
+            "seen_at": 1774957076576,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          },
+          "zGe2wH7hfWWIHrrsLpfUlkRVQ842": {
+            "fully_watched": false,
+            "seen_at": 1774914970212,
+            "viewer_id": "zGe2wH7hfWWIHrrsLpfUlkRVQ842"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-Oozj12pCBlYOcl_YolF": {
+        "background": "escuro",
+        "created_at": 1774890787061,
+        "expires_at": 1774977187061,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2F0gTPuaFwzseW08y3jSlJDPyFGjn1%2Fvideos%2F1774890780073.mp4?alt=media&token=9d1ddc3f-dd4d-4534-be82-6a27becb92ae",
+        "overlays": [
+          {
+            "content": "Precisava?",
+            "pos_x": 0.31111111111111117,
+            "pos_y": 0.16469999999999999,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          },
+          {
+            "content": "🔥",
+            "pos_x": 0.7789098141113376,
+            "pos_y": 0.25146759973037985,
+            "scale": 1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "video",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "video_duration": 15,
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": true,
+            "seen_at": 1774891816490,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1774918929397,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": false,
+            "seen_at": 1774957074469,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          },
+          "zGe2wH7hfWWIHrrsLpfUlkRVQ842": {
+            "fully_watched": false,
+            "seen_at": 1774914965491,
+            "viewer_id": "zGe2wH7hfWWIHrrsLpfUlkRVQ842"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-Op0KkNAlI2YyFJarPQg": {
+        "background": "escuro",
+        "created_at": 1774917715467,
+        "expires_at": 1775004115467,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2F1774917710119.jpg?alt=media&token=a8026023-f353-47f5-bdd9-427c9eade340",
+        "overlays": [
+          {
+            "content": "Insanoooo",
+            "pos_x": 0.3630904586226851,
+            "pos_y": 0.3233254405286345,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": true,
+            "seen_at": 1774986302651,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1774918928288,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": false,
+            "seen_at": 1774918518288,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-Op0NdLCfTI_Ro6XxD4O": {
+        "background": "escuro",
+        "created_at": 1774918473101,
+        "expires_at": 1775004873101,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2F1774918465209.jpg?alt=media&token=b62abdd8-b719-4fbd-830b-fc6bc0277f16",
+        "overlays": [
+          {
+            "content": "Top",
+            "pos_x": 0.7423674406828704,
+            "pos_y": 0.41659933268229166,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": true,
+            "seen_at": 1774986297086,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1774918926869,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": false,
+            "seen_at": 1774918515468,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-OpF4Q9dO7EEmYuSB4kp": {
+        "background": "escuro",
+        "created_at": 1775165092521,
+        "expires_at": 1775251492521,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2Fvideos%2F1775165080796.mp4?alt=media&token=cf16cef7-b4f2-4ad3-ab21-d5b08d5887cc",
+        "text_style": "branco",
+        "type": "video",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2.jpg?alt=media&token=5947becf-7620-4346-ab53-9a37f7e7aa3a",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "video_duration": 15,
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1775223294190,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1775165270823,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-OpF52qgEscSq8qzQNK6": {
+        "background": "escuro",
+        "created_at": 1775165259180,
+        "expires_at": 1775251659180,
+        "media_url": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/stories%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2%2F1775165253070.jpg?alt=media&token=a70fcac5-4380-4104-9b82-0ac51ac8c9da",
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2.jpg?alt=media&token=5947becf-7620-4346-ab53-9a37f7e7aa3a",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1775223301805,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1775165266502,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryA001": {
+        "background": "rosaFogo",
+        "central_text": "Tabu Friday tá chegando 🔥 Quem tá dentro?",
+        "created_at": 1774287324133,
+        "expires_at": 1774373724133,
+        "text_style": "display",
+        "type": "texto",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "view_count": 3,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774300860020,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": true,
+            "seen_at": 1774289124133,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": false,
+            "seen_at": 1774290924133,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryA003": {
+        "background": "ouro",
+        "central_emoji": "🎉",
+        "created_at": 1774293324133,
+        "expires_at": 1774379724133,
+        "text_style": "branco",
+        "type": "emoji",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+        "user_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "user_name": "TABUADM",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774300854799,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "vip"
+      },
+      "-StoryAl001": {
+        "background": "escuro",
+        "central_emoji": "⚡",
+        "created_at": 1774283724133,
+        "expires_at": 1774370124133,
+        "text_style": "branco",
+        "type": "emoji",
+        "user_avatar": "",
+        "user_id": "TqlEzYtMedY5nncyJ8VcIWxvrHk1",
+        "user_name": "ALBERTO",
+        "view_count": 2,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774301065480,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1774287324133,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryAl002": {
+        "background": "roxo",
+        "central_text": "Primeira vez no Tabu Friday, ansioso demais 😈",
+        "created_at": 1774290924133,
+        "expires_at": 1774377324133,
+        "text_style": "branco",
+        "type": "texto",
+        "user_avatar": "",
+        "user_id": "TqlEzYtMedY5nncyJ8VcIWxvrHk1",
+        "user_name": "ALBERTO",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774301064500,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryN001": {
+        "background": "roxo",
+        "created_at": 1773938588329,
+        "expires_at": 1774024988329,
+        "media_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800",
+        "overlays": [
+          {
+            "content": "Quinta noite 🌃",
+            "pos_x": 0.3,
+            "pos_y": 0.189,
+            "scale": 1.1,
+            "style": {
+              "fontStyle": "rosa"
+            },
+            "type": "text"
+          }
+        ],
+        "text_style": "rosa",
+        "type": "camera",
+        "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "view_count": 5,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774015710317,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1773951572528,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryN002": {
+        "background": "rosaFogo",
+        "central_emoji": "🌸",
+        "created_at": 1773945788329,
+        "expires_at": 1774032188329,
+        "text_style": "branco",
+        "type": "emoji",
+        "user_avatar": "https://i.pinimg.com/736x/2b/54/f4/2b54f4bb96b81b1afe4e3c5d48f8a6a5.jpg",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "view_count": 4,
+        "views": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1773951573200,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          }
+        },
+        "visibilidade": "seguidores"
+      },
+      "-StoryN010": {
+        "background": "rosaFogo",
+        "created_at": 1774280124133,
+        "expires_at": 1774366524133,
+        "media_url": "https://images.unsplash.com/photo-1555982105-d25af4182e4e?w=800",
+        "overlays": [
+          {
+            "content": "Amo demais essa cidade 🌸",
+            "pos_x": 0.17,
+            "pos_y": 0.168,
+            "scale": 1,
+            "style": {
+              "fontStyle": "rosa"
+            },
+            "type": "text"
+          }
+        ],
+        "text_style": "rosa",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "view_count": 5,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774301060446,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "TqlEzYtMedY5nncyJ8VcIWxvrHk1": {
+            "fully_watched": true,
+            "seen_at": 1774287324133,
+            "viewer_id": "TqlEzYtMedY5nncyJ8VcIWxvrHk1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1774285524133,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": true,
+            "seen_at": 1774283724133,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": true,
+            "seen_at": 1774280484133,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryN011": {
+        "background": "roxo",
+        "central_text": "Forró até o amanhecer? Conta comigo 💃",
+        "created_at": 1774287324133,
+        "expires_at": 1774373724133,
+        "text_style": "branco",
+        "type": "texto",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "view_count": 2,
+        "views": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1774290924133,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": true,
+            "seen_at": 1774289124133,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          }
+        },
+        "visibilidade": "seguidores"
+      },
+      "-StoryN012": {
+        "background": "escuro",
+        "central_emoji": "🌸",
+        "created_at": 1774292124133,
+        "expires_at": 1774378524133,
+        "report_count": 1,
+        "text_style": "branco",
+        "type": "emoji",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+        "user_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "user_name": "NATALLIA",
+        "view_count": 0,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774301075861,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryR001": {
+        "background": "ouro",
+        "central_text": "Goiânia de noite é outra dimensão 🤠",
+        "created_at": 1773931388329,
+        "expires_at": 1774017788329,
+        "text_style": "branco",
+        "type": "texto",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 6,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774015711617,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1773951588877,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": true,
+            "seen_at": 1773938588329,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryR002": {
+        "background": "azulNoite",
+        "created_at": 1773947588329,
+        "expires_at": 1774032188329,
+        "media_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+        "overlays": [
+          {
+            "content": "🐂",
+            "pos_x": 0.8,
+            "pos_y": 0.105,
+            "scale": 1.3,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 4,
+        "views": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1773951589729,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          }
+        },
+        "visibilidade": "vip"
+      },
+      "-StoryR010": {
+        "background": "ouro",
+        "created_at": 1774276524133,
+        "expires_at": 1774362924133,
+        "media_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+        "overlays": [
+          {
+            "content": "Goiânia minha terra 🤠",
+            "pos_x": 0.2,
+            "pos_y": 0.1365,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          },
+          {
+            "content": "🐂",
+            "pos_x": 0.75,
+            "pos_y": 0.105,
+            "scale": 1.3,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 6,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774301067579,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "TqlEzYtMedY5nncyJ8VcIWxvrHk1": {
+            "fully_watched": true,
+            "seen_at": 1774283724133,
+            "viewer_id": "TqlEzYtMedY5nncyJ8VcIWxvrHk1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": true,
+            "seen_at": 1774276884133,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": true,
+            "seen_at": 1774280124133,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": false,
+            "seen_at": 1774281924133,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryR011": {
+        "background": "verde",
+        "central_text": "Piseiro no sangue, sertanejo na alma 🎶",
+        "created_at": 1774285524133,
+        "expires_at": 1774371924133,
+        "text_style": "branco",
+        "type": "texto",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 3,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774301066334,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "TqlEzYtMedY5nncyJ8VcIWxvrHk1": {
+            "fully_watched": false,
+            "seen_at": 1774290924133,
+            "viewer_id": "TqlEzYtMedY5nncyJ8VcIWxvrHk1"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": true,
+            "seen_at": 1774287324133,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": true,
+            "seen_at": 1774289124133,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryR012": {
+        "background": "azulNoite",
+        "central_emoji": "🤠",
+        "created_at": 1774291524133,
+        "expires_at": 1774377924133,
+        "text_style": "branco",
+        "type": "emoji",
+        "user_avatar": "https://i.pinimg.com/736x/9b/13/6c/9b136c1ac44e9e2dbd06de58e1e7a50c.jpg",
+        "user_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "user_name": "ROBERTO",
+        "view_count": 0,
+        "visibilidade": "vip"
+      },
+      "-StoryV001": {
+        "background": "escuro",
+        "created_at": 1773942188329,
+        "expires_at": 1774028588329,
+        "media_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800",
+        "overlays": [
+          {
+            "content": "Hoje tem rolê 🔥",
+            "pos_x": 0.25,
+            "pos_y": 0.1575,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          },
+          {
+            "content": "🥂",
+            "pos_x": 0.75,
+            "pos_y": 0.126,
+            "scale": 1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "view_count": 2,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774029133345,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1773947588329,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1773950618463,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": true,
+            "seen_at": 1773945788329,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryV002": {
+        "background": "rosaFogo",
+        "central_emoji": "🎶",
+        "created_at": 1773934988329,
+        "expires_at": 1774021388329,
+        "text_style": "branco",
+        "type": "emoji",
+        "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "view_count": 1,
+        "views": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1773950619513,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": true,
+            "seen_at": 1773938588329,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "seguidores"
+      },
+      "-StoryV003": {
+        "background": "ouro",
+        "central_text": "Só pra quem é VIP mesmo 😏",
+        "created_at": 1773945788329,
+        "expires_at": 1774032188329,
+        "text_style": "display",
+        "type": "texto",
+        "user_avatar": "https://i.pinimg.com/736x/a6/a5/f9/a6a5f99c41f0e3a5e28a4e7a74db0ae6.jpg",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "view_count": 0,
+        "views": {
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": false,
+            "seen_at": 1773950617375,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          }
+        },
+        "visibilidade": "vip"
+      },
+      "-StoryV010": {
+        "background": "azulNoite",
+        "created_at": 1774283724133,
+        "expires_at": 1774370124133,
+        "media_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800",
+        "overlays": [
+          {
+            "content": "BSB de noite não tem igual 🌃",
+            "pos_x": 0.15,
+            "pos_y": 0.147,
+            "scale": 1,
+            "style": {
+              "fontStyle": "branco"
+            },
+            "type": "text"
+          },
+          {
+            "content": "🥂",
+            "pos_x": 0.8,
+            "pos_y": 0.1155,
+            "scale": 1.1,
+            "type": "emoji"
+          }
+        ],
+        "text_style": "branco",
+        "type": "camera",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2Fsgu6uc90loVCPVc8gqjwp8aTghE3.jpg?alt=media&token=fd7c9cb4-6de5-4bb0-b94e-1203e480b24f",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "view_count": 4,
+        "views": {
+          "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+            "fully_watched": false,
+            "seen_at": 1774301070049,
+            "viewer_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1"
+          },
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": true,
+            "seen_at": 1774287324133,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+            "fully_watched": true,
+            "seen_at": 1774284084133,
+            "viewer_id": "sgu6uc90loVCPVc8gqjwp8aTghE3"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": false,
+            "seen_at": 1774288044133,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "publico"
+      },
+      "-StoryV011": {
+        "background": "roxo",
+        "central_text": "Rodeio Goiânia vai ser épico esse ano 🤠",
+        "created_at": 1774289124133,
+        "expires_at": 1774375524133,
+        "text_style": "rosa",
+        "type": "texto",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2Fsgu6uc90loVCPVc8gqjwp8aTghE3.jpg?alt=media&token=fd7c9cb4-6de5-4bb0-b94e-1203e480b24f",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "view_count": 2,
+        "views": {
+          "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+            "fully_watched": false,
+            "seen_at": 1774291824133,
+            "viewer_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2"
+          },
+          "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+            "fully_watched": true,
+            "seen_at": 1774290924133,
+            "viewer_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+          }
+        },
+        "visibilidade": "seguidores"
+      },
+      "-StoryV012": {
+        "background": "ouro",
+        "central_emoji": "🔥",
+        "created_at": 1774292724133,
+        "expires_at": 1774379124133,
+        "text_style": "branco",
+        "type": "emoji",
+        "user_avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2Fsgu6uc90loVCPVc8gqjwp8aTghE3.jpg?alt=media&token=fd7c9cb4-6de5-4bb0-b94e-1203e480b24f",
+        "user_id": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+        "user_name": "VICTOR",
+        "view_count": 0,
+        "visibilidade": "vip"
+      },
+      "rs": "rs"
+    }
+  },
+  "Reports": {
+    "chats": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+        "acao_tomada": "advertencia",
+        "artigo": "Art. 7º, III – Política de Uso Responsável",
+        "chat_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "created_at": 1774297750206,
+        "descricao": "ela me mandou mensagens sexuais eu não queria isso",
+        "motivo": "assedio",
+        "motivo_label": "Assédio ou mensagens ofensivas",
+        "protocolo": "TABU-MN5B31ZN-I0OA",
+        "reported_name": "Natallia",
+        "reported_uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+        "reporter_uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "resolvido_em": 1774398553043,
+        "status": "actioned"
+      }
+    },
+    "posts": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_-PostR003": {
+        "artigo": "Art. 10º, II",
+        "created_at": 1774119424881,
+        "descricao": "o usuário fica postando esse tipo de coisa todo mês eu tô cansada já",
+        "motivo": "spam",
+        "motivo_label": "Spam ou conteúdo repetitivo",
+        "post_id": "-PostR003",
+        "post_owner_id": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+        "reporter_uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "status": "pending"
+      }
+    },
+    "stories": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_-StoryN012": {
+        "artigo": "Termos de Uso – Art. 10º, II",
+        "created_at": 1774296023902,
+        "descricao": "postou esse mesmo story 10 vezes mano chega",
+        "motivo": "spam",
+        "motivo_label": "Spam ou conteúdo repetitivo",
+        "reporter_uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "status": "pending",
+        "story_id": "-StoryN012",
+        "story_owner_id": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1"
+      }
+    },
+    "users": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_TqlEzYtMedY5nncyJ8VcIWxvrHk1": {
+        "artigo": "Art. 6º – Termos de Uso",
+        "created_at": 1774296864115,
+        "descricao": "conta muito suspeita",
+        "motivo": "identidade_falsa",
+        "motivo_label": "Identidade falsa ou conta falsa",
+        "reported_user_id": "TqlEzYtMedY5nncyJ8VcIWxvrHk1",
+        "reported_user_name": "Alberto",
+        "reporter_uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+        "status": "pending"
+      }
+    }
+  },
+  "UserChatRequests": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_TqlEzYtMedY5nncyJ8VcIWxvrHk1": "pending",
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "accepted"
+    },
+    "TqlEzYtMedY5nncyJ8VcIWxvrHk1": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_TqlEzYtMedY5nncyJ8VcIWxvrHk1": "pending",
+      "TqlEzYtMedY5nncyJ8VcIWxvrHk1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "pending"
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+      "VBHzHqUtv7cITvqxZNK4N2qt7wx2_sgu6uc90loVCPVc8gqjwp8aTghE3": "accepted",
+      "VBHzHqUtv7cITvqxZNK4N2qt7wx2_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "accepted"
+    },
+    "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+      "VBHzHqUtv7cITvqxZNK4N2qt7wx2_sgu6uc90loVCPVc8gqjwp8aTghE3": "accepted",
+      "sgu6uc90loVCPVc8gqjwp8aTghE3_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "accepted"
+    },
+    "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "accepted",
+      "TqlEzYtMedY5nncyJ8VcIWxvrHk1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "pending",
+      "VBHzHqUtv7cITvqxZNK4N2qt7wx2_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "accepted",
+      "sgu6uc90loVCPVc8gqjwp8aTghE3_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "accepted",
+      "zGe2wH7hfWWIHrrsLpfUlkRVQ842_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "pending"
+    },
+    "zGe2wH7hfWWIHrrsLpfUlkRVQ842": {
+      "zGe2wH7hfWWIHrrsLpfUlkRVQ842_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": "pending"
+    }
+  },
+  "UserChats": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+      "VBHzHqUtv7cITvqxZNK4N2qt7wx2_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+    },
+    "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+      "sgu6uc90loVCPVc8gqjwp8aTghE3_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+    },
+    "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true,
+      "VBHzHqUtv7cITvqxZNK4N2qt7wx2_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true,
+      "sgu6uc90loVCPVc8gqjwp8aTghE3_tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+    }
+  },
+  "Users": {
+    "0gTPuaFwzseW08y3jSlJDPyFGjn1": {
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F0gTPuaFwzseW08y3jSlJDPyFGjn1.jpg?alt=media&token=ffce2f73-d9dc-455a-a9a9-6d21fd9b58ce",
+      "bairro": "Jardim Botânico",
+      "bio": "",
+      "city": "Goiânia",
+      "email": "tabuadministrative@gmail.com",
+      "following": {
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+      },
+      "latitude": -16.7294291,
+      "longitude": -49.38033470000001,
+      "name": "TabuAdm",
+      "partys": 0,
+      "presence": {
+        "last_seen": 1775232568819,
+        "online": false
+      },
+      "reservations": 0,
+      "state": "GO",
+      "uid": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+      "unreadChatsCount": 0,
+      "vip_friends": {
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+      },
+      "vip_lists": 0
+    },
+    "6mrxsCc7FDSNwnRY7T165FSC4Jq2": {
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2F6mrxsCc7FDSNwnRY7T165FSC4Jq2.jpg?alt=media&token=600b50d6-d3d6-40e1-a8ee-bf43625147a4",
+      "bairro": "Parque Das Nações",
+      "bio": "Apenas um jovem a procura de diversão",
+      "city": "Aparecida de Goiânia",
+      "email": "demo@tabulounge.com",
+      "latitude": -16.8036135,
+      "longitude": -49.3069611,
+      "name": "Stiles",
+      "partys": 0,
+      "presence": {
+        "last_seen": 1775234630493,
+        "online": true
+      },
+      "reservations": 0,
+      "state": "GO",
+      "uid": "6mrxsCc7FDSNwnRY7T165FSC4Jq2",
+      "vip_lists": 0
+    },
+    "TqlEzYtMedY5nncyJ8VcIWxvrHk1": {
+      "avatar": "",
+      "bairro": "Independência Mansões",
+      "bio": "",
+      "city": "Aparecida de Goiânia",
+      "following": {
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+      },
+      "latitude": -16.8228144,
+      "longitude": -49.3069611,
+      "name": "Alberto",
+      "report_count": 1,
+      "state": "GO",
+      "unreadChatsCount": 0
+    },
+    "VBHzHqUtv7cITvqxZNK4N2qt7wx2": {
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FVBHzHqUtv7cITvqxZNK4N2qt7wx2.jpg?alt=media&token=5947becf-7620-4346-ab53-9a37f7e7aa3a",
+      "bairro": "Setor Bueno",
+      "bio": "Goiano raiz 🤠 Piseiro de coração.",
+      "city": "Goiânia",
+      "email": "arcanjopisos@gmail.com",
+      "followers": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+      },
+      "following": {
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": true,
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+      },
+      "historical": {
+        "partys": [
+          null,
+          "Rodeio Goiânia",
+          "Festa do Peão"
+        ],
+        "reservations": [
+          null,
+          "Camarote Premium"
+        ],
+        "vip_list": [
+          null,
+          "Lista Ouro",
+          "Lista Black"
+        ]
+      },
+      "latitude": -16.6778,
+      "longitude": -49.2551,
+      "name": "Roberto",
+      "partys": 5,
+      "presence": {
+        "last_seen": 1775171284105,
+        "online": false
+      },
+      "reservations": 3,
+      "state": "GO",
+      "uid": "VBHzHqUtv7cITvqxZNK4N2qt7wx2",
+      "unreadChatsCount": 0,
+      "vip_friends": {
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+      },
+      "vip_lists": 8
+    },
+    "presence": {
+      "last_seen": 1774914836058,
+      "online": false
+    },
+    "sgu6uc90loVCPVc8gqjwp8aTghE3": {
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2Fsgu6uc90loVCPVc8gqjwp8aTghE3.jpg?alt=media&token=fd7c9cb4-6de5-4bb0-b94e-1203e480b24f",
+      "bairro": "Asa Sul",
+      "bio": "Amante da vida noturna. Brasília de dia, pista de dança de noite 🥂",
+      "city": "Brasília",
+      "email": "viitiinmec@gmail.com",
+      "followers": {
+        "TqlEzYtMedY5nncyJ8VcIWxvrHk1": true,
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+      },
+      "following": {
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+      },
+      "historical": {
+        "partys": [
+          null,
+          "Neon Shadows",
+          "Rave do Cerrado",
+          "Tabu Friday"
+        ],
+        "reservations": [
+          null,
+          "Shadow Fast",
+          "Camarote VIP"
+        ],
+        "vip_list": [
+          null,
+          "Lista Gold",
+          "Lista Platinum"
+        ]
+      },
+      "latitude": -15.7942,
+      "longitude": -47.8825,
+      "name": "Victor",
+      "partys": 12,
+      "reservations": 5,
+      "state": "DF",
+      "uid": "sgu6uc90loVCPVc8gqjwp8aTghE3",
+      "unreadChatsCount": 0,
+      "vip_friends": {
+        "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": true
+      },
+      "vip_lists": 19
+    },
+    "tOjCDjgUhpYS5OZVTOp5eTYXV3u1": {
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/tabuapp-4325a.firebasestorage.app/o/avatars%2FtOjCDjgUhpYS5OZVTOp5eTYXV3u1.jpg?alt=media&token=4bcb04e5-6421-4216-ae9e-e190edf405ea",
+      "bairro": "Taguatinga",
+      "bio": "Goiana perdida em Brasília 🌸 Amo forró, odeio segunda",
+      "city": "Brasília",
+      "email": "natalliameuamor@gmail.com",
+      "followers": {
+        "0gTPuaFwzseW08y3jSlJDPyFGjn1": true,
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+      },
+      "following": {
+        "VBHzHqUtv7cITvqxZNK4N2qt7wx2": true,
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+      },
+      "historical": {
+        "partys": [
+          null,
+          "Tabu Friday",
+          "Open Bar Calixto"
+        ],
+        "reservations": [
+          null,
+          "Mesa VIP Tabu"
+        ],
+        "vip_list": [
+          null,
+          "Lista Diamante"
+        ]
+      },
+      "latitude": -15.8335644,
+      "longitude": -48.057109,
+      "name": "Natallia",
+      "partys": 7,
+      "penalidade_ativa": "advertencia",
+      "penalidades": {
+        "-OoXOIjFKNyb8uZ4ZA5j": {
+          "acao": "advertencia",
+          "aplicada_em": 1774398553043,
+          "aplicada_por": "0gTPuaFwzseW08y3jSlJDPyFGjn1",
+          "artigo_violado": "Art. 10º, II – TU",
+          "denuncia_id": "0gTPuaFwzseW08y3jSlJDPyFGjn1_0gTPuaFwzseW08y3jSlJDPyFGjn1_tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+          "denuncia_tipo": "chats",
+          "motivo": "Assédio ou mensagens ofensivas",
+          "motivo_admin": "Você está sendo penalizado porque seu conteúdo foi considerado ofensivo, discriminatório ou diretamente prejudicial a outros usuários. Esse tipo de comportamento não será tolerado e pode resultar em punições progressivas.",
+          "protocolo": "TABU-MN5B31ZN-I0OA",
+          "tipo": "advertencia",
+          "vista": true
+        }
+      },
+      "presence": {
+        "last_seen": 1775168350069,
+        "online": false
+      },
+      "report_count": 1,
+      "reservations": 2,
+      "state": "DF",
+      "uid": "tOjCDjgUhpYS5OZVTOp5eTYXV3u1",
+      "unreadChatsCount": 3,
+      "vip_friends": {
+        "sgu6uc90loVCPVc8gqjwp8aTghE3": true
+      },
+      "vip_lists": 4
+    },
+    "zGe2wH7hfWWIHrrsLpfUlkRVQ842": {
+      "avatar": "",
+      "bio": "",
+      "city": "",
+      "email": "kurosakicifer9@gmail.com",
+      "name": "Ichigo",
+      "partys": 0,
+      "presence": {
+        "last_seen": 1774916556391,
+        "online": false
+      },
+      "reservations": 0,
+      "state": "",
+      "uid": "zGe2wH7hfWWIHrrsLpfUlkRVQ842",
+      "vip_lists": 0
+    }
+  }
+}

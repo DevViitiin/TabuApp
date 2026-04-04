@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:tabuapp/models/party_model.dart';
 import 'package:tabuapp/services/services_app/cache_service.dart';
 
@@ -90,44 +91,53 @@ class PartyServicePaginated {
   }
 
   /// Busca todas as festas do Firebase (com cache)
-  Future<List<PartyModel>> _fetchAllPartiesFromFirebase() async {
-    final cacheKey = 'parties_all';
-    final cached = _cache.get<List<PartyModel>>(cacheKey);
-    if (cached != null) return cached;
+// lib/services/services_app/party_service_paginated.dart
 
-    final snap = await _db.ref('Festas').get();
-    if (!snap.exists || snap.value == null) return [];
+Future<List<PartyModel>> _fetchAllPartiesFromFirebase() async {
+  final cacheKey = 'parties_all';
+  final cached = _cache.get<List<PartyModel>>(cacheKey);
+  if (cached != null) return cached;
 
-    final raw = Map<dynamic, dynamic>.from(snap.value as Map);
-    final list = <PartyModel>[];
+  final snap = await _db.ref('Festas').get();
+  if (!snap.exists || snap.value == null) return [];
 
-    for (final entry in raw.entries) {
-      if (entry.value is! Map) continue;
+  final raw = Map<dynamic, dynamic>.from(snap.value as Map);
+  final list = <PartyModel>[];
 
-      try {
-        final data = Map<String, dynamic>.from(entry.value as Map);
-        data['id'] = entry.key as String;
-
-        final party = PartyModel.fromMap(entry.key as String, data);
-        list.add(party);
-      } catch (e) {
-        // Ignora festas com dados inválidos
-        continue;
-      }
+  for (final entry in raw.entries) {
+    if (entry.value is! Map) continue;
+    try {
+      final data = Map<String, dynamic>.from(entry.value as Map);
+      data['id'] = entry.key as String;
+      final party = PartyModel.fromMap(entry.key as String, data);
+      list.add(party);
+    } catch (e) {
+      debugPrint('_fetchAllPartiesFromFirebase parse error on ${entry.key}: $e');
+      continue;
     }
-
-    // Remove festas que já terminaram
-    final now = DateTime.now();
-    list.removeWhere((p) => p.dataFim.isBefore(now));
-
-    // Ordena por data de início (mais próximas primeiro)
-    list.sort((a, b) => a.dataInicio.compareTo(b.dataInicio));
-
-    // Cache por 2 minutos
-    _cache.set(cacheKey, list, ttl: const Duration(minutes: 2));
-
-    return list;
   }
+
+  // ✅ Protegido: tenta comparar dataFim; se falhar, mantém a festa
+  final now = DateTime.now();
+  list.removeWhere((p) {
+    try {
+      return p.dataFim.isBefore(now);
+    } catch (_) {
+      return false; // se a data estiver corrompida, não remove
+    }
+  });
+
+  list.sort((a, b) {
+    try {
+      return a.dataInicio.compareTo(b.dataInicio);
+    } catch (_) {
+      return 0;
+    }
+  });
+
+  _cache.set(cacheKey, list, ttl: const Duration(minutes: 2));
+  return list;
+}
 
   /// Aplica filtros às festas
   List<PartyModel> _applyPartyFilters({

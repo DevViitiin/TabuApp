@@ -13,34 +13,34 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   
-  # Firebase - versões estáveis compatíveis
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
-  firebase_database: ^11.1.4
-  firebase_storage: ^12.3.7
-  cloud_functions: ^5.1.3
+  # Firebase - VERSÕES ATUALIZADAS ✅
+  firebase_core: ^3.15.0
+  firebase_auth: ^5.7.0
+  firebase_database: ^11.3.0
+  firebase_storage: ^12.4.0
+  cloud_functions: ^5.6.0
   
-  # Google Services
+  # Google Services - ATUALIZADAS ✅
   google_places_flutter: ^2.0.9
-  google_maps_flutter: ^2.9.0
-  google_sign_in: ^6.1.6
-  geolocator: ^13.0.1
+  google_maps_flutter: ^2.16.0
+  google_sign_in: ^6.3.0
+  geolocator: ^13.0.4
   
-  # Media
-  video_player: ^2.8.6
-  video_compress: ^3.1.2
-  camera: ^0.10.5+9
+  # Media - ATUALIZADAS ✅
+  video_player: ^2.9.2
+  video_compress: ^3.1.3
+  camera: ^0.10.6
   image_picker: ^1.1.2
   ffmpeg_kit_flutter_new: ^4.1.0
   
-  # Utilities
-  path_provider: ^2.1.0
-  intl: ^0.18.0
-  shared_preferences: ^2.2.2
-  provider: ^6.1.1
-  permission_handler: ^11.3.0
+  # Utilities - ATUALIZADAS ✅
+  path_provider: ^2.1.5
+  intl: ^0.19.0
+  shared_preferences: ^2.3.4
+  provider: ^6.1.2
+  permission_handler: ^11.4.0
   flutter_cache_manager: ^3.4.1
-  cached_network_image: ^3.3.0
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:
