@@ -10,10 +10,11 @@ import 'package:tabuapp/core/theme/tabu_theme.dart';
 import 'package:tabuapp/services/services_app/user_avatar_service.dart';
 import 'package:tabuapp/services/services_app/edit_perfil_service.dart';
 import 'package:tabuapp/services/services_app/user_data_notifier.dart';
+// ← NOVO IMPORT
+import 'package:tabuapp/services/services_app/user_profile_cache.dart';
 
 const _kPlacesApiKey = 'AIzaSyDt4lIuxWvTESG21ok0YexdTgskf8NaNZ4';
 
-// ── Lista de estados brasileiros ──────────────────────────────────────────────
 const _kEstados = [
   {'sigla': 'AC', 'nome': 'Acre'},
   {'sigla': 'AL', 'nome': 'Alagoas'},
@@ -44,7 +45,6 @@ const _kEstados = [
   {'sigla': 'TO', 'nome': 'Tocantins'},
 ];
 
-// Status de validação
 enum _FieldStatus { idle, validando, valido, invalido }
 
 class EditPerfilScreen extends StatefulWidget {
@@ -57,10 +57,10 @@ class EditPerfilScreen extends StatefulWidget {
 }
 
 class _EditPerfilScreenState extends State<EditPerfilScreen> {
-  final _service  = EditPerfilService();
-  final _formKey  = GlobalKey<FormState>();
-  final _nameFocus  = FocusNode();
-  final _bioFocus   = FocusNode();
+  final _service   = EditPerfilService();
+  final _formKey   = GlobalKey<FormState>();
+  final _nameFocus   = FocusNode();
+  final _bioFocus    = FocusNode();
   final _cidadeFocus = FocusNode();
   final _bairroFocus = FocusNode();
 
@@ -69,7 +69,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
   late TextEditingController _cidadeCtrl;
   late TextEditingController _bairroCtrl;
 
-  // Estado selecionado via dropdown
   String? _estadoSelecionado;
 
   final _cidadeFieldKey = GlobalKey();
@@ -86,24 +85,19 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
   bool                 _mapaConfirmado = false;
   GoogleMapController?  _mapController;
 
-  // Autocomplete cidade
   List<Map<String, dynamic>> _sugestoes = [];
   bool                       _buscando  = false;
 
-  // Validação da cidade (verifica se pertence ao estado)
   _FieldStatus _cidadeStatus  = _FieldStatus.idle;
   String?      _cidadeErro;
   String?      _cidadeValidada;
 
-  // Validação do bairro
   _FieldStatus _bairroStatus  = _FieldStatus.idle;
   String?      _bairroErro;
   String?      _bairroValidado;
 
-  // Debounce
   DateTime? _bairroUltimaDigitacao;
 
-  // ── Getters ────────────────────────────────────────────────────────────────
   bool get _estadoPreenchido  => _estadoSelecionado != null && _estadoSelecionado!.isNotEmpty;
   bool get _cidadePreenchida  => _cidadeCtrl.text.trim().isNotEmpty && _latitude != null && _cidadeStatus == _FieldStatus.valido;
   bool get _bairroOk          => _bairroStatus == _FieldStatus.valido;
@@ -124,27 +118,22 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     _cidadeCtrl = TextEditingController(text: widget.userData['city']   as String? ?? '');
     _bairroCtrl = TextEditingController(text: widget.userData['bairro'] as String? ?? '');
 
-    // Inicializa estado pelo dropdown
     final estadoSalvo = widget.userData['state'] as String? ?? '';
     _estadoSelecionado = _kEstados.any((e) => e['sigla'] == estadoSalvo)
-        ? estadoSalvo
-        : null;
+        ? estadoSalvo : null;
 
     _currentAvatar = widget.userData['avatar']    as String? ?? '';
     _latitude      = (widget.userData['latitude']  as num?)?.toDouble();
     _longitude     = (widget.userData['longitude'] as num?)?.toDouble();
 
-    // Se já tinha dados salvos, marca como válidos
     if (_cidadeCtrl.text.trim().isNotEmpty &&
-        _estadoSelecionado != null &&
-        _latitude != null) {
+        _estadoSelecionado != null && _latitude != null) {
       _cidadeStatus   = _FieldStatus.valido;
       _cidadeValidada = _cidadeCtrl.text.trim();
     }
 
     if (_bairroCtrl.text.trim().isNotEmpty &&
-        _cidadeCtrl.text.trim().isNotEmpty &&
-        _estadoSelecionado != null) {
+        _cidadeCtrl.text.trim().isNotEmpty && _estadoSelecionado != null) {
       _bairroStatus   = _FieldStatus.valido;
       _bairroValidado = _bairroCtrl.text.trim();
     }
@@ -185,7 +174,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     super.dispose();
   }
 
-  // ── Overlay sugestões cidade ───────────────────────────────────────────────
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
@@ -252,7 +240,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  // ── Busca cidades (filtrado pelo estado selecionado) ───────────────────────
   Future<void> _buscarCidades(String input) async {
     if (input.length < 2) {
       _removeOverlay();
@@ -278,7 +265,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
       final data  = jsonDecode(res.body) as Map<String, dynamic>;
       final preds = (data['predictions'] as List? ?? []).cast<Map<String, dynamic>>();
 
-      // Filtra sugestões pelo estado selecionado
       final estadoNome = _kEstados
           .firstWhere((e) => e['sigla'] == _estadoSelecionado,
               orElse: () => {'sigla': '', 'nome': ''})['nome']!
@@ -297,7 +283,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     }
   }
 
-  // ── Seleciona cidade e valida que ela está no estado escolhido ─────────────
   Future<void> _selecionarCidade(Map<String, dynamic> pred) async {
     final placeId = pred['place_id'] as String? ?? '';
     _removeOverlay();
@@ -330,7 +315,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
 
       if (!mounted) return;
 
-      // ── Validação: cidade deve pertencer ao estado selecionado ──────────────
       if (stateFromApi != null &&
           stateFromApi.toUpperCase() != (_estadoSelecionado ?? '').toUpperCase()) {
         final nomeEstadoSelecionado = _kEstados
@@ -352,7 +336,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
         _cidadeStatus    = _FieldStatus.valido;
         _cidadeValidada  = city ?? '';
         _cidadeErro      = null;
-        // Reseta bairro pois a cidade mudou
         _bairroStatus    = _FieldStatus.idle;
         _bairroErro      = null;
         _bairroValidado  = null;
@@ -379,26 +362,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     }
   }
 
-  // ── Validação do bairro ────────────────────────────────────────────────────
-  //
-  // Por que as abordagens anteriores falhavam:
-  //   - Autocomplete com "bairro, cidade, estado" na query: o Google geocodifica
-  //     o texto todo e ignora qualquer bounds/bias, então "Setor Independência
-  //     Mansões, Brasília, DF" retorna Brasília mesmo que o bairro fique em
-  //     Aparecida de Goiânia.
-  //   - Geocoding com bounds + texto completo: mesma coisa — o texto explícito
-  //     da cidade/estado na query domina e o bounds vira só hint fraco.
-  //
-  // Solução correta:
-  //   Buscar APENAS o nome do bairro (sem cidade/estado na query) usando a
-  //   Geocoding API com `location` (ponto central) + `radius` em metros via
-  //   o novo endpoint Places API Nearby ou, mais simples e sem SDK adicional,
-  //   usando o parâmetro `latlng` do Reverse Geocoding não — usamos o
-  //   `components=locality` + `bounds` apertado (±0.05° ≈ 5 km).
-  //
-  //   Com query = só o nome do bairro e bounds restrito à cidade, o Google não
-  //   tem texto de cidade/estado para se agarrar e obedece o bounds de verdade.
-  //   Os address_components do resultado são então verificados estruturalmente.
   Future<void> _validarBairro(String bairro) async {
     if (!_cidadePreenchida) return;
     if (bairro.isEmpty) {
@@ -414,17 +377,12 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
       final cidadeNorm = _normalizar(cidade);
       final estadoNorm = estado.toUpperCase().trim();
 
-      // Coordenadas da cidade (salvas quando o usuário selecionou a cidade)
       final latC  = _latitude!;
       final lngC  = _longitude!;
-
-      // bounds apertado ±0.05° ≈ 5 km — não deixa o Google escapar para outra cidade
       const delta = 0.05;
       final sw = '${latC - delta},${lngC - delta}';
       final ne = '${latC + delta},${lngC + delta}';
 
-      // Query = SOMENTE o nome do bairro, sem cidade/estado
-      // Isso força o Google a usar o bounds como localização principal
       final uri = Uri.parse(
         'https://maps.googleapis.com/maps/api/geocode/json'
         '?address=${Uri.encodeComponent(bairro)}'
@@ -455,12 +413,10 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
         String? cidadeComp, estadoComp;
         for (final c in comps) {
           final types = (c['types'] as List).cast<String>();
-          if (types.contains('administrative_area_level_2')) {
+          if (types.contains('administrative_area_level_2'))
             cidadeComp = _normalizar(c['long_name'] as String? ?? '');
-          }
-          if (types.contains('administrative_area_level_1')) {
+          if (types.contains('administrative_area_level_1'))
             estadoComp = (c['short_name'] as String? ?? '').toUpperCase().trim();
-          }
         }
 
         final cidadeOk = cidadeComp != null && cidadeComp == cidadeNorm;
@@ -489,7 +445,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
         }
       }
 
-      // Nenhum resultado dentro do bounds bateu cidade + estado
       if (!mounted) return;
       setState(() {
         _bairroStatus   = _FieldStatus.invalido;
@@ -506,14 +461,11 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     }
   }
 
-  /// Normaliza string: minúsculas, sem acentos, sem espaços extras.
   String _normalizar(String s) {
     const from = 'àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ';
     const to   = 'aaaaaaa ceeeeiiiidnoooooouuuuypy';
     var r = s.toLowerCase().trim();
-    for (var i = 0; i < from.length; i++) {
-      r = r.replaceAll(from[i], to[i]);
-    }
+    for (var i = 0; i < from.length; i++) r = r.replaceAll(from[i], to[i]);
     return r;
   }
 
@@ -521,7 +473,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     _latitude = pos.latitude; _longitude = pos.longitude; _mapaConfirmado = false;
   });
 
-  // ── Imagem ─────────────────────────────────────────────────────────────────
   Future<void> _pickImage(ImageSource source) async {
     Navigator.pop(context);
     final picked = await ImagePicker().pickImage(
@@ -530,7 +481,7 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     setState(() => _imageFile = File(picked.path));
   }
 
-  // ── Salvar ─────────────────────────────────────────────────────────────────
+  // ── SALVAR ─────────────────────────────────────────────────────────────────
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -569,8 +520,18 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
         longitude: _longitude,
       );
       if (mounted) {
+        final uid = updated['uid'] as String? ?? '';
+
+        // Atualiza notifier (feed do próprio usuário já reflete)
         UserDataNotifier.instance.update(updated);
-        UserAvatarService.instance.invalidate(updated['uid'] as String? ?? '');
+
+        // Invalida cache de avatar
+        UserAvatarService.instance.invalidate(uid);
+
+        // ← NOVO: invalida o UserProfileCache para que os posts
+        //   exibam nome e avatar atualizados na próxima renderização
+        UserProfileCache.instance.invalidate(uid);
+
         widget.onSaved?.call(updated);
         _showSnack('PERFIL ATUALIZADO', success: true);
         Navigator.pop(context, updated);
@@ -625,7 +586,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
       ])));
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final busy = _saving || _uploading;
@@ -640,9 +600,7 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
               TabuColors.rosaDeep, TabuColors.rosaPrincipal,
               TabuColors.rosaClaro, TabuColors.rosaPrincipal, TabuColors.rosaDeep,
             ])))),
-
         SafeArea(child: Column(children: [
-
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 12, 16, 0),
             child: Row(children: [
@@ -665,9 +623,7 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                         fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2.5,
                         color: busy ? TabuColors.subtle : TabuColors.branco)))),
             ])),
-
           Container(height: 0.5, color: TabuColors.border),
-
           Expanded(child: GestureDetector(
             onTap: () { FocusScope.of(context).unfocus(); _removeOverlay(); },
             behavior: HitTestBehavior.translucent,
@@ -678,28 +634,23 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 36),
-
                   _AvatarPicker(
                     imageFile: _imageFile, avatarUrl: _currentAvatar,
                     uploading: _uploading, uploadProgress: _uploadProgress,
                     onTap: _showImagePicker),
-
                   const SizedBox(height: 36),
-
                   _SectionLabel(label: 'DADOS PESSOAIS'),
                   const SizedBox(height: 14),
-
                   _TabuField(
                     controller: _nameCtrl, focusNode: _nameFocus,
                     label: 'NOME', icon: Icons.person_outline,
                     hint: 'Seu nome',
+                    maxLength: 20,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     validator: (v) => (v == null || v.trim().isEmpty) ? 'Nome é obrigatório' : null,
                     onEditingComplete: () => FocusScope.of(context).requestFocus(_bioFocus)),
-
                   const SizedBox(height: 14),
-
                   _TabuField(
                     controller: _bioCtrl, focusNode: _bioFocus,
                     label: 'BIO', icon: Icons.edit_note_outlined,
@@ -707,12 +658,9 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                     maxLines: 3, maxLength: 120,
                     keyboardType: TextInputType.multiline,
                     textInputAction: TextInputAction.newline),
-
                   const SizedBox(height: 28),
-
                   _SectionLabel(label: 'LOCALIZAÇÃO'),
                   const SizedBox(height: 6),
-
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
@@ -726,46 +674,27 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                         style: TextStyle(fontFamily: TabuTypography.bodyFont,
                             fontSize: 11, letterSpacing: 0.5, color: TabuColors.subtle))),
                     ])),
-
                   const SizedBox(height: 16),
-
-                  // ── Dropdown de estados ──────────────────────────────────
                   _buildEstadoDropdown(),
-
                   const SizedBox(height: 14),
-
-                  // ── Cidade com autocomplete ──────────────────────────────
                   _buildCidadeField(),
-
                   const SizedBox(height: 14),
-
-                  // ── Bairro com validação ─────────────────────────────────
                   _buildBairroField(),
-
                   const SizedBox(height: 10),
-
-                  // ── Mini-mapa ────────────────────────────────────────────
                   if (_latitude != null) _buildMiniMap(),
-
                   const SizedBox(height: 28),
-
                   _SectionLabel(label: 'CONTA'),
                   const SizedBox(height: 14),
-
                   _ReadOnlyField(
                     label: 'E-MAIL',
                     value: widget.userData['email'] as String? ?? '',
                     icon: Icons.mail_outline),
-
                   const SizedBox(height: 8),
                   _InfoBox(text: 'O e-mail não pode ser alterado por aqui.'),
-
                   const SizedBox(height: 40),
-
                   _SaveButton(
                     saving: _saving, uploading: _uploading,
                     progress: _uploadProgress, onTap: _save),
-
                   const SizedBox(height: 40),
                 ],
               )),
@@ -776,10 +705,8 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     );
   }
 
-  // ── Dropdown de estados ────────────────────────────────────────────────────
   Widget _buildEstadoDropdown() {
     final hasValue = _estadoSelecionado != null;
-
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
         Icon(Icons.map_outlined,
@@ -804,8 +731,7 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
               color: TabuColors.subtle, size: 20),
           dropdownColor: TabuColors.bgAlt,
           style: const TextStyle(fontFamily: TabuTypography.bodyFont,
-              fontSize: 15, fontWeight: FontWeight.w500,
-              color: TabuColors.branco),
+              fontSize: 15, fontWeight: FontWeight.w500, color: TabuColors.branco),
           decoration: const InputDecoration(
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -817,18 +743,11 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
           onChanged: (val) {
             setState(() {
               _estadoSelecionado = val;
-              // Reseta cidade e bairro ao trocar estado
               _cidadeCtrl.clear();
-              _latitude        = null;
-              _longitude       = null;
-              _mapaConfirmado  = false;
-              _cidadeStatus    = _FieldStatus.idle;
-              _cidadeErro      = null;
-              _cidadeValidada  = null;
-              _bairroStatus    = _FieldStatus.idle;
-              _bairroErro      = null;
-              _bairroValidado  = null;
-              _sugestoes       = [];
+              _latitude = null; _longitude = null; _mapaConfirmado = false;
+              _cidadeStatus = _FieldStatus.idle; _cidadeErro = null; _cidadeValidada = null;
+              _bairroStatus = _FieldStatus.idle; _bairroErro = null; _bairroValidado = null;
+              _sugestoes = [];
             });
             _removeOverlay();
           },
@@ -842,37 +761,29 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                   decoration: BoxDecoration(
                     color: TabuColors.rosaPrincipal.withOpacity(0.15),
                     border: Border.all(color: TabuColors.border, width: 0.5)),
-                  child: Text(e['sigla']!,
-                    style: const TextStyle(
-                        fontFamily: TabuTypography.bodyFont,
-                        fontSize: 9, fontWeight: FontWeight.w800,
-                        letterSpacing: 1, color: TabuColors.rosaPrincipal))),
+                  child: Text(e['sigla']!, style: const TextStyle(
+                      fontFamily: TabuTypography.bodyFont,
+                      fontSize: 9, fontWeight: FontWeight.w800,
+                      letterSpacing: 1, color: TabuColors.rosaPrincipal))),
                 const SizedBox(width: 10),
-                Text(e['nome']!,
-                  style: const TextStyle(fontFamily: TabuTypography.bodyFont,
-                      fontSize: 13, color: TabuColors.branco)),
+                Text(e['nome']!, style: const TextStyle(
+                    fontFamily: TabuTypography.bodyFont, fontSize: 13, color: TabuColors.branco)),
               ]));
           }).toList(),
         )),
     ]);
   }
 
-  // ── Campo cidade com autocomplete ──────────────────────────────────────────
   Widget _buildCidadeField() {
     final focused  = _cidadeFocus.hasFocus;
     final hasValue = _cidadeCtrl.text.isNotEmpty;
 
-    // Cor da borda conforme status
     Color bordaColor;
     switch (_cidadeStatus) {
-      case _FieldStatus.valido:
-        bordaColor = TabuColors.rosaPrincipal;
-      case _FieldStatus.invalido:
-        bordaColor = const Color(0xFFE85D5D);
-      case _FieldStatus.validando:
-        bordaColor = TabuColors.rosaPrincipal.withOpacity(0.5);
-      case _FieldStatus.idle:
-        bordaColor = focused ? TabuColors.rosaPrincipal : TabuColors.border;
+      case _FieldStatus.valido:    bordaColor = TabuColors.rosaPrincipal;
+      case _FieldStatus.invalido:  bordaColor = const Color(0xFFE85D5D);
+      case _FieldStatus.validando: bordaColor = TabuColors.rosaPrincipal.withOpacity(0.5);
+      case _FieldStatus.idle:      bordaColor = focused ? TabuColors.rosaPrincipal : TabuColors.border;
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -912,31 +823,24 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
           const Icon(Icons.search_rounded, color: TabuColors.subtle, size: 18),
           const SizedBox(width: 8),
           Expanded(child: TextField(
-            controller: _cidadeCtrl,
-            focusNode: _cidadeFocus,
+            controller: _cidadeCtrl, focusNode: _cidadeFocus,
             enabled: _estadoPreenchido,
             style: TextStyle(fontFamily: TabuTypography.bodyFont,
-                fontSize: 15, fontWeight: FontWeight.w500,
-                letterSpacing: 0.3,
+                fontSize: 15, fontWeight: FontWeight.w500, letterSpacing: 0.3,
                 color: _estadoPreenchido ? TabuColors.branco : TabuColors.subtle),
             cursorColor: TabuColors.rosaPrincipal,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               border: InputBorder.none, isDense: true,
-              hintText: _estadoPreenchido
-                  ? 'Busque sua cidade...'
-                  : 'Selecione o estado primeiro',
+              hintText: _estadoPreenchido ? 'Busque sua cidade...' : 'Selecione o estado primeiro',
               hintStyle: const TextStyle(fontFamily: TabuTypography.bodyFont,
                   fontSize: 13, color: TabuColors.subtle),
               contentPadding: const EdgeInsets.symmetric(vertical: 14)),
             onChanged: (v) {
-              // Reseta validação ao digitar
               setState(() {
-                _cidadeStatus = _FieldStatus.idle;
-                _cidadeErro   = null;
-                _latitude     = null;
-                _longitude    = null;
+                _cidadeStatus = _FieldStatus.idle; _cidadeErro = null;
+                _latitude = null; _longitude = null;
               });
               _buscarCidades(v);
             },
@@ -949,56 +853,40 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                     color: TabuColors.rosaPrincipal, strokeWidth: 1.5)))
           else if (_cidadeStatus == _FieldStatus.valido)
             const Padding(padding: EdgeInsets.only(right: 10),
-              child: Icon(Icons.check_circle_rounded,
-                  color: TabuColors.rosaPrincipal, size: 18))
+              child: Icon(Icons.check_circle_rounded, color: TabuColors.rosaPrincipal, size: 18))
           else if (_cidadeStatus == _FieldStatus.invalido)
             const Padding(padding: EdgeInsets.only(right: 10),
-              child: Icon(Icons.cancel_rounded,
-                  color: Color(0xFFE85D5D), size: 18))
+              child: Icon(Icons.cancel_rounded, color: Color(0xFFE85D5D), size: 18))
           else if (hasValue && !focused)
             const Padding(padding: EdgeInsets.only(right: 10),
-              child: Icon(Icons.check_circle_rounded,
-                  color: TabuColors.rosaPrincipal, size: 18))
+              child: Icon(Icons.check_circle_rounded, color: TabuColors.rosaPrincipal, size: 18))
           else if (hasValue)
             GestureDetector(
               onTap: () {
-                _cidadeCtrl.clear();
-                _removeOverlay();
+                _cidadeCtrl.clear(); _removeOverlay();
                 setState(() {
-                  _sugestoes    = [];
-                  _latitude     = null;
-                  _longitude    = null;
-                  _mapaConfirmado = false;
-                  _cidadeStatus = _FieldStatus.idle;
-                  _cidadeErro   = null;
-                  _cidadeValidada = null;
-                  _bairroStatus = _FieldStatus.idle;
-                  _bairroErro   = null;
-                  _bairroValidado = null;
+                  _sugestoes = []; _latitude = null; _longitude = null;
+                  _mapaConfirmado = false; _cidadeStatus = _FieldStatus.idle;
+                  _cidadeErro = null; _cidadeValidada = null;
+                  _bairroStatus = _FieldStatus.idle; _bairroErro = null; _bairroValidado = null;
                 });
               },
               child: const Padding(padding: EdgeInsets.only(right: 10),
                 child: Icon(Icons.close_rounded, color: TabuColors.subtle, size: 16))),
         ])),
-
-      // Mensagem de erro/sucesso cidade
       if (_cidadeStatus == _FieldStatus.invalido && _cidadeErro != null)
-        Padding(
-          padding: const EdgeInsets.only(top: 5, left: 2),
+        Padding(padding: const EdgeInsets.only(top: 5, left: 2),
           child: Row(children: [
             const Icon(Icons.info_outline, color: Color(0xFFE85D5D), size: 11),
             const SizedBox(width: 4),
-            Expanded(child: Text(_cidadeErro!,
-              style: const TextStyle(fontFamily: TabuTypography.bodyFont,
-                  fontSize: 10, letterSpacing: 0.8, color: Color(0xFFE85D5D)))),
+            Expanded(child: Text(_cidadeErro!, style: const TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 10, letterSpacing: 0.8, color: Color(0xFFE85D5D)))),
           ])),
-
       if (_cidadeStatus == _FieldStatus.valido)
-        Padding(
-          padding: const EdgeInsets.only(top: 5, left: 2),
+        Padding(padding: const EdgeInsets.only(top: 5, left: 2),
           child: Row(children: [
-            const Icon(Icons.check_circle_outline,
-                color: TabuColors.rosaPrincipal, size: 11),
+            const Icon(Icons.check_circle_outline, color: TabuColors.rosaPrincipal, size: 11),
             const SizedBox(width: 4),
             Text('Cidade confirmada em $_estadoSelecionado',
               style: const TextStyle(fontFamily: TabuTypography.bodyFont,
@@ -1007,20 +895,15 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
     ]);
   }
 
-  // ── Campo bairro com validação inline ─────────────────────────────────────
   Widget _buildBairroField() {
     final focused = _bairroFocus.hasFocus;
 
     Color bordaColor;
     switch (_bairroStatus) {
-      case _FieldStatus.valido:
-        bordaColor = TabuColors.rosaPrincipal;
-      case _FieldStatus.invalido:
-        bordaColor = const Color(0xFFE85D5D);
-      case _FieldStatus.validando:
-        bordaColor = TabuColors.rosaPrincipal.withOpacity(0.5);
-      case _FieldStatus.idle:
-        bordaColor = focused ? TabuColors.rosaPrincipal : TabuColors.border;
+      case _FieldStatus.valido:    bordaColor = TabuColors.rosaPrincipal;
+      case _FieldStatus.invalido:  bordaColor = const Color(0xFFE85D5D);
+      case _FieldStatus.validando: bordaColor = TabuColors.rosaPrincipal.withOpacity(0.5);
+      case _FieldStatus.idle:      bordaColor = focused ? TabuColors.rosaPrincipal : TabuColors.border;
     }
 
     Widget? sufixo;
@@ -1028,16 +911,13 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
       case _FieldStatus.validando:
         sufixo = const Padding(padding: EdgeInsets.only(right: 12),
           child: SizedBox(width: 14, height: 14,
-            child: CircularProgressIndicator(
-                color: TabuColors.rosaPrincipal, strokeWidth: 1.5)));
+            child: CircularProgressIndicator(color: TabuColors.rosaPrincipal, strokeWidth: 1.5)));
       case _FieldStatus.valido:
         sufixo = const Padding(padding: EdgeInsets.only(right: 10),
-          child: Icon(Icons.check_circle_rounded,
-              color: TabuColors.rosaPrincipal, size: 18));
+          child: Icon(Icons.check_circle_rounded, color: TabuColors.rosaPrincipal, size: 18));
       case _FieldStatus.invalido:
         sufixo = const Padding(padding: EdgeInsets.only(right: 10),
-          child: Icon(Icons.cancel_rounded,
-              color: Color(0xFFE85D5D), size: 18));
+          child: Icon(Icons.cancel_rounded, color: Color(0xFFE85D5D), size: 18));
       case _FieldStatus.idle:
         sufixo = null;
     }
@@ -1068,7 +948,6 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
         ],
       ]),
       const SizedBox(height: 6),
-
       Container(
         decoration: BoxDecoration(
           color: TabuColors.bgCard,
@@ -1077,12 +956,10 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
         child: Row(children: [
           const SizedBox(width: 16),
           Expanded(child: TextFormField(
-            controller: _bairroCtrl,
-            focusNode:  _bairroFocus,
-            enabled:    _cidadePreenchida,
+            controller: _bairroCtrl, focusNode: _bairroFocus,
+            enabled: _cidadePreenchida,
             style: TextStyle(fontFamily: TabuTypography.bodyFont,
-                fontSize: 15, fontWeight: FontWeight.w500,
-                letterSpacing: 0.3,
+                fontSize: 15, fontWeight: FontWeight.w500, letterSpacing: 0.3,
                 color: _cidadePreenchida ? TabuColors.branco : TabuColors.subtle),
             cursorColor: TabuColors.rosaPrincipal,
             textCapitalization: TextCapitalization.words,
@@ -1094,74 +971,58 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
             },
             decoration: InputDecoration(
               border: InputBorder.none, isDense: true,
-              hintText: _cidadePreenchida
-                  ? 'Ex: Setor Bueno, Jardins...'
-                  : 'Confirme a cidade primeiro',
+              hintText: _cidadePreenchida ? 'Ex: Setor Bueno, Jardins...' : 'Confirme a cidade primeiro',
               hintStyle: const TextStyle(fontFamily: TabuTypography.bodyFont,
                   fontSize: 13, color: TabuColors.subtle),
               contentPadding: const EdgeInsets.symmetric(vertical: 14),
               errorStyle: const TextStyle(height: 0)),
             onChanged: (v) {
               setState(() {
-                _bairroStatus   = _FieldStatus.idle;
-                _bairroErro     = null;
-                _mapaConfirmado = false;
+                _bairroStatus = _FieldStatus.idle; _bairroErro = null; _mapaConfirmado = false;
               });
               _bairroUltimaDigitacao = DateTime.now();
               final capturedTime = _bairroUltimaDigitacao!;
               Future.delayed(const Duration(milliseconds: 800), () {
                 if (_bairroUltimaDigitacao == capturedTime && mounted) {
                   final current = _bairroCtrl.text.trim();
-                  if (current.isNotEmpty && _cidadePreenchida) {
-                    _validarBairro(current);
-                  }
+                  if (current.isNotEmpty && _cidadePreenchida) _validarBairro(current);
                 }
               });
             },
             onEditingComplete: () {
               FocusScope.of(context).unfocus();
               final v = _bairroCtrl.text.trim();
-              if (v.isNotEmpty && _cidadePreenchida && v != _bairroValidado) {
-                _validarBairro(v);
-              }
+              if (v.isNotEmpty && _cidadePreenchida && v != _bairroValidado) _validarBairro(v);
             },
           )),
           if (sufixo != null) sufixo,
         ])),
-
       if (_bairroStatus == _FieldStatus.invalido && _bairroErro != null)
-        Padding(
-          padding: const EdgeInsets.only(top: 5, left: 2),
+        Padding(padding: const EdgeInsets.only(top: 5, left: 2),
           child: Row(children: [
             const Icon(Icons.info_outline, color: Color(0xFFE85D5D), size: 11),
             const SizedBox(width: 4),
-            Expanded(child: Text(_bairroErro!,
-              style: const TextStyle(fontFamily: TabuTypography.bodyFont,
-                  fontSize: 10, letterSpacing: 0.8, color: Color(0xFFE85D5D)))),
+            Expanded(child: Text(_bairroErro!, style: const TextStyle(
+                fontFamily: TabuTypography.bodyFont,
+                fontSize: 10, letterSpacing: 0.8, color: Color(0xFFE85D5D)))),
           ])),
-
       if (_bairroStatus == _FieldStatus.valido)
-        Padding(
-          padding: const EdgeInsets.only(top: 5, left: 2),
+        Padding(padding: const EdgeInsets.only(top: 5, left: 2),
           child: Row(children: [
-            const Icon(Icons.check_circle_outline,
-                color: TabuColors.rosaPrincipal, size: 11),
+            const Icon(Icons.check_circle_outline, color: TabuColors.rosaPrincipal, size: 11),
             const SizedBox(width: 4),
             Text('Bairro confirmado em ${_cidadeCtrl.text.trim()}',
               style: const TextStyle(fontFamily: TabuTypography.bodyFont,
                   fontSize: 10, letterSpacing: 0.8, color: TabuColors.rosaPrincipal)),
           ])),
-
       if (_bairroStatus == _FieldStatus.validando)
-        const Padding(
-          padding: EdgeInsets.only(top: 5, left: 2),
-          child: Text('Verificando bairro...',
-            style: TextStyle(fontFamily: TabuTypography.bodyFont,
-                fontSize: 10, letterSpacing: 0.8, color: TabuColors.subtle))),
+        const Padding(padding: EdgeInsets.only(top: 5, left: 2),
+          child: Text('Verificando bairro...', style: TextStyle(
+              fontFamily: TabuTypography.bodyFont,
+              fontSize: 10, letterSpacing: 0.8, color: TabuColors.subtle))),
     ]);
   }
 
-  // ── Mini-mapa ──────────────────────────────────────────────────────────────
   Widget _buildMiniMap() {
     final pos        = LatLng(_latitude!, _longitude!);
     final enderecoOk = _localizacaoCompleta;
@@ -1178,43 +1039,29 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
               : enderecoOk ? TabuColors.borderMid : TabuColors.border.withOpacity(0.4),
           width: _mapaConfirmado ? 1.5 : 0.8)),
       child: Stack(children: [
-
         GoogleMap(
           initialCameraPosition: CameraPosition(target: pos, zoom: 15),
           onMapCreated: (ctrl) => _mapController = ctrl,
           markers: {
             Marker(
-              markerId: const MarkerId('perfil'),
-              position: pos,
-              draggable: enderecoOk,
-              onDragEnd: _onPinDragged,
+              markerId: const MarkerId('perfil'), position: pos,
+              draggable: enderecoOk, onDragEnd: _onPinDragged,
               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose),
             ),
           },
-          myLocationButtonEnabled: false,
-          zoomControlsEnabled: false,
-          mapToolbarEnabled: false,
-          compassEnabled: false,
-          style: _mapStyle,
+          myLocationButtonEnabled: false, zoomControlsEnabled: false,
+          mapToolbarEnabled: false, compassEnabled: false, style: _mapStyle,
         ),
-
         if (!enderecoOk)
-          Positioned.fill(
-            child: Container(
-              color: Colors.black.withOpacity(0.6),
-              child: Center(child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.edit_location_alt_outlined,
-                      color: TabuColors.subtle, size: 24),
-                  const SizedBox(height: 8),
-                  Text(_getMensagemMapa(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontFamily: TabuTypography.bodyFont,
-                        fontSize: 11, letterSpacing: 1, color: TabuColors.subtle)),
-                ]))),
-          ),
-
+          Positioned.fill(child: Container(
+            color: Colors.black.withOpacity(0.6),
+            child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Icon(Icons.edit_location_alt_outlined, color: TabuColors.subtle, size: 24),
+              const SizedBox(height: 8),
+              Text(_getMensagemMapa(), textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: TabuTypography.bodyFont,
+                    fontSize: 11, letterSpacing: 1, color: TabuColors.subtle)),
+            ])))),
         if (enderecoOk && !_mapaConfirmado)
           Positioned(top: 10, left: 0, right: 0,
             child: Center(child: Container(
@@ -1225,11 +1072,10 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
               child: const Row(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.open_with_rounded, color: TabuColors.subtle, size: 11),
                 SizedBox(width: 5),
-                Text('Arraste o pin para ajustar',
-                  style: TextStyle(fontFamily: TabuTypography.bodyFont,
-                      fontSize: 10, letterSpacing: 1, color: TabuColors.subtle)),
+                Text('Arraste o pin para ajustar', style: TextStyle(
+                    fontFamily: TabuTypography.bodyFont, fontSize: 10,
+                    letterSpacing: 1, color: TabuColors.subtle)),
               ])))),
-
         Positioned(bottom: 10, right: 10,
           child: GestureDetector(
             onTap: enderecoOk
@@ -1241,9 +1087,7 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
               decoration: BoxDecoration(
                 color: _mapaConfirmado
                     ? TabuColors.rosaPrincipal
-                    : enderecoOk
-                        ? Colors.black.withOpacity(0.75)
-                        : Colors.black.withOpacity(0.3),
+                    : enderecoOk ? Colors.black.withOpacity(0.75) : Colors.black.withOpacity(0.3),
                 border: Border.all(
                   color: _mapaConfirmado
                       ? TabuColors.rosaPrincipal
@@ -1260,15 +1104,13 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                       color: enderecoOk ? Colors.white : TabuColors.subtle)),
               ]))),
         ),
-
         if (enderecoOk && texto.isNotEmpty)
           Positioned(bottom: 10, left: 10,
             child: Container(
               constraints: const BoxConstraints(maxWidth: 210),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
               color: Colors.black.withOpacity(0.65),
-              child: Text(texto,
-                maxLines: 2, overflow: TextOverflow.ellipsis,
+              child: Text(texto, maxLines: 2, overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontFamily: TabuTypography.bodyFont,
                     fontSize: 9, letterSpacing: 0.3, color: TabuColors.subtle)))),
       ]),
@@ -1276,16 +1118,15 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
   }
 
   String _getMensagemMapa() {
-    if (!_estadoPreenchido)                                 return 'Selecione seu estado\npara começar';
-    if (!_cidadePreenchida)                                 return 'Selecione sua cidade\npara posicionar o mapa';
-    if (_bairroStatus == _FieldStatus.validando)            return 'Verificando bairro...';
-    if (_bairroStatus == _FieldStatus.invalido)             return 'Corrija o bairro\npara confirmar';
-    if (_bairroCtrl.text.trim().isEmpty)                    return 'Digite seu bairro\npara confirmar';
+    if (!_estadoPreenchido)                          return 'Selecione seu estado\npara começar';
+    if (!_cidadePreenchida)                          return 'Selecione sua cidade\npara posicionar o mapa';
+    if (_bairroStatus == _FieldStatus.validando)     return 'Verificando bairro...';
+    if (_bairroStatus == _FieldStatus.invalido)      return 'Corrija o bairro\npara confirmar';
+    if (_bairroCtrl.text.trim().isEmpty)             return 'Digite seu bairro\npara confirmar';
     return 'Complete a localização\npara confirmar';
   }
 }
 
-// ── Estilo escuro do mapa ──────────────────────────────────────────────────────
 const _mapStyle = '''
 [
   {"elementType":"geometry","stylers":[{"color":"#0d0015"}]},

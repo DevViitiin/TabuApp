@@ -484,11 +484,15 @@ class _PerfilScreenState extends State<PerfilScreen>
     ));
   }
 
-  void _abrirPerfil(String userId) {
-    HapticFeedback.selectionClick();
-    Navigator.push(context, MaterialPageRoute(
-        builder: (_) => PublicProfileScreen(userId: userId, userName: userId)));
-  }
+  void _abrirPerfil(String userId, String userName) {
+  HapticFeedback.selectionClick();
+  Navigator.push(context, MaterialPageRoute(
+      builder: (_) => PublicProfileScreen(
+        userId: userId, 
+        userName: userName
+      )
+  ));
+}
 
   void _openSheet({
     required String title,
@@ -496,9 +500,19 @@ class _PerfilScreenState extends State<PerfilScreen>
     required Color accentColor,
     required Widget content,
   }) {
+    debugPrint('📱 Opening sheet: $title with ${_followers.length} followers, ${_vipFriends.length} VIP');
     showModalBottomSheet(
-      context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
-      builder: (_) => MetricSheet(title: title, icon: icon, accentColor: accentColor, content: content),
+      context: context, 
+      isScrollControlled: true, 
+      backgroundColor: Colors.transparent,
+      isDismissible: true,
+      enableDrag: true,
+      builder: (BuildContext context) => MetricSheet(
+        title: title, 
+        icon: icon, 
+        accentColor: accentColor, 
+        content: content
+      ),
     );
   }
 
@@ -702,28 +716,38 @@ class _PerfilScreenState extends State<PerfilScreen>
                         StatCard(
                           value: _loadingFollow ? '—' : '${_followers.length}',
                           label: 'SEGUIDORES', icon: Icons.people_outline_rounded,
-                          onTap: () => _openSheet(
-                            title: 'SEGUIDORES', icon: Icons.people_outline_rounded,
-                            accentColor: TabuColors.rosaClaro,
-                            content: PaginatedUserList(
-                              uids: _followers, emptyLabel: 'Nenhum seguidor ainda',
-                              onTap: _abrirPerfil,
-                            ),
-                          ),
+                          onTap: () {
+                            debugPrint('🔵 Abrindo seguidores: ${_followers.length} items');
+                            _openSheet(
+                              title: 'SEGUIDORES', 
+                              icon: Icons.people_outline_rounded,
+                              accentColor: TabuColors.rosaClaro,
+                              content: PaginatedUserList(
+                                uids: _followers, 
+                                emptyLabel: 'Nenhum seguidor ainda',
+                                onTap: (userId, userName) => _abrirPerfil(userId, userName)
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(width: 10),
                         StatCard(
                           value: _loadingVip ? '—' : '${_vipFriends.length}',
                           label: 'AMIGOS VIP', icon: Icons.star_border_rounded,
                           highlight: true,
-                          onTap: () => _openSheet(
-                            title: 'AMIGOS VIP', icon: Icons.star_rounded,
-                            accentColor: const Color(0xFFD4AF37),
-                            content: PaginatedUserList(
-                              uids: _vipFriends, emptyLabel: 'Nenhum amigo VIP ainda',
-                              onTap: _abrirPerfil, isVip: true,
-                            ),
-                          ),
+                          onTap: () {
+                            _openSheet(
+                              title: 'SEGUIDORES', 
+                              icon: Icons.people_outline_rounded,
+                              accentColor: TabuColors.rosaClaro,
+                              content: PaginatedUserList(
+                                uids: _followers, 
+                                emptyLabel: 'Nenhum seguidor ainda',
+                                onTap: (uid, name) => _abrirPerfil(uid, name), // ← Passa os dois parâmetros
+                              ),
+                            
+                            );
+                          },
                         ),
                       ]),
 
@@ -770,17 +794,17 @@ class _PerfilScreenState extends State<PerfilScreen>
                     SliverFillRemaining(hasScrollBody: false, child: _buildVazio())
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), // Adicionado vertical
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                       sliver: SliverGrid(
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 1.5,
                           mainAxisSpacing: 1.5,
                           childAspectRatio: 1.0,
-                          mainAxisExtent: 120.0, // Fixa altura para melhor controle
+                          mainAxisExtent: 120.0,
                         ),
                         delegate: SliverChildBuilderDelegate(
-                          (_, i) => Padding( // Padding extra em cada tile
+                          (_, i) => Padding(
                             padding: const EdgeInsets.all(0.75),
                             child: _PostGridTile(
                               post: _posts[i],
@@ -792,7 +816,6 @@ class _PerfilScreenState extends State<PerfilScreen>
                         ),
                       ),
                     ),
-                  // Indicador de carregamento de mais posts
                   if (_loadingMorePosts)
                     const SliverToBoxAdapter(child: _LoadMoreIndicator()),
                 ] else ...[
@@ -804,14 +827,14 @@ class _PerfilScreenState extends State<PerfilScreen>
                     SliverFillRemaining(hasScrollBody: false, child: _buildGaleriaVazia())
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0), // Mesmo padding
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                       sliver: SliverGrid(
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 1.5,
                           mainAxisSpacing: 1.5,
                           childAspectRatio: 1.0,
-                          mainAxisExtent: 120.0, // Fixa altura
+                          mainAxisExtent: 120.0,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (_, i) => Padding(
@@ -827,24 +850,28 @@ class _PerfilScreenState extends State<PerfilScreen>
                         ),
                       ),
                     ),
-                  // Indicador de carregamento de mais galeria
                   if (_loadingMoreGallery)
                     const SliverToBoxAdapter(child: _LoadMoreIndicator()),
-
-                  ],
+                ],
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
           ),
         ),
       ]),
+
       floatingActionButton: _tabController.index == 1 && !_loadingGallery
-          ? FloatingActionButton(
-              onPressed: _adicionarAGaleria,
-              backgroundColor: TabuColors.rosaPrincipal,
-              elevation: 8, heroTag: 'gallery_fab',
-              child: const Icon(Icons.add, color: Colors.white, size: 28))
-          : null,
+    ? Padding(
+        padding: const EdgeInsets.only(bottom: 80), // 👈 sobe aqui
+        child: FloatingActionButton(
+          onPressed: _adicionarAGaleria,
+          backgroundColor: TabuColors.rosaPrincipal,
+          elevation: 8,
+          heroTag: 'gallery_fab',
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),
+      )
+    : null,
     );
   }
 
@@ -942,12 +969,12 @@ class _LoadMoreIndicator extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  PAGINATED USER LIST — seguidores e VIP com scroll infinito (5 por vez)
+//  PAGINATED USER LIST
 // ══════════════════════════════════════════════════════════════════════════════
 class PaginatedUserList extends StatefulWidget {
   final List<String> uids;
   final String emptyLabel;
-  final void Function(String) onTap;
+  final void Function(String uid, String name) onTap; // ← Mudança aqui
   final bool isVip;
 
   const PaginatedUserList({
@@ -963,7 +990,7 @@ class PaginatedUserList extends StatefulWidget {
 }
 
 class _PaginatedUserListState extends State<PaginatedUserList> {
-  static const int _pageSize = 5;
+  static const int _pageSize = 10;
   int _visibleCount = _pageSize;
   final _scrollController = ScrollController();
 
@@ -971,6 +998,7 @@ class _PaginatedUserListState extends State<PaginatedUserList> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    debugPrint('📋 PaginatedUserList iniciada com ${widget.uids.length} UIDs');
   }
 
   @override
@@ -983,57 +1011,77 @@ class _PaginatedUserListState extends State<PaginatedUserList> {
     final max = _scrollController.position.maxScrollExtent;
     final cur = _scrollController.position.pixels;
     if (cur >= max - 100 && _visibleCount < widget.uids.length) {
-      setState(() => _visibleCount = (_visibleCount + _pageSize).clamp(0, widget.uids.length));
+      setState(() {
+        final newCount = (_visibleCount + _pageSize).clamp(0, widget.uids.length);
+        debugPrint('📊 Carregando mais: $_visibleCount -> $newCount de ${widget.uids.length}');
+        _visibleCount = newCount;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('🎨 Build PaginatedUserList: ${widget.uids.length} total, $_visibleCount visíveis');
+    
     if (widget.uids.isEmpty) {
-      return Center(child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40),
-        child: Text(widget.emptyLabel, style: const TextStyle(
-            fontFamily: TabuTypography.bodyFont, fontSize: 12, color: TabuColors.subtle)),
-      ));
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          child: Text(
+            widget.emptyLabel.toUpperCase(), 
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: TabuTypography.bodyFont, 
+              fontSize: 10, 
+              fontWeight: FontWeight.w600,
+              letterSpacing: 2.5, 
+              color: TabuColors.subtle
+            ),
+          ),
+        ),
+      );
     }
 
     final slice = widget.uids.take(_visibleCount).toList();
     final hasMore = _visibleCount < widget.uids.length;
 
-    return ListView.builder(
+    return ListView.separated(
       controller: _scrollController,
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
       itemCount: slice.length + (hasMore ? 1 : 0),
-      itemBuilder: (_, i) {
+      separatorBuilder: (_, __) => Container(height: 0.5, color: TabuColors.border),
+      itemBuilder: (context, i) {
         if (i == slice.length) {
+          // Indicador de carregamento
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: SizedBox(
-              width: 16, height: 16,
-              child: CircularProgressIndicator(
-                  color: TabuColors.rosaPrincipal, strokeWidth: 1.5),
-            )),
+            child: Center(
+              child: SizedBox(
+                width: 16, 
+                height: 16,
+                child: CircularProgressIndicator(
+                  color: TabuColors.rosaPrincipal, 
+                  strokeWidth: 1.5
+                ),
+              ),
+            ),
           );
         }
-        return _UserListTile(uid: slice[i], isVip: widget.isVip, onTap: widget.onTap);
+        
+        return UserTile(
+          uid: slice[i], 
+          isVip: widget.isVip, 
+          onTap: (uid, name) { // ← Recebe uid e name
+            debugPrint('👆 Tap em usuário: $uid ($name)');
+            widget.onTap(uid, name); // ← Passa os dois
+          }
+        );
       },
     );
   }
 }
 
-// Tile individual de usuário (usa UserList internamente se já existir, senão implementa aqui)
-class _UserListTile extends StatelessWidget {
-  final String uid;
-  final bool isVip;
-  final void Function(String) onTap;
 
-  const _UserListTile({required this.uid, required this.isVip, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    // Reutiliza o widget UserList passando só 1 uid para manter consistência visual
-    return UserList(uids: [uid], emptyLabel: '', onTap: onTap, isVip: isVip);
-  }
-}
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  GALLERY GRID TILE
@@ -1152,7 +1200,6 @@ class _PostGridTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Verifica se o vídeo já foi pré-carregado
     final isPreloaded = post.tipo == 'video'
         ? VideoPreloadService.instance.isReady(post.id)
         : false;
@@ -1172,7 +1219,6 @@ class _PostGridTile extends StatelessWidget {
             Positioned.fill(child: Container(decoration: BoxDecoration(
               gradient: RadialGradient(center: Alignment.center, radius: 0.88,
                   colors: [Colors.transparent, Colors.black.withOpacity(0.3)])))),
-            // Botão play com borda verde se pré-carregado
             Center(child: Container(
               width: 36, height: 36,
               decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black.withOpacity(0.6),
@@ -1189,7 +1235,6 @@ class _PostGridTile extends StatelessWidget {
                 child: Text(_formatDuration(post.videoDuration!), style: const TextStyle(
                     fontFamily: TabuTypography.bodyFont, fontSize: 9,
                     fontWeight: FontWeight.w700, color: Colors.white)))),
-            // Indicador de pronto (igual ao feed e galeria)
             if (isPreloaded)
               Positioned(top: 5, left: 5, child: Container(
                 width: 18, height: 18,

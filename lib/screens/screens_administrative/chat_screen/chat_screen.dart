@@ -53,6 +53,23 @@ class _ChatRoomScreenState extends State<ChatRoomScreen>
       final has = _textCtrl.text.trim().isNotEmpty;
       if (has != _hasText) setState(() => _hasText = has);
     });
+    
+    // Listener para scroll automático quando teclado abrir
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        // Múltiplos scrolls em diferentes momentos para garantir
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted && _scroll.hasClients) _scrollToBottom();
+        });
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted && _scroll.hasClients) _scrollToBottom();
+        });
+        Future.delayed(const Duration(milliseconds: 600), () {
+          if (mounted && _scroll.hasClients) _scrollToBottom();
+        });
+      }
+    });
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _init();
       _setupScrollListener();
@@ -63,6 +80,27 @@ class _ChatRoomScreenState extends State<ChatRoomScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && mounted) {
       context.read<TabuChatController>().markAsRead();
+    }
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    // Quando o teclado abre/fecha, rola para o final
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    if (keyboardHeight > 0 && _focusNode.hasFocus) {
+      // Teclado aberto - faz scroll com delay para garantir que o layout já ajustou
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted && _scroll.hasClients) {
+          _scrollToBottom();
+        }
+      });
+      // Segundo scroll com mais delay para garantir
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted && _scroll.hasClients) {
+          _scrollToBottom();
+        }
+      });
     }
   }
 
@@ -118,8 +156,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen>
     _textCtrl.clear();
     setState(() => _hasText = false);
     await context.read<TabuChatController>().send(text);
+    // Múltiplos scrolls para garantir que a mensagem enviada apareça
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _scrollToBottom();
+    });
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted && _scroll.hasClients) _scrollToBottom();
+    });
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted && _scroll.hasClients) _scrollToBottom();
     });
   }
 
@@ -150,6 +195,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: TabuColors.bg,
       body: Stack(children: [
         Positioned(top: 0, left: 0, right: 0,
@@ -272,7 +318,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen>
     }
     return ListView.builder(
       controller: _scroll,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
       itemCount: msgs.length + (ctrl.isLoadingMore ? 1 : 0),
       itemBuilder: (context, i) {
         if (ctrl.isLoadingMore && i == 0) {
@@ -337,8 +383,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen>
   Widget _buildInput() {
     return Consumer<TabuChatController>(builder: (_, ctrl, __) {
       return Container(
-        padding: EdgeInsets.fromLTRB(
-            12, 10, 12, MediaQuery.of(context).padding.bottom + 10),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
         decoration: BoxDecoration(
           color: TabuColors.bg,
           border: Border(top: BorderSide(

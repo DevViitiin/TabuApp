@@ -792,7 +792,7 @@ class _SearchScreenPaginatedState extends State<SearchScreenPaginated>
                     width: 0.8),
               ),
               child: Text(
-                _pessoasRaioKm >= 500 ? 'SEM LIMITE' : '${_pessoasRaioKm.toInt()} KM',
+                _pessoasRaioKm >= 1000 ? 'SEM LIMITE' : '${_pessoasRaioKm.toInt()} KM',
                 style: const TextStyle(
                     fontFamily: TabuTypography.bodyFont,
                     fontSize: 10,
@@ -826,10 +826,10 @@ class _SearchScreenPaginatedState extends State<SearchScreenPaginated>
                 overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
               ),
               child: Slider(
-                value:     _pessoasRaioKm.clamp(10, 500),
+                value:     _pessoasRaioKm.clamp(10, 1000),
                 min:       10,
-                max:       500,
-                divisions: 49,
+                max:       1000,
+                divisions: 99,
                 onChanged:    (v) => setState(() => _pessoasRaioKm = v),
                 onChangeEnd:  (_) => _resetarPaginacaoPessoas(),
               ),
@@ -1037,10 +1037,10 @@ class _SearchScreenPaginatedState extends State<SearchScreenPaginated>
                 overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
               ),
               child: Slider(
-                value:     _raioKm.clamp(10, 500),
+                value:     _raioKm.clamp(10, 1000),
                 min:       10,
-                max:       500,
-                divisions: 49,
+                max:       1000,
+                divisions: 99,
                 onChanged:   (v) => setState(() => _raioKm = v),
                 onChangeEnd: (_) => _resetarPaginacaoFestas(),
               ),

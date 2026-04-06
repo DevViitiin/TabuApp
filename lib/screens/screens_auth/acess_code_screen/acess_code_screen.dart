@@ -389,7 +389,7 @@ class _AccessCodeScreenState extends State<AccessCodeScreen>
                           );
                         },
                         child: Text(
-                          'Solicitar novo código',
+                          'Solicitar convite',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: TabuColors.rosaPrincipal,
                             fontSize: 11,

@@ -1,10 +1,11 @@
 // functions/src/index.ts
 import { onSchedule }         from "firebase-functions/v2/scheduler";
 import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
-import { onValueWritten }     from "firebase-functions/v2/database";
+import { onValueWritten, onValueCreated } from "firebase-functions/v2/database";
 import { initializeApp }      from "firebase-admin/app";
 import { getDatabase }        from "firebase-admin/database";
 import { getAuth }            from "firebase-admin/auth";
+import { getMessaging }       from "firebase-admin/messaging";
 import * as nodemailer         from "nodemailer";
 
 initializeApp();
@@ -535,7 +536,95 @@ async function getNome(uid: string): Promise<string> {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  1. PROCESSAR DENÚNCIA
+//  1. NOTIFICAÇÃO PUSH — NOVA MENSAGEM DE CHAT
+//  Dispara sempre que uma nova mensagem é criada em ChatMessages/{chatId}/{msgId}
+// ══════════════════════════════════════════════════════════════════════════════
+export const notificarNovaMensagem = onValueCreated(
+  { ref: "ChatMessages/{chatId}/{msgId}", region: "us-central1" },
+  async (event) => {
+    const { chatId, msgId } = event.params;
+
+    // Ignora o placeholder de inicialização
+    if (msgId === "_placeholder") return null;
+
+    const msg = event.data.val() as {
+      text?: string;
+      sender_id?: string;
+      senderId?: string;
+      read_by?: Record<string, boolean>;
+    } | null;
+
+    if (!msg || !msg.text) return null;
+
+    // Suporte a ambos os formatos de campo (sender_id e senderId)
+    const senderId = msg.senderId ?? msg.sender_id;
+    if (!senderId) return null;
+
+    // Destinatário é quem tem read_by === false
+    const readBy = msg.read_by ?? {};
+    const recipientId = Object.keys(readBy).find((uid) => readBy[uid] === false);
+    if (!recipientId) return null;
+
+    const db = getDatabase();
+
+    // Busca token FCM, presença do destinatário e nome do remetente em paralelo
+    const [tokenSnap, onlineSnap, senderNameSnap] = await Promise.all([
+      db.ref(`Users/${recipientId}/fcmToken`).get(),
+      db.ref(`Users/${recipientId}/presence/online`).get(),
+      db.ref(`Users/${senderId}/name`).get(),
+    ]);
+
+    // Não notifica se o destinatário está online (já está vendo o chat)
+    const isOnline = onlineSnap.val() === true;
+    if (isOnline) return null;
+
+    const token      = tokenSnap.val() as string | null;
+    const senderName = (senderNameSnap.val() as string | null) ?? "Alguém";
+
+    if (!token) return null;
+
+    // Trunca o corpo da notificação em 100 caracteres
+    const body = msg.text.length > 100
+      ? `${msg.text.substring(0, 100)}…`
+      : msg.text;
+
+    try {
+      await getMessaging().send({
+        token,
+        notification: {
+          title: senderName,
+          body,
+        },
+        data: {
+          chatId,
+          senderId,
+          type: "chat_message",
+        },
+        android: {
+          priority: "high",
+          notification: { sound: "default" },
+        },
+        apns: {
+          payload: { aps: { sound: "default", badge: 1 } },
+        },
+      });
+    } catch (err: unknown) {
+      // Token inválido ou expirado — remove do banco para evitar tentativas futuras
+      const errCode = (err as { code?: string })?.code;
+      if (
+        errCode === "messaging/invalid-registration-token" ||
+        errCode === "messaging/registration-token-not-registered"
+      ) {
+        await db.ref(`Users/${recipientId}/fcmToken`).remove();
+      }
+    }
+
+    return null;
+  }
+);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  2. PROCESSAR DENÚNCIA
 // ══════════════════════════════════════════════════════════════════════════════
 export const processarDenuncia = onCall<ProcessarDenunciaData>(
   { region: "us-central1" },
@@ -580,7 +669,6 @@ export const processarDenuncia = onCall<ProcessarDenunciaData>(
     const artigoFinal       = artigoViolado ?? denuncia.artigo ?? "—";
     const denunciaMotivo    = denuncia.motivo_label ?? denuncia.motivo ?? "—";
 
-    // FIX: vista: false — o usuário verá a penalidade ao fazer login
     const penalidade: Penalidade = {
       protocolo,
       acao,
@@ -591,7 +679,7 @@ export const processarDenuncia = onCall<ProcessarDenunciaData>(
       aplicada_por:   request.auth.uid,
       denuncia_id:    denunciaId,
       denuncia_tipo:  denunciaTipo,
-      vista:          false, // ← usuário verá ao próximo login
+      vista:          false,
     };
 
     const updates: Record<string, unknown> = {};
@@ -624,7 +712,7 @@ export const processarDenuncia = onCall<ProcessarDenunciaData>(
       updates[`Users/${reportedUid}/penalidades/${penRef.key}`]     = {
         ...penalidade, tipo: "suspensao",
         suspensao_inicio: inicio, suspensao_fim: fim,
-        vista: true, // suspensão é tratada como tela separada, não como popup
+        vista: true,
       };
       updates[`Users/${reportedUid}/suspenso`]                      = true;
       updates[`Users/${reportedUid}/suspensao_fim`]                 = fim;
@@ -641,7 +729,7 @@ export const processarDenuncia = onCall<ProcessarDenunciaData>(
       const penRef = db.ref(`Users/${reportedUid}/penalidades`).push();
       updates[`Users/${reportedUid}/penalidades/${penRef.key}`]     = {
         ...penalidade, tipo: "banimento",
-        vista: true, // banimento é tratado como tela separada
+        vista: true,
       };
       updates[`Users/${reportedUid}/banido`]                        = true;
       updates[`Users/${reportedUid}/banido_em`]                     = agora;
@@ -673,7 +761,7 @@ export const processarDenuncia = onCall<ProcessarDenunciaData>(
           tipo:               "remover_conteudo",
           conteudo_removido:  conteudoId,
           conteudo_tipo:      denunciaTipo,
-          vista:              false, // ← usuário verá popup ao próximo login
+          vista:              false,
         };
       }
     }
@@ -773,7 +861,7 @@ export const processarDenuncia = onCall<ProcessarDenunciaData>(
 );
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  2. VERIFICAR SUSPENSÕES
+//  3. VERIFICAR SUSPENSÕES
 // ══════════════════════════════════════════════════════════════════════════════
 export const verificarSuspensoes = onSchedule(
   { schedule: "every 1 hours", timeZone: "America/Sao_Paulo", region: "us-central1" },
@@ -802,7 +890,7 @@ export const verificarSuspensoes = onSchedule(
 );
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  3. ARQUIVAMENTO DE FESTAS
+//  4. ARQUIVAMENTO DE FESTAS
 // ══════════════════════════════════════════════════════════════════════════════
 async function _arquivarFestasVencidas(): Promise<{ arquivadas: number; timestamp: string }> {
   const db        = getDatabase();
@@ -844,7 +932,7 @@ export const archivePartiesHttp = onRequest(
 );
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  4. BADGE DE CHATS NÃO LIDOS
+//  5. BADGE DE CHATS NÃO LIDOS
 // ══════════════════════════════════════════════════════════════════════════════
 export const updateUnreadChatsCount = onValueWritten(
   { ref: "Chats/{chatId}/unreadCount/{uid}", region: "us-central1" },
@@ -972,7 +1060,7 @@ function emailConviteRecusado(opts: {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  5. PROCESSAR PEDIDO DE CONVITE
+//  6. PROCESSAR PEDIDO DE CONVITE
 // ══════════════════════════════════════════════════════════════════════════════
 export const processarPedidoConvite = onCall<ProcessarPedidoConviteData>(
   { region: "us-central1" },
@@ -1011,8 +1099,6 @@ export const processarPedidoConvite = onCall<ProcessarPedidoConviteData>(
 
     // ── APROVAR ─────────────────────────────────────────────────────────────
     if (acao === "aprovar") {
-      // Busca o código de convite vigente
-      // Ajuste o caminho conforme onde você armazena o código (InviteCode/code)
       const codigoSnap = await db.ref("Invitation_code").get();
       const codigo     = codigoSnap.val() as string | null;
 

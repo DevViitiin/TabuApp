@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:tabuapp/services/services_app/presence_service.dart';
 
 class AuthService {
@@ -15,10 +16,15 @@ class AuthService {
     required String password,
   }) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      final credential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      final uid = credential.user?.uid;
+      if (uid != null) await _salvarTokenFCM(uid);
+
+      return credential;
     } on FirebaseAuthException catch (e) {
       throw _handleException(e);
     }
@@ -68,6 +74,8 @@ class AuthService {
           'reservations': 0,
           'vip_lists':    0,
         });
+
+        await _salvarTokenFCM(uid);
       }
 
       return credential;
@@ -85,9 +93,24 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-  await PresenceService.instance.setOffline(); // ← marca offline primeiro
-  await FirebaseAuth.instance.signOut();
-}
+    await PresenceService.instance.setOffline(); // ← marca offline primeiro
+    await FirebaseAuth.instance.signOut();
+  }
+
+  // ─── Salva o token FCM no banco para receber notificações push ────────────
+  Future<void> _salvarTokenFCM(String uid) async {
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token == null) return;
+
+      await _database.ref('Users/$uid/fcmToken').set(token);
+
+      // Atualiza automaticamente se o token for renovado pelo Firebase
+      FirebaseMessaging.instance.onTokenRefresh.listen((novoToken) {
+        _database.ref('Users/$uid/fcmToken').set(novoToken);
+      });
+    } catch (_) {}
+  }
 
   String _handleException(FirebaseAuthException e) {
     switch (e.code) {
@@ -106,7 +129,7 @@ class AuthService {
       case 'too-many-requests':
         return 'Muitas tentativas. Tente novamente mais tarde.';
       default:
-        return 'Erro: \${e.message}';
+        return 'Erro: ${e.message}';
     }
   }
 }

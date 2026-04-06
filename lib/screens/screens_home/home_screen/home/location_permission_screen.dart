@@ -1,6 +1,8 @@
 // lib/screens/screens_auth/location_permission_screen/location_permission_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tabuapp/core/theme/tabu_theme.dart';
@@ -85,17 +87,68 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
   /// No Android 13+ usa [Permission.photos] e [Permission.videos];
   /// em versões anteriores usa [Permission.storage].
   Future<bool> _isGalleryGranted() async {
-    // Android 13+ (API 33+) expõe permissões granulares
+  // Verifica se está no Android 13+ (API 33+)
+  if (await _isAndroid13OrHigher()) {
     final photosStatus = await Permission.photos.status;
-    if (photosStatus != PermissionStatus.permanentlyDenied &&
-        photosStatus != PermissionStatus.denied) {
-      // API granular disponível — checa vídeos também
-      final videosStatus = await Permission.videos.status;
-      return photosStatus.isGranted && videosStatus.isGranted;
-    }
-    // Fallback: Android < 13 usa READ_EXTERNAL_STORAGE
-    return (await Permission.storage.status).isGranted;
+    final videosStatus = await Permission.videos.status;
+    return photosStatus.isGranted && videosStatus.isGranted;
   }
+  
+  // Android < 13: usa READ_EXTERNAL_STORAGE
+  return (await Permission.storage.status).isGranted;
+}
+
+/// Verifica se o dispositivo está rodando Android 13+ (API 33+)
+Future<bool> _isAndroid13OrHigher() async {
+  if (!Platform.isAndroid) return false;
+  
+  final androidInfo = await DeviceInfoPlugin().androidInfo;
+  return androidInfo.version.sdkInt >= 33;
+}
+
+Future<void> _pedirGaleria() async {
+  try {
+    // Verifica a versão do Android primeiro
+    if (await _isAndroid13OrHigher()) {
+      // Android 13+: permissões granulares
+      final results = await [
+        Permission.photos,
+        Permission.videos,
+      ].request();
+
+      if (!mounted) return;
+
+      final photosStatus = results[Permission.photos]!;
+      final videosStatus = results[Permission.videos]!;
+
+      if (photosStatus.isGranted && videosStatus.isGranted) {
+        _onGalleryGranted();
+        return;
+      }
+
+      final anythingForever = photosStatus.isPermanentlyDenied ||
+          videosStatus.isPermanentlyDenied;
+      setState(() => _state = anythingForever 
+          ? _PermState.deniedForever 
+          : _PermState.denied);
+    } else {
+      // Android < 13: READ_EXTERNAL_STORAGE
+      final storageStatus = await Permission.storage.request();
+      
+      if (!mounted) return;
+      
+      if (storageStatus.isGranted) {
+        _onGalleryGranted();
+      } else if (storageStatus.isPermanentlyDenied) {
+        setState(() => _state = _PermState.deniedForever);
+      } else {
+        setState(() => _state = _PermState.denied);
+      }
+    }
+  } catch (_) {
+    if (mounted) setState(() => _state = _PermState.denied);
+  }
+}
 
   // ── Pede permissão conforme etapa atual ──────────────────────────────────
   Future<void> _pedirPermissao() async {
@@ -181,50 +234,6 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
       } else {
         setState(() => _state = _PermState.denied);
       }
-    } catch (_) {
-      if (mounted) setState(() => _state = _PermState.denied);
-    }
-  }
-
-  Future<void> _pedirGaleria() async {
-    try {
-      // Tenta primeiro as permissões granulares do Android 13+
-      final results = await [
-        Permission.photos,
-        Permission.videos,
-      ].request();
-
-      if (!mounted) return;
-
-      final photosStatus = results[Permission.photos]!;
-      final videosStatus = results[Permission.videos]!;
-
-      // Se ambas as permissões granulares forem concedidas
-      if (photosStatus.isGranted && videosStatus.isGranted) {
-        _onGalleryGranted();
-        return;
-      }
-
-      // Se a API granular não está disponível (Android < 13), 
-      // o sistema retorna permanentlyDenied — tenta READ_EXTERNAL_STORAGE
-      if (photosStatus.isPermanentlyDenied || videosStatus.isPermanentlyDenied) {
-        // Verifica se é porque o sistema usa a permissão legada
-        final storageStatus = await Permission.storage.request();
-        if (!mounted) return;
-        if (storageStatus.isGranted) {
-          _onGalleryGranted();
-          return;
-        } else if (storageStatus.isPermanentlyDenied) {
-          setState(() => _state = _PermState.deniedForever);
-          return;
-        }
-      }
-
-      // Denied em alguma das granulares mas não permanente
-      final anythingForever = photosStatus.isPermanentlyDenied ||
-          videosStatus.isPermanentlyDenied;
-      setState(() =>
-          _state = anythingForever ? _PermState.deniedForever : _PermState.denied);
     } catch (_) {
       if (mounted) setState(() => _state = _PermState.denied);
     }

@@ -112,6 +112,17 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
     _phoneFocus.addListener(() {
       if (mounted) setState(() => _phoneFocused = _phoneFocus.hasFocus);
     });
+    
+    // Listeners para atualizar UI quando texto mudar (para mostrar erros em tempo real)
+    _nameController.addListener(() {
+      if (mounted) setState(() {});
+    });
+    _emailController.addListener(() {
+      if (mounted) setState(() {});
+    });
+    _phoneController.addListener(() {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -131,8 +142,29 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
   }
 
   Future<void> _submitRequest() async {
-    if (!_formKey.currentState!.validate() || _isLoading) return;
+    print('🔥 _submitRequest CHAMADO');
+    
+    if (_isLoading) {
+      print('⏳ Já está carregando, ignorando...');
+      return;
+    }
 
+    // Validar ANTES de remover o foco
+    if (!_formKey.currentState!.validate()) {
+      print('❌ Validação falhou');
+      print('Nome: "${_nameController.text}"');
+      print('Email: "${_emailController.text}"');
+      print('Telefone: "${_phoneController.text}"');
+      HapticFeedback.mediumImpact(); // Feedback tátil
+      _errorShakeController.forward(from: 0); // Shake visual
+      return;
+    }
+    
+    print('✅ Validação OK - Iniciando envio');
+    
+    // Unfocus keyboard DEPOIS da validação bem-sucedida
+    FocusScope.of(context).unfocus();
+    
     setState(() {
       _isLoading = true;
       _hasError = false;
@@ -140,11 +172,15 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
     });
 
     try {
+      print('📤 Enviando: ${_nameController.text.trim()}, ${_emailController.text.trim()}, ${_phoneController.text.trim()}');
+      
       await _inviteService.createInviteRequest(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
       );
+
+      print('✅ Solicitação enviada com sucesso!');
 
       if (!mounted) return;
 
@@ -155,6 +191,8 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
       _successController.forward();
       HapticFeedback.heavyImpact();
     } catch (e) {
+      print('❌ Erro ao enviar solicitação: $e');
+      
       if (!mounted) return;
 
       setState(() {
@@ -349,17 +387,19 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
                             controller: _nameController,
                             focusNode: _nameFocus,
                             isFocused: _nameFocused,
-                            label: 'NOME COMPLETO',
-                            hint: 'Digite seu nome',
+                            label: 'NOME COMPLETO (NOME E SOBRENOME)',
+                            hint: 'Ex: João Silva',
                             icon: Icons.person_outline,
                             keyboardType: TextInputType.name,
                             textCapitalization: TextCapitalization.words,
+                            helperText: 'Digite nome e sobrenome',
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return 'Nome é obrigatório';
+                                return 'Por favor, digite seu nome completo';
                               }
-                              if (value.trim().split(' ').length < 2) {
-                                return 'Digite nome e sobrenome';
+                              final parts = value.trim().split(RegExp(r'\s+'));
+                              if (parts.length < 2) {
+                                return 'Digite nome E sobrenome (Ex: João Silva)';
                               }
                               return null;
                             },
@@ -399,10 +439,12 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
                             keyboardType: TextInputType.phone,
                             inputFormatters: [_PhoneMaskFormatter()],
                             validator: (value) {
+                              print('🔍 Validando telefone: "$value"');
                               if (value == null || value.trim().isEmpty) {
                                 return 'Telefone é obrigatório';
                               }
                               final cleanPhone = value.replaceAll(RegExp(r'\D'), '');
+                              print('🔍 Telefone limpo: "$cleanPhone" (${cleanPhone.length} dígitos)');
                               if (cleanPhone.length < 10) {
                                 return 'Telefone inválido';
                               }
@@ -527,8 +569,16 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
     List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
     void Function(String)? onFieldSubmitted,
+    String? helperText,
   }) {
     final hasValue = controller.text.isNotEmpty;
+    String? errorText;
+    
+    // Tenta validar o campo atual para obter mensagem de erro
+    if (validator != null && hasValue && !isFocused) {
+      errorText = validator(controller.text);
+    }
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -537,7 +587,11 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
           style: TextStyle(
             fontSize: 10,
             letterSpacing: 2,
-            color: isFocused ? TabuColors.rosaPrincipal : TabuColors.subtle,
+            color: errorText != null 
+                ? TabuColors.rosaPrincipal 
+                : isFocused 
+                    ? TabuColors.rosaPrincipal 
+                    : TabuColors.subtle,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -545,7 +599,7 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
         AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           decoration: BoxDecoration(
-            color: _hasError
+            color: errorText != null
                 ? TabuColors.rosaPrincipal.withOpacity(0.15)
                 : hasValue
                     ? const Color(0x22E85D8A)
@@ -553,21 +607,21 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
                         ? const Color(0x14E85D8A)
                         : TabuColors.bgCard,
             border: Border.all(
-              color: _hasError
+              color: errorText != null
                   ? TabuColors.rosaPrincipal.withOpacity(0.8)
                   : isFocused
                       ? TabuColors.rosaPrincipal
                       : hasValue
                           ? TabuColors.borderMid
                           : TabuColors.border,
-              width: isFocused ? 1.5 : _hasError ? 1.2 : 0.8,
+              width: isFocused ? 1.5 : errorText != null ? 1.2 : 0.8,
             ),
             boxShadow: isFocused
                 ? [
                     BoxShadow(
                         color: TabuColors.glow.withOpacity(0.3), blurRadius: 16)
                   ]
-                : hasValue && !_hasError
+                : hasValue && errorText == null
                     ? [
                         BoxShadow(
                             color: TabuColors.glow.withOpacity(0.15),
@@ -587,7 +641,7 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
               fontSize: 14,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.3,
-              color: _hasError
+              color: errorText != null
                   ? TabuColors.rosaPrincipal
                   : hasValue
                       ? TabuColors.branco
@@ -602,11 +656,13 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
               ),
               prefixIcon: Icon(
                 icon,
-                color: isFocused
+                color: errorText != null
                     ? TabuColors.rosaPrincipal
-                    : hasValue
-                        ? TabuColors.subtle
-                        : TabuColors.subtle.withOpacity(0.5),
+                    : isFocused
+                        ? TabuColors.rosaPrincipal
+                        : hasValue
+                            ? TabuColors.subtle
+                            : TabuColors.subtle.withOpacity(0.5),
                 size: 20,
               ),
               border: InputBorder.none,
@@ -623,6 +679,63 @@ class _RequestInviteScreenState extends State<RequestInviteScreen>
               isDense: true,
             ),
           ),
+        ),
+        // Mensagem de erro ou helper text
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: errorText != null
+              ? Padding(
+                  key: ValueKey('error-$label'),
+                  padding: const EdgeInsets.only(top: 6, left: 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 12,
+                        color: TabuColors.rosaPrincipal,
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          errorText,
+                          style: TextStyle(
+                            color: TabuColors.rosaPrincipal,
+                            fontSize: 11,
+                            letterSpacing: 0.3,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : helperText != null && !hasValue && !isFocused
+                  ? Padding(
+                      key: ValueKey('helper-$label'),
+                      padding: const EdgeInsets.only(top: 6, left: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 11,
+                            color: TabuColors.subtle.withOpacity(0.6),
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              helperText,
+                              style: TextStyle(
+                                color: TabuColors.subtle.withOpacity(0.8),
+                                fontSize: 10,
+                                letterSpacing: 0.3,
+                                height: 1.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(key: ValueKey('empty'), height: 0),
         ),
       ],
     );
@@ -834,14 +947,21 @@ class _ActionButtonState extends State<_ActionButton>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return GestureDetector(
-      onTapDown: widget.enabled ? (_) => setState(() => _pressed = true) : null,
+      onTapDown: widget.enabled ? (_) {
+        print('🔥 BOTÃO PRESSIONADO (onTapDown)');
+        setState(() => _pressed = true);
+      } : null,
       onTapUp: widget.enabled
           ? (_) {
+              print('🔥 BOTÃO SOLTO (onTapUp) - Chamando callback');
               setState(() => _pressed = false);
               widget.onTap();
             }
           : null,
-      onTapCancel: widget.enabled ? () => setState(() => _pressed = false) : null,
+      onTapCancel: widget.enabled ? () {
+        print('⚠️ TOQUE CANCELADO (onTapCancel)');
+        setState(() => _pressed = false);
+      } : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         width: double.infinity,
